@@ -143,6 +143,16 @@ class DeclaredControlsTest {
   }
 
   @Test
+  void a_passing_module_cannot_hide_a_surface_with_no_normal_control() {
+    manifest.remove("control_failures");
+    error = null;
+    ((ObjectNode) manifest.path("modules")).putObject("another")
+        .put("wire", "anthropic").put("http_client", "jdk");
+    var failure = assertThrows(IOException.class, this::runControls);
+    assertTrue(failure.getMessage().contains("normal control"), failure.getMessage());
+  }
+
+  @Test
   void unexercised_declaration_fails() {
     ((ObjectNode) manifest.path("control_failures").get(0)).put("tool", "set_level");
     error = null;

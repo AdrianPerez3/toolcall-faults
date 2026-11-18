@@ -83,6 +83,11 @@ public final class ManifestLint {
         problems.add(new Problem(anchors.toString(), "$.format", "expected tcf.anchors/v1"));
       int i = 0;
       for (JsonNode entry : n.path("entries")) {
+        try {
+          toolcallfaults.runner.selftest.AnchorExpectation.validate(entry.path("expect"));
+        } catch (IOException e) {
+          problems.add(new Problem(anchors.toString(), "$.entries[" + i + "].expect", e.getMessage()));
+        }
         String id = entry.path("fixture").asText();
         Path base = root.resolve("suite/fixtures").toAbsolutePath().normalize(),
             file = base.resolve(id + ".json").normalize();

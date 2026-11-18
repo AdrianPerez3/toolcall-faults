@@ -493,6 +493,20 @@ class ManifestLintTest {
   }
 
   @Test
+  void anchors_require_an_observed_category_and_nonempty_contains_text() throws Exception {
+    for (var expect : java.util.List.of("null", "[]", "{}", "{\"category\":\"HARNESS\"}",
+        "{\"category\":\"unknown\"}", "{\"category\":\"UNSUPPORTED\"}",
+        "{\"category\":\"SURFACED\",\"caller_text_contains\":\"\"}")) {
+      var file = root.resolve("expectations/anchors.json");
+      java.nio.file.Files.createDirectories(file.getParent());
+      java.nio.file.Files.writeString(file,
+          "{\"format\":\"tcf.anchors/v1\",\"entries\":[{\"expect\":" + expect + "}]}");
+      assertTrue(ManifestLint.check(root).stream().anyMatch(
+          p -> p.jsonPath().startsWith("$.entries[0].expect")), expect);
+    }
+  }
+
+  @Test
   void malformed_anchors_are_a_problem() throws Exception {
     Path p = root.resolve("expectations/anchors.json");
     Files.createDirectories(p.getParent());

@@ -17,7 +17,9 @@ public final class SelfTest {
     List<Path> files = new ArrayList<>();
     for (String dir : List.of("fixtures", "selftest"))
       try (var paths = Files.walk(suite.resolve(dir))) {
-        files.addAll(paths.filter(p -> p.toString().endsWith(".json")).sorted().toList());
+        var fixtures = paths.filter(p -> p.toString().endsWith(".json")).sorted().toList();
+        if (fixtures.isEmpty()) throw new IOException("No server fixtures in " + dir);
+        files.addAll(fixtures);
       }
     for (Path path : files) {
       Fixture f = FixtureLoader.load(path);
@@ -74,8 +76,11 @@ public final class SelfTest {
         var manifest = toolcallfaults.runner.cell.AdapterManifest.load(dir);
         String version = toolcallfaults.runner.cell.AdapterBuild.defaultVersion(dir);
         Set<AdapterManifest.ControlFailure> seen = new HashSet<>();
+        Set<String> missingControls = new TreeSet<>();
         for (var module : manifest.modules().entrySet())
-          for (String surface : manifest.surfaces())
+          for (String surface : manifest.surfaces()) {
+            String selection = module.getKey() + "/" + surface;
+            missingControls.add(selection);
             for (Fixture f : fixtures) {
               if (!module.getValue().supportsScenario(f.scenario())
                   || !f.wire().equals(module.getValue().wire())
@@ -103,6 +108,8 @@ public final class SelfTest {
                         Runtime.version().feature(),
                         client);
                 total++;
+                if (f.scenario().equals("tools.single-call") && f.tools().equals(List.of("record_note")))
+                  missingControls.remove(selection);
                 var declaration = manifest.controlFailure(cell).orElse(null);
                 if (declaration != null) seen.add(declaration);
                 boolean ok = true;
@@ -182,6 +189,9 @@ public final class SelfTest {
                             : "FAIL"));
               }
             }
+          }
+        if (!missingControls.isEmpty())
+          throw new IOException(manifest.target() + ": no normal control for " + missingControls);
         if (!seen.containsAll(
             manifest.controlFailures().stream()
                 .filter(f -> f.appliesToVersion(version))
@@ -202,8 +212,17 @@ public final class SelfTest {
     List<JsonNode> entries = new ArrayList<>();
     for (String dir : List.of("expectations", ".local/expectations")) {
       Path file = root.resolve(dir).resolve("anchors.json");
-      if (Files.exists(file))
-        FixtureLoader.JSON.readTree(file.toFile()).path("entries").forEach(entries::add);
+      if (!Files.exists(file) && dir.startsWith(".local/")) continue;
+      JsonNode document = FixtureLoader.read(file);
+      if (document == null || !document.path("format").asText().equals("tcf.anchors/v1")
+          || !document.path("entries").isArray())
+        throw new IOException("Invalid anchor register in " + file);
+      if (dir.equals("expectations") && document.path("entries").isEmpty())
+        throw new IOException("Empty public anchor register");
+      for (var entry : document.path("entries")) {
+        AnchorExpectation.validate(entry.path("expect"));
+        entries.add(entry);
+      }
     }
     int total = 0, matched = 0;
     for (JsonNode entry : entries) {
@@ -270,7 +289,8 @@ public final class SelfTest {
             String field = contains ? key.substring(0, key.length() - 9) : key;
             boolean equal =
                 contains
-                    ? actual.path(field).asText().contains(expected.getValue().asText())
+                    ? actual.path(field).isTextual()
+                        && actual.path(field).textValue().contains(expected.getValue().textValue())
                     : actual.path(field).equals(expected.getValue());
             if (!equal)
               differences.add(

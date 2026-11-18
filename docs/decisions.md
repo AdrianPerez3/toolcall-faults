@@ -296,3 +296,7 @@ A filtered run uses retained observations as well as new repetitions to decide w
 ## 2026-11-18 — Source scope in the judgement register
 
 The silent-drop and stalled-body terminal criteria belong to this suite. Client timeouts can cover different parts of an HTTP response. The register distinguishes guidance for the tested request from guidance for an optional mode or a different service. Streaming-only guidance applies directly to streaming surfaces. Synthetic fixtures must retain message boundaries except where they declare a removal.
+
+## 2026-11-18 — Self-test coverage
+
+Each anchor requires an observed category and a nonempty value for any substring assertion. The self-test requires a public anchor register, fixtures for server checks, and a single-call control for each applicable module and surface.

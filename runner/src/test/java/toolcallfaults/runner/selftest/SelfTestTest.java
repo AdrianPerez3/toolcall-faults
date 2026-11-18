@@ -8,6 +8,27 @@ import org.junit.jupiter.api.Test;
 import toolcallfaults.runner.fixture.FixtureLoader;
 
 class SelfTestTest {
+  @org.junit.jupiter.api.io.TempDir Path root;
+
+  @Test
+  void server_rejects_an_empty_fixture_set() throws Exception {
+    java.nio.file.Files.createDirectories(root.resolve("fixtures"));
+    java.nio.file.Files.createDirectories(root.resolve("selftest"));
+    assertThrows(java.io.IOException.class, () -> SelfTest.server(root));
+  }
+
+  @Test
+  void missing_expectations_are_rejected_before_building_any_adapter() throws Exception {
+    var file = root.resolve("expectations/anchors.json");
+    java.nio.file.Files.createDirectories(file.getParent());
+    java.nio.file.Files.writeString(file, """
+        {"format":"tcf.anchors/v1","entries":[
+          {"target":"example","version":"1","fixture":"openai-chat/test","expect":{}}]}
+        """);
+    var error = assertThrows(java.io.IOException.class, () -> SelfTest.anchors(root, null, null));
+    assertTrue(error.getMessage().contains("expect.category"), error.getMessage());
+  }
+
   @Test
   void probe_expectations_keep_their_origin_and_run_on_each_reference_jdk() throws Exception {
     var entry =
