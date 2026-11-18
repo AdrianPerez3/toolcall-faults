@@ -271,6 +271,18 @@ class WorkflowsTest {
   }
 
   @Test
+  void reference_images_are_pinned_and_watched_for_digest_updates() throws Exception {
+    var dockerfile = Files.readAllLines(root.resolve("Dockerfile"));
+    for (String jdk : List.of("17", "21", "25")) {
+      String image = "FROM maven:3.9-eclipse-temurin-" + jdk + "@sha256:";
+      assertTrue(dockerfile.stream().anyMatch(line ->
+          line.matches(Pattern.quote(image) + "[0-9a-f]{64} AS base" + jdk)));
+    }
+    var config = Files.readString(root.resolve(".github/dependabot.yml"));
+    assertTrue(config.contains("  - package-ecosystem: docker\n    directory: '/'\n"));
+  }
+
+  @Test
   void hosted_check_requires_all_published_cells() throws Exception {
     for (String workflow : List.of("ci.yml", "weekly.yml"))
       assertTrue(lines(workflow).stream().anyMatch(line ->

@@ -42,7 +42,7 @@ concurrency:
 permissions:
   contents: read
 # Two jobs per JDK, side by side on separate runners, so that neither comes near its time limit.
-# A cell still runs alone on its runner. The limits are about twice the slowest time seen.
+# Each job has its own runner. Matrix concurrency follows the processors available.
 # Self-test, run and check lines name cells and outcomes. Unfiled observations stay in the
 # ephemeral workspace, including failure details; only fixed lines and counts reach this log.
 jobs:

@@ -22,3 +22,12 @@ If a normal control fails, first fix the adapter, harness or fixture. Only a lib
 ## Verify
 
 Build with `./mvnw verify`; run `./tcf lint` and `./tcf lint --scan`. Use the README's container cell command with your target, module and each surface, then `./tcf --container 21 selftest --controls`. Inspect the recorded versions, arguments and requests, not only the category. Review any `NEW` or `CHANGED` baseline entry against raw observations and documentary judgements. Keep target execution inside `--network none` containers.
+
+## Measuring a new release of an existing target
+
+Prepare the candidate as the target's `next` version on a local branch. Include any version-specific BOM or transport dependency in the adapter manifest. If a preview already occupies that role, retain its configuration for restoration. Commit the preparation after the build and lint checks so every new row identifies the exact code used.
+
+1. List the candidate with `./tcf run --list --role next --target TARGET --jdk 21`. Compare its cell keys with the current version, accounting for the version field and declared control failures.
+2. Run `./tcf --container 21 run --role next --target TARGET --jdk 21 --out .local/candidate-21` from the clean commit. Use a fresh output directory. The published selector requires existing rows, so leave it off for a new version. Repeat on JDK 17 and 25, one container at a time.
+3. Check each run with `./tcf check --run .local/candidate-21`, substituting the corresponding directory. Compare old and new outcomes by matching all axes except version. Review differences, fixture hashes, resolved dependencies and all repetitions. A baseline names a particular version and outcome.
+4. Route the candidate's measured rows through the ordinary result store after reviewing its baselines. Promote the pin in the adapter POM only after the expected current cells have rows. Restore the intended preview role and compare the promoted cell selection and resolved dependencies with what was measured. Remeasure any changed selection or executable configuration.

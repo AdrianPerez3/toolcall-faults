@@ -304,3 +304,5 @@ Each anchor requires an observed category and a nonempty value for any substring
 ## 2026-11-18 — Published replay coverage
 
 Hosted checks require the complete set of published current cells for the running JDK. An alternate run compares with the stored same-JDK cell when one exists, or its JDK 21 reference otherwise. The comparison uses the registered stability fields. Empty output cannot verify a replay.
+
+Dependabot checks the reference Dockerfile weekly. Digest updates can be reviewed together while the JDK axes remain pinned. A new target release can be measured at a clean candidate commit using the existing next-version role before promotion.
