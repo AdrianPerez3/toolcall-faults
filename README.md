@@ -23,11 +23,11 @@ These are observations of behaviour on replayed bytes; not a ranking.
 
 ## How it works
 
-1. A **fixture** holds the exact bytes of one provider response, damage included. Most fixtures are synthetic, constructed for this suite; a few are recordings taken from other projects.
+1. A **fixture** supplies the response bytes, including any damage. It can also supply a follow-up response if the client makes another request. Most fixtures are synthetic. The catalogue also includes upstream recordings and a documented transform of a recording.
 2. A small **replay server** sends those bytes over HTTP on the local machine. No model and no provider takes part, and no API key is needed.
-3. An **adapter** is a short program that calls one real client library the way an application would, with a tool whose body writes down the arguments it receives. Every run is a fresh process in a container with the network switched off and fake credentials. The client is given a timeout of 3 seconds, and a watchdog ends a run after 12.
-4. The **oracle** compares what the tool received with what the bytes carried, and gives the run one **category**. Every cell is run three times.
-5. A **judgement**, kept apart from the observation, says whether provider documentation supports that outcome. Where the documentation is silent or disputed, the outcome is recorded without a verdict.
+3. An **adapter** is a short program that calls one real client library the way an application would and records what the caller sees. On a tool loop, it also records the arguments inside the application’s tool body. Every run is a fresh process in a container with the network switched off and fake credentials. The adapter configures a 3-second client timeout. A watchdog gives the child JVM 12 seconds. The adapter manifest describes which parts of a request the client timeout covers.
+4. The **oracle** compares the tool invocations or the calls returned to the application with the fixture. It also reads the caller’s signals and the server’s request log to assign one **category** per repetition. A normal matrix run measures each cell three times.
+5. A separate **judgement** names the criterion for each scenario. Some criteria come from provider documentation. Others express the suite’s expectation, such as a visible indication that a call was dropped. Controls describe normal operation. The suite records all model surfaces and the scenarios marked record-only without judging the outcome.
 
 ## What a result looks like
 
@@ -43,27 +43,27 @@ Each run produces one row. This one is from `results/spring-ai/2.0.2.jsonl`, sho
 }
 ```
 
-The `cell` key reads, from left to right: library and version, module, surface, wire format and scenario, tool, JDK, HTTP client. `invocations` is what the tool body received. The `category` is one of:
+The `cell` key reads, from left to right: library and version, module, surface, wire format and scenario, tool, JDK, HTTP client. `invocations` records actual entries into a tool body. On a loop surface, the oracle compares those entries with the fixture. On a model surface, it compares the assembled calls in `adapter.caller.tool_calls` with the fixture. The same category names cover both surfaces.
 
 | Category | Meaning |
 |---|---|
-| `EXECUTED_AS_SENT` | The tool ran with the arguments as sent. |
-| `EXECUTED_ALTERED` | The tool ran with other arguments than a complete call carried. |
-| `SURFACED` | The tool did not run, and the caller can tell. |
-| `DROPPED` | The tool did not run, and the caller cannot tell. |
-| `FED_BACK_HIDDEN` | The error was sent back to the model and hidden from the caller. |
-| `ERROR_TYPED` | The client raised an error of its own type. |
-| `ERROR_UNTYPED` | The client raised an error of a generic type. |
+| `EXECUTED_AS_SENT` | All calls matched the fixture’s complete calls by tool name and argument values. |
+| `EXECUTED_ALTERED` | An invocation or returned call with usable arguments had no matching complete call in the fixture. |
+| `SURFACED` | A call remained unmatched, and the caller saw a non-completion finish reason or invalid arguments. |
+| `DROPPED` | A call remained unmatched, and the oracle found no caller-visible indication of damage. |
+| `FED_BACK_HIDDEN` | A follow-up request carried a tool result for an unmatched call. The caller saw a normal completion. |
+| `ERROR_TYPED` | The first error class matched a typed-error prefix in the adapter manifest. |
+| `ERROR_UNTYPED` | The first error class fell outside the adapter’s typed-error prefixes. |
 | `HANG` | No terminal signal arrived before the watchdog ended the run. |
-| `UNSUPPORTED` | The client cannot express the cell. |
-| `HARNESS` | The run itself was invalid. Such a run is never kept as an observation. |
+| `UNSUPPORTED` | Reserved for a cell the client cannot express. The matrix excludes unsupported combinations before execution. |
+| `HARNESS` | The run was invalid. Its row is retained privately for diagnosis, and the run fails verification. |
 
 ## Status
 
 Pre-release. No report pages are published.
 
-- `results/` holds observation rows for cells that are not judged, or whose behaviour is already reported upstream, by the author or by someone else. [results/upstream.json](results/upstream.json) lists those threads.
-- Where a cell shows an outcome without documentary support that has not been reported upstream, its rows and the rows of the other cells of the same target version, module and scenario are withheld until the report is filed.
+- `results/` holds public observations, including controls, record-only cells and unsupported outcomes covered by a filed report. The upstream register links each report. [Upstream threads](results/upstream.json)
+- When a cell has an unsupported outcome without a matching filed report, its rows stay private. Other cells of the same target version, module and scenario also stay private unless they have their own filed report.
 
 ## Try it
 
@@ -80,13 +80,13 @@ You need a JDK and Docker. Maven compiles Java 17 source; the reference containe
 ./tcf --container 21 selftest
 ```
 
-Replace the scenario with the fixture's scenario ID to reproduce a particular cell. `tcf cell` prints the fixture, resolved versions, category and received arguments. A loop surface records tool execution inside the tool body; a model surface records the assembled response without running a tool. The latter is record-only in this release.
+Replace the scenario with the fixture's scenario ID to reproduce a particular cell. `tcf cell` prints the fixture, resolved versions, category and received arguments.
 
-`./tcf --container 21 run` runs the selected matrix; `./tcf check` compares observations with reviewed baselines; `./tcf report` generates Markdown. An unreviewed cell makes `check` fail. Observations of behaviours that are not reported upstream yet, with their baselines, anchors and the frozen predictions, remain private; `expectations/predictions.commitment.json` holds the hash of the predictions. A public checkout runs the published cells with `./tcf --container 21 run --jdk 21 --published`; a full run may report `NEW` for the others. Do not suppress that check to obtain a green run.
+`./tcf --container 21 run` runs the selected matrix. Use `./tcf check` to compare observations with reviewed baselines and `./tcf report` to generate Markdown. An unsupported outcome without a baseline makes `check` fail. Withheld observations and their baselines and anchors remain private. The hash in `expectations/predictions.commitment.json` identifies the frozen predictions. A public checkout runs the published cells with `./tcf --container 21 run --jdk 21 --published`. A full run may report `NEW` for the others. Do not suppress that check to obtain a green run.
 
 ## The scenarios
 
-A scenario is one kind of response: a kind of damage, or an undamaged control. Each has a fixture per wire format.
+A scenario is one kind of response: a kind of damage, or an undamaged control. Each has a fixture for the wire formats it covers.
 
 | Scenario | The response |
 |---|---|
@@ -148,7 +148,7 @@ Fixtures are synthetic unless their `tier` says otherwise. A synthetic replay de
 | inference | Our interpretation of the evidence. |
 | unverified | Not confirmed by the available evidence. |
 
-A category describes what happened. A judgement records whether a cited provider contract supports it; disputed or undocumented behaviour may be record-only. The result records execution, callbacks and caller-visible signals separately. It does not infer execution merely from a completed model response. [Dispute an observation or judgement](docs/disputing-a-cell.md) with the cell key and evidence.
+A category describes what happened. For a judged cell, the register explains the criterion and distinguishes applicable provider guidance from related material. The result records actual tool invocations, optional callbacks and caller-visible signals separately. Include the cell key and supporting evidence when disputing an observation or judgement. [Dispute instructions](docs/disputing-a-cell.md)
 
 ## Glossary
 

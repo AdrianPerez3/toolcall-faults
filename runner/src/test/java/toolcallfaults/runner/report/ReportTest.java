@@ -248,6 +248,11 @@ class ReportTest {
     String local = generate(true).split("## Observations", 2)[0];
     assertTrue(local.contains("DROPPED"));
     assertTrue(local.contains("EXECUTED_ALTERED"));
+    String[] localSections = local.split("## Other outcomes marked unsupported by the judgement register", 2);
+    assertEquals(2, localSections.length, "Mixed criteria must be identified separately.");
+    String mixed = localSections[1];
+    assertTrue(mixed.contains("Criterion: suite criterion"));
+    assertTrue(mixed.contains("Criterion: provider documentation"));
 
     // An eligible public cell must still show both the supported and the filed repetition.
     var supported = Records.row(CELL, 1, "SURFACED", 1);
@@ -308,6 +313,45 @@ class ReportTest {
     String structuredOutputs = register.split("## N-OA6", 2)[1].split("## ", 2)[0];
     assertTrue(structuredOutputs.contains("context for: openai-chat"));
     assertTrue(Files.readString(root.resolve("site/index.md")).contains("(register.md)"));
+  }
+
+  @Test
+  void scenario_rules_identify_the_criterion_of_each_outcome() throws Exception {
+    generate(false);
+    var scenarios = root.resolve("site/scenarios");
+    String cut = Files.readString(scenarios.resolve("truncation.args-cut-mid-string.md"));
+    assertTrue(cut.contains("the tool ran with other arguments than a complete call carried (provider documentation)"));
+    assertTrue(cut.contains("not run, and the caller cannot tell (suite criterion)"));
+    String stall = Files.readString(scenarios.resolve("stream.stall-mid-args.md"));
+    assertFalse(stall.contains("No documentary support:"));
+    assertTrue(stall.contains("when beyond configured timeout (suite criterion)"));
+    assertTrue(stall.contains("Model surfaces are record-only"));
+  }
+
+  @Test
+  void a_control_failure_is_listed_separately_from_provider_based_observations() throws Exception {
+    String control = "spring-ai@2.0.2|spring-ai-deepseek|loop-call|openai-chat/tools.single-call@nonstream"
+        + "|record_note|jdk21|reactor-netty";
+    writeRow(control, "ERROR_UNTYPED", false);
+    baseline(control, TODAY.minusDays(30), false, "filed", BASIS);
+    String table = generate(false).split("## Observations", 2)[0];
+    String[] sections = table.split("## Other outcomes marked unsupported by the judgement register", -1);
+    assertEquals(2, sections.length);
+    assertTrue(sections[0].contains("EXECUTED_ALTERED"));
+    assertFalse(sections[0].contains("ERROR_UNTYPED"));
+    assertTrue(sections[1].contains("ERROR_UNTYPED"));
+    assertFalse(sections[1].contains("EXECUTED_ALTERED"));
+  }
+
+  @Test
+  void model_only_observations_explain_the_execution_category() throws Exception {
+    String model = "spring-ai@2.0.2|spring-ai-openai|model-stream|openai-chat/tools.single-call"
+        + "|record_note|jdk21|okhttp";
+    writeRow(model, "EXECUTED_AS_SENT", false);
+    String page = generate(false);
+    String modelSection = page.substring(page.indexOf(model));
+    assertTrue(modelSection.contains("Execution categories describe the tool calls handed up to the caller"));
+    assertTrue(modelSection.contains("EXECUTED_AS_SENT"));
   }
 
   @Test

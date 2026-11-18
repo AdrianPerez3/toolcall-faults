@@ -17,7 +17,13 @@ public final class Report {
   private Report() {}
 
   private record View(
-      String key, List<RunRecord> rows, Fixture fixture, Verdict verdict, Entry entry) {}
+      String key, List<RunRecord> rows, Fixture fixture, List<Verdict> verdicts, Entry entry) {
+
+    String basis() {
+      return String.join(" ", verdicts.stream().map(v ->
+          v.basis() + " Criterion: " + v.criterionLabel() + ". " + v.citation()).toList());
+    }
+  }
 
   public static void generate(Path root, Path siteDir, boolean includeWithheld, LocalDate today)
       throws Exception {
@@ -79,25 +85,14 @@ public final class Report {
         var rows = group.getValue();
         rows.sort(Comparator.comparingInt(RunRecord::rep));
         var first = rows.get(0);
-        var verdict =
-            judgements.judge(
-                first.fixtureId(),
-                first.surface(),
-                Category.valueOf(first.category()),
-                first.attributes());
-        for (var row : rows) {
-          var candidate =
-              judgements.judge(
-                  row.fixtureId(),
-                  row.surface(),
-                  Category.valueOf(row.category()),
-                  row.attributes());
-          if (candidate.unsupported()) verdict = candidate;
-        }
+        var verdicts = rows.stream().map(row -> judgements.judge(
+                row.fixtureId(), row.surface(), Category.valueOf(row.category()), row.attributes()))
+            .distinct().toList();
+        var unsupported = verdicts.stream().filter(Verdict::unsupported).toList();
         var entry = baseline.entry(group.getKey()).orElse(null);
         if (!includeWithheld
             && (rows.stream().anyMatch(r -> r.category().equals("HARNESS"))
-                || verdict.unsupported()
+                || !unsupported.isEmpty()
                     && !publishable(entry, config.path("window_days").asInt(14), today)))
           continue;
         views.add(
@@ -105,7 +100,7 @@ public final class Report {
                 group.getKey(),
                 List.copyOf(rows),
                 ControlFixtures.load(root, first.fixtureId()),
-                verdict,
+                unsupported.isEmpty() ? verdicts : unsupported,
                 entry));
       }
     }
@@ -197,6 +192,7 @@ public final class Report {
       out.append("- ").append(escape(url.asText())).append("\n");
     if (scenario.path("evidence_notes").isTextual())
       out.append("\n").append(escape(scenario.path("evidence_notes").asText())).append("\n");
+    out.append("\nThe rules below apply to loop surfaces. Model surfaces are record-only.\n");
     for (JsonNode entry : judgements.path("entries")) {
       if (!entry.path("scenario").asText().equals(id)) continue;
       out.append("\nWire `")
@@ -207,24 +203,26 @@ public final class Report {
           .append(entry.path("level").asText())
           .append(". ");
       List<String> rules = new ArrayList<>();
-      for (JsonNode rule : entry.path("unsupported"))
+      for (JsonNode rule : entry.path("unsupported")) {
+        String criterion = rule.path("criterion").asText(entry.path("criterion").asText());
         rules.add(
             outcome(rule.path("category").asText())
                 + (rule.path("when").asText().equals("always")
                     ? ""
-                    : " when " + rule.path("when").asText().replace('_', ' ')));
-      out.append("No documentary support: ")
+                    : " when " + rule.path("when").asText().replace('_', ' '))
+                + " (" + Verdict.criterionLabel(criterion) + ")");
+      }
+      out.append("Outcomes marked unsupported: ")
           .append(rules.isEmpty() ? "none listed" : String.join("; ", rules))
           .append(". ");
       List<String> defensible = new ArrayList<>();
       entry.path("defensible").forEach(d -> defensible.add(outcome(d.asText())));
       if (!defensible.isEmpty())
         out.append("Defensible: ").append(String.join(", ", defensible)).append(". ");
-      out.append("Criterion: ")
-          .append(
-              new Verdict(
-                      "", false, false, List.of(), List.of(), entry.path("criterion").asText(), "")
-                  .criterionLabel())
+      // The entry's criterion is a default; an individual unsupported rule can override it.
+      boolean hasOverrides = !entry.path("unsupported").findValues("criterion").isEmpty();
+      out.append(hasOverrides ? "Default criterion: " : "Criterion: ")
+          .append(Verdict.criterionLabel(entry.path("criterion").asText()))
           .append(". ")
           .append(escape(entry.path("basis").asText()));
       List<String> keys = new ArrayList<>();
@@ -338,44 +336,15 @@ public final class Report {
             .append(escape(title))
             .append("\n\n")
             .append(banner)
-            .append("\n## Cells with an outcome no provider document supports\n\n");
-    var judged = views.stream().filter(v -> v.verdict().unsupported()).toList();
-    if (judged.isEmpty()) out.append("No eligible observations in this section.\n");
-    else {
-      out.append(
-          "| Scenario | Wire damage | Observation | Category | Basis | Upstream | Reproduce |\n"
-              + "|---|---|---|---|---|---|---|\n");
-      for (var v : judged) {
-        var row = v.rows().get(0);
-        out.append("| ")
-            .append(table(scenarios.get(v.fixture().scenario()).path("title").asText()))
-            .append(" | ")
-            .append(table(v.fixture().truth().damage()))
-            .append(" | ")
-            .append(
-                table(
-                    String.join(
-                        "\n",
-                        v.rows().stream()
-                            .map(r -> "Repetition " + r.rep() + ": " + observation(r))
-                            .toList())))
-            .append(" | ")
-            .append(
-                String.join(" / ", v.rows().stream().map(RunRecord::category).distinct().toList()))
-            .append(" | ")
-            .append(
-                table(
-                    v.verdict().basis()
-                        + " Criterion: "
-                        + v.verdict().criterionLabel()
-                        + ". "
-                        + v.verdict().citation()))
-            .append(" | ")
-            .append(table(upstream(v.entry(), upstream)))
-            .append(" | `")
-            .append(table(command(row)))
-            .append("` |\n");
-      }
+            .append("\n## Cells with an outcome no provider document supports\n\n")
+            .append("The judgement uses the provider passages cited for each cell.\n\n");
+    var judged = views.stream().filter(v -> v.verdicts().get(0).unsupported()).toList();
+    var provider = judged.stream().filter(Report::hasProviderBasis).toList();
+    judgedTable(out, provider, scenarios, upstream);
+    var other = judged.stream().filter(v -> !hasProviderBasis(v)).toList();
+    if (!other.isEmpty()) {
+      out.append("\n## Other outcomes marked unsupported by the judgement register\n\n");
+      judgedTable(out, other, scenarios, upstream);
     }
     out.append("\n## Observations\n\n");
     for (var v : views) {
@@ -393,14 +362,14 @@ public final class Report {
           .append(". Wire damage: ")
           .append(escape(v.fixture().truth().damage()))
           .append(".\n\n");
-      if (v.verdict().level().equals("record-only")) out.append("record-only\n\n");
-      else
+      if (v.verdicts().get(0).level().equals("record-only")) {
+        out.append("record-only");
+        if (v.rows().get(0).surface().startsWith("model-"))
+          out.append(". Execution categories describe the tool calls handed up to the caller on this surface.");
+        out.append("\n\n");
+      } else
         out.append("Basis: ")
-            .append(escape(v.verdict().basis()))
-            .append(" Criterion: ")
-            .append(v.verdict().criterionLabel())
-            .append(". ")
-            .append(escape(v.verdict().citation()))
+            .append(escape(v.basis()))
             .append("\n\n");
       for (var row : v.rows()) {
         out.append("Repetition ")
@@ -442,6 +411,45 @@ public final class Report {
             .append(")\n\n");
     }
     return out.toString();
+  }
+
+  private static boolean hasProviderBasis(View view) {
+    return view.verdicts().stream().allMatch(v -> v.criterion().equals("provider") && !v.keys().isEmpty());
+  }
+
+  private static void judgedTable(
+      StringBuilder out, List<View> judged, Map<String, JsonNode> scenarios, Map<String, JsonNode> upstream) {
+    if (judged.isEmpty()) out.append("No eligible observations in this section.\n");
+    else {
+      out.append(
+          "| Scenario | Wire damage | Observation | Category | Basis | Upstream | Reproduce |\n"
+              + "|---|---|---|---|---|---|---|\n");
+      for (var v : judged) {
+        var row = v.rows().get(0);
+        out.append("| ")
+            .append(table(scenarios.get(v.fixture().scenario()).path("title").asText()))
+            .append(" | ")
+            .append(table(v.fixture().truth().damage()))
+            .append(" | ")
+            .append(
+                table(
+                    String.join(
+                        "\n",
+                        v.rows().stream()
+                            .map(r -> "Repetition " + r.rep() + ": " + observation(r))
+                            .toList())))
+            .append(" | ")
+            .append(
+                String.join(" / ", v.rows().stream().map(RunRecord::category).distinct().toList()))
+            .append(" | ")
+            .append(table(v.basis()))
+            .append(" | ")
+            .append(table(upstream(v.entry(), upstream)))
+            .append(" | `")
+            .append(table(command(row)))
+            .append("` |\n");
+      }
+    }
   }
 
   private static String observation(RunRecord row) {

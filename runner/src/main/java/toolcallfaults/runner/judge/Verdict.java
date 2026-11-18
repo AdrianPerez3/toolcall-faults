@@ -26,6 +26,10 @@ public record Verdict(
   }
 
   public String criterionLabel() {
+    return criterionLabel(criterion);
+  }
+
+  public static String criterionLabel(String criterion) {
     return switch (criterion) {
       case "provider" -> "provider documentation";
       case "suite" -> "suite criterion";

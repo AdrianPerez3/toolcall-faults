@@ -310,3 +310,9 @@ Dependabot checks the reference Dockerfile weekly. Digest updates can be reviewe
 ## 2026-11-18 — Publication history and known withheld identities
 
 The repository scan compares tracked text in both the index and the working tree with withheld cell identifiers known to the maintainer checkout. The push hook requires each updated ref to resolve to a commit whose only root is the reviewed public snapshot. The same rule covers annotated tags and merges.
+
+## 2026-11-18 — Fixture identity and interpretation of results
+
+Measurement verifies each fixture exchange against its declared body digest before serving any bytes. The same encoding supplies the replay and the digest.
+
+For loop surfaces, the observations record actual tool entries. For model surfaces, the execution categories describe the assembled calls returned to the application. Reports give the source of each applicable criterion and retain the distinct criteria observed across repetitions.
