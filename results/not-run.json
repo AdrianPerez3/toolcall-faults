@@ -1,0 +1,19 @@
+{
+  "format" : "tcf.not-run/v1",
+  "suiteVersion" : "86ce2e7",
+  "date" : "2026-11-18T14:41:58.372222044Z",
+  "entries" : [ {
+    "cell" : {
+      "target" : "spring-ai",
+      "version" : "2.0.2",
+      "module" : "spring-ai-deepseek",
+      "surface" : "loop-call",
+      "fixtureId" : "openai-chat/finish.unknown-value-with-tool-call@nonstream",
+      "tool" : "record_note",
+      "jdk" : 21,
+      "httpClient" : "reactor-netty"
+    },
+    "basis" : [ "https://github.com/spring-projects/spring-ai/pull/6775" ],
+    "notes" : [ "Synthetic fixture with null assistant content, which the DeepSeek API reference documents as allowed (https://api-docs.deepseek.com/api/create-chat-completion/). Whether the live API sends null or an empty string is unverified until a live response is recorded. PR #6775 references the related streaming issue https://github.com/spring-projects/spring-ai/issues/5568; that issue is not evidence of this blocking-path fix." ]
+  } ]
+}
