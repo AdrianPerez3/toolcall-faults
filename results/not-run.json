@@ -1,7 +1,7 @@
 {
   "format" : "tcf.not-run/v1",
-  "suiteVersion" : "86ce2e7",
-  "date" : "2026-11-18T14:41:58.372222044Z",
+  "suiteVersion" : "f139373",
+  "date" : "2026-11-18T16:48:02.300289295Z",
   "entries" : [ {
     "cell" : {
       "target" : "spring-ai",
