@@ -79,8 +79,12 @@ jobs:
       - name: Self-test
         run: |
           mkdir -p .local
-          ./tcf --container "$JDK" selftest > .local/ci-selftest.log 2>&1 || { grep -E '^(server|controls|anchors|pins): ' .local/ci-selftest.log || true; echo "harness lines: $(grep -c HARNESS .local/ci-selftest.log || true)"; echo "selftest failed; details stay in the workspace"; exit 1; }
-          grep -E '^(server|controls|anchors|pins): ' .local/ci-selftest.log
+          ./tcf --container "$JDK" selftest > .local/ci-selftest.log 2>&1 || {
+            code=$?
+            awk -f .github/scripts/summary.awk phase=selftest-failed .local/ci-selftest.log || true
+            exit "$code"
+          }
+          awk -f .github/scripts/summary.awk phase=selftest .local/ci-selftest.log
   cells:
     runs-on: ubuntu-24.04
     timeout-minutes: 120
@@ -107,9 +111,17 @@ jobs:
         # by the maintainer with the private baselines.
         run: |
           mkdir -p .local
-          ./tcf --container "$JDK" run --jdk "$JDK" --published --out .local/run > .local/ci-run.log 2>&1 || { grep -E '^run: ' .local/ci-run.log || true; echo "run failed; details stay in the workspace"; exit 1; }
+          ./tcf --container "$JDK" run --jdk "$JDK" --published --out .local/run > .local/ci-run.log 2>&1 || {
+            code=$?
+            awk -f .github/scripts/summary.awk phase=run .local/ci-run.log || true
+            exit "$code"
+          }
       - name: Check observations
         # In the container, because withheld rows are written owner-only by its user.
         run: |
           mkdir -p .local
-          ./tcf --container "$JDK" check --run .local/run --published > .local/ci-check.log 2>&1 || { echo "differing cells: $(grep -cE '^(CHANGED|NEW|STALE) ' .local/ci-check.log || true)"; echo "check failed; details stay in the workspace"; exit 1; }
+          ./tcf --container "$JDK" check --run .local/run --published > .local/ci-check.log 2>&1 || {
+            code=$?
+            awk -f .github/scripts/summary.awk phase=check .local/ci-check.log || true
+            exit "$code"
+          }

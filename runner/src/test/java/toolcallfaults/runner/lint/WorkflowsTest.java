@@ -36,10 +36,7 @@ class WorkflowsTest {
   private static final List<Pattern> LOG_USES =
       List.of(
           Pattern.compile("> " + LOG + " 2>&1"),
-          Pattern.compile("grep -E '\\^\\(server\\|controls\\|anchors\\|pins\\): ' " + LOG),
-          Pattern.compile("grep -E '\\^run: ' " + LOG),
-          Pattern.compile("grep -c HARNESS " + LOG),
-          Pattern.compile("grep -cE '\\^\\(CHANGED\\|NEW\\|STALE\\) ' " + LOG));
+          Pattern.compile("awk -f \\.github/scripts/summary\\.awk phase=(selftest-failed|selftest|run|check) " + LOG));
 
   private static boolean readsALogAnotherWay(String line) {
     String rest = line;
@@ -52,17 +49,15 @@ class WorkflowsTest {
     assertTrue(readsALogAnotherWay("          cat .local/ci-run.log"));
     assertTrue(readsALogAnotherWay("x > .local/a.log 2>&1 || grep CHANGED .local/a.log"));
     assertTrue(readsALogAnotherWay("x > .local/a.log 2>&1 || grep HARNESS .local/a.log"));
-    assertFalse(readsALogAnotherWay("x > .local/a.log 2>&1 || grep -E '^run: ' .local/a.log"));
+    assertTrue(readsALogAnotherWay("x > .local/a.log 2>&1 || grep -E '^run: ' .local/a.log"));
+    assertFalse(readsALogAnotherWay("awk -f .github/scripts/summary.awk phase=run .local/a.log"));
     for (String name : List.of("ci.yml", "weekly.yml")) {
       var text = lines(name);
       for (String line : text)
         assertFalse(readsALogAnotherWay(line), name + " prints from a log: " + line.strip());
-      // A failing step says how far it got, without naming a cell.
-      for (String use :
-          List.of("grep -c HARNESS ", "grep -E '^run: ' ", "grep -cE '^(CHANGED|NEW|STALE) ' "))
-        assertTrue(
-            text.stream().anyMatch(l -> l.contains("|| {") && l.contains(use)),
-            name + " does not say how far a failing step got: " + use);
+      for (String phase : List.of("selftest-failed", "run", "check"))
+        assertTrue(text.stream().anyMatch(line -> line.contains("summary.awk phase=" + phase + " ")),
+            name + " has no summary for " + phase);
     }
   }
 
@@ -297,5 +292,81 @@ class WorkflowsTest {
       for (String line : lines(name))
         if (line.matches(".*\\./tcf (--container \\S+ )?run .*"))
           assertTrue(line.contains(" --published "), name + ": " + line.strip());
+  }
+
+  private String step(String workflow, String name) throws Exception {
+    var lines = lines(workflow);
+    int start = lines.indexOf("      - name: " + name);
+    assertTrue(start >= 0);
+    int block = lines.subList(start, lines.size()).indexOf("        run: |");
+    assertTrue(block >= 0);
+    return String.join("\n", lines.stream().skip(start + block + 1L)
+        .takeWhile(line -> line.startsWith("          "))
+        .map(line -> line.substring(10)).toList());
+  }
+
+  private String failedStep(Path temp, String workflow, String name, String log) throws Exception {
+    return stepOutput(temp, workflow, name, log, 17);
+  }
+
+  private String stepOutput(Path temp, String workflow, String name, String log, int status)
+      throws Exception {
+    Files.writeString(temp.resolve("input.txt"), log);
+    var process = new ProcessBuilder("sh", "-e", "-c", step(workflow, name))
+        .directory(temp.toFile()).redirectErrorStream(true).start();
+    String output = new String(process.getInputStream().readAllBytes(),
+        java.nio.charset.StandardCharsets.UTF_8);
+    assertEquals(status, process.waitFor(), output);
+    return output;
+  }
+
+  @Test
+  void failed_steps_report_numeric_counts_and_keep_observation_text_private(
+      @org.junit.jupiter.api.io.TempDir Path temp) throws Exception {
+    Files.createSymbolicLink(temp.resolve(".github"), root.resolve(".github"));
+    Path command = temp.resolve("tcf");
+    Files.writeString(command, "#!/bin/sh\ncat input.txt\nexit 17\n");
+    assertTrue(command.toFile().setExecutable(true));
+    String a = "example@1|module|model-stream|wire/test|tool|jdk21|jdk";
+    String b = a.replace("model-stream", "loop-stream");
+    for (String workflow : List.of("ci.yml", "weekly.yml")) {
+      String run = failedStep(temp, workflow, "Run matrix",
+          "controls: 3 unexpected repetitions; inspect local evidence\n"
+          + "run: 2 cells x 3 repetitions, 0 HARNESS\n"
+          + "FLAKY " + a + " {SURFACED=2, DROPPED=1}\n"
+          + "run: 9 cells x 3 repetitions, 0 HARNESS private text\n");
+      assertEquals("run: 2 cells x 3 repetitions, 0 HARNESS\n"
+          + "unstable cells: 1\nunexpected control repetitions: 3\n"
+          + "run failed; details stay in the workspace\n", run);
+      String check = failedStep(temp, workflow, "Check observations",
+          "INCOMPLETE " + a + " private details\nFLAKY " + a + " {DROPPED=1}\n"
+          + "HARNESS " + b + " private details\nNEW " + b + " private details\n"
+          + "Run does not contain the complete published current matrix\n");
+      assertEquals("differing cells: 2\n"
+          + "findings: CHANGED=0 NEW=1 STALE=0 INCOMPLETE=1 FLAKY=1 HARNESS=1\n"
+          + "published coverage: incomplete\ncheck failed; details stay in the workspace\n", check);
+      String self = failedStep(temp, workflow, "Self-test",
+          "server: 5 of 5 fixtures byte-exact\ncontrols: private text\n"
+          + "FLAKY " + b + " HARNESS\n");
+      assertEquals("server: 5 of 5 fixtures byte-exact\nharness lines: 1\n"
+          + "selftest failed; details stay in the workspace\n", self);
+    }
+  }
+
+  @Test
+  void successful_self_test_requires_exactly_one_summary_for_each_phase(
+      @org.junit.jupiter.api.io.TempDir Path temp) throws Exception {
+    Files.createSymbolicLink(temp.resolve(".github"), root.resolve(".github"));
+    Path command = temp.resolve("tcf");
+    Files.writeString(command, "#!/bin/sh\ncat input.txt\n");
+    assertTrue(command.toFile().setExecutable(true));
+    String server = "server: 1 of 1 fixtures byte-exact\n";
+    String rest = "controls: 1 of 1 EXECUTED_AS_SENT; 0 declared\n"
+        + "anchors: 1 of 1 matched (JDK 21; probe JDK 21)\npins: 1 of 1 DIFFERS\n";
+    for (String workflow : List.of("ci.yml", "weekly.yml")) {
+      assertEquals(server + rest, stepOutput(temp, workflow, "Self-test", server + rest, 0));
+      stepOutput(temp, workflow, "Self-test", server, 1);
+      stepOutput(temp, workflow, "Self-test", server + rest + server, 1);
+    }
   }
 }

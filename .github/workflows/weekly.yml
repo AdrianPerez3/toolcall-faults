@@ -40,19 +40,31 @@ jobs:
       - name: Self-test
         run: |
           mkdir -p .local
-          ./tcf --container 21 selftest > .local/weekly-selftest.log 2>&1 || { grep -E '^(server|controls|anchors|pins): ' .local/weekly-selftest.log || true; echo "harness lines: $(grep -c HARNESS .local/weekly-selftest.log || true)"; echo "selftest failed; details stay in the workspace"; exit 1; }
-          grep -E '^(server|controls|anchors|pins): ' .local/weekly-selftest.log
+          ./tcf --container 21 selftest > .local/weekly-selftest.log 2>&1 || {
+            code=$?
+            awk -f .github/scripts/summary.awk phase=selftest-failed .local/weekly-selftest.log || true
+            exit "$code"
+          }
+          awk -f .github/scripts/summary.awk phase=selftest .local/weekly-selftest.log
       - name: Run matrix
         # Published cells only: the cells with rows in results/. The others are run and judged
         # by the maintainer with the private baselines.
         run: |
           mkdir -p .local
-          ./tcf --container 21 run --jdk 21 --published --out .local/run > .local/weekly-run.log 2>&1 || { grep -E '^run: ' .local/weekly-run.log || true; echo "run failed; details stay in the workspace"; exit 1; }
+          ./tcf --container 21 run --jdk 21 --published --out .local/run > .local/weekly-run.log 2>&1 || {
+            code=$?
+            awk -f .github/scripts/summary.awk phase=run .local/weekly-run.log || true
+            exit "$code"
+          }
       - name: Check observations
         # In the container, because withheld rows are written owner-only by its user.
         run: |
           mkdir -p .local
-          ./tcf --container 21 check --run .local/run --published > .local/weekly-check.log 2>&1 || { echo "differing cells: $(grep -cE '^(CHANGED|NEW|STALE) ' .local/weekly-check.log || true)"; echo "check failed; details stay in the workspace"; exit 1; }
+          ./tcf --container 21 check --run .local/run --published > .local/weekly-check.log 2>&1 || {
+            code=$?
+            awk -f .github/scripts/summary.awk phase=check .local/weekly-check.log || true
+            exit "$code"
+          }
       - name: Stamp successful run
         run: |
           python3 - <<'PY'

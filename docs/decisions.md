@@ -316,3 +316,7 @@ The repository scan compares tracked text in both the index and the working tree
 Measurement verifies each fixture exchange against its declared body digest before serving any bytes. The same encoding supplies the replay and the digest.
 
 For loop surfaces, the observations record actual tool entries. For model surfaces, the execution categories describe the assembled calls returned to the application. Reports give the source of each applicable criterion and retain the distinct criteria observed across repetitions.
+
+## 2026-11-18 — Hosted failure summaries
+
+CI and weekly replay print counts of unstable cells, unexpected controls and check findings. Each command keeps its own exit status. The full self-test has four required summary lines. Raw observations and cell identifiers stay in the runner workspace.
