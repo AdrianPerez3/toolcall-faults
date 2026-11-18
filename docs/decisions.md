@@ -306,3 +306,7 @@ Each anchor requires an observed category and a nonempty value for any substring
 Hosted checks require the complete set of published current cells for the running JDK. An alternate run compares with the stored same-JDK cell when one exists, or its JDK 21 reference otherwise. The comparison uses the registered stability fields. Empty output cannot verify a replay.
 
 Dependabot checks the reference Dockerfile weekly. Digest updates can be reviewed together while the JDK axes remain pinned. A new target release can be measured at a clean candidate commit using the existing next-version role before promotion.
+
+## 2026-11-18 — Publication history and known withheld identities
+
+The repository scan compares tracked text in both the index and the working tree with withheld cell identifiers known to the maintainer checkout. The push hook requires each updated ref to resolve to a commit whose only root is the reviewed public snapshot. The same rule covers annotated tags and merges.

@@ -20,15 +20,31 @@ public final class RepositoryScan {
         Files.exists(root.resolve("scan-allow.txt"))
             ? allow(Files.readAllBytes(root.resolve("scan-allow.txt")))
             : Set.of();
+    var inventory = new WithheldKeys(root);
+    Map<String, String> stagedFiled = new HashMap<>(), workingFiled = new HashMap<>();
+    if (inventory.hasObservations()) {
+      for (String name : files) {
+        if (!name.startsWith("expectations/baseline/") || !name.endsWith(".json")) continue;
+        WithheldKeys.filed(git(root, "cat-file", "blob", ":" + name), stagedFiled);
+        if (Files.isRegularFile(root.resolve(name)))
+          WithheldKeys.filed(Files.readAllBytes(root.resolve(name)), workingFiled);
+      }
+    }
+    var stagedKeys = inventory.keys(stagedFiled);
+    var workingKeys = inventory.keys(workingFiled);
+    var stagedMatcher = WithheldKeys.matcher(stagedKeys);
+    var workingMatcher =
+        workingKeys.equals(stagedKeys) ? stagedMatcher : WithheldKeys.matcher(workingKeys);
     List<Problem> problems = new ArrayList<>();
     for (String name : files) {
       byte[] staged = git(root, "cat-file", "blob", ":" + name);
-      problems.addAll(SecretPathScan.scan(name + " (index)", staged, stagedAllow));
+      problems.addAll(SecretPathScan.scan(name + " (index)", staged, stagedAllow, stagedMatcher));
       Path file = root.resolve(name);
       if (Files.exists(file)) {
         byte[] working = Files.readAllBytes(file);
-        if (!Arrays.equals(working, staged) || !workingAllow.equals(stagedAllow))
-          problems.addAll(SecretPathScan.scan(name, working, workingAllow));
+        if (!Arrays.equals(working, staged) || !workingAllow.equals(stagedAllow)
+            || workingMatcher != stagedMatcher)
+          problems.addAll(SecretPathScan.scan(name, working, workingAllow, workingMatcher));
       }
     }
     return List.copyOf(problems);

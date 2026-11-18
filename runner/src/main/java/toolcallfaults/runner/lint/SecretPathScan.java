@@ -44,6 +44,10 @@ public final class SecretPathScan {
   }
 
   public static List<Problem> scan(String file, byte[] bytes, Set<String> allow) {
+    return scan(file, bytes, allow, null);
+  }
+
+  static List<Problem> scan(String file, byte[] bytes, Set<String> allow, Pattern withheld) {
     List<Problem> problems = new ArrayList<>();
     boolean binary = false;
     for (int i = 0; i < Math.min(8192, bytes.length); i++)
@@ -54,6 +58,9 @@ public final class SecretPathScan {
     if (binary) return List.of();
     String[] lines = new String(bytes, StandardCharsets.UTF_8).split("\\R", -1);
     for (int i = 0; i < lines.length; i++) {
+      if (withheld != null && lines[i].contains("|")
+          && withheld.matcher(lines[i].replace("\\|", "|")).find())
+        problems.add(new Problem(file, "line " + (i + 1), "contains a withheld cell identifier"));
       for (Pattern pattern : PATTERNS) {
         var matcher = pattern.matcher(lines[i]);
         while (matcher.find()) {

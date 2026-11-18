@@ -7,16 +7,16 @@ if [ "${TCF_ALLOW_PUSH:-}" != "1" ]; then
   exit 1
 fi
 
-# The history before the publication snapshot holds observations of behaviours that were not
-# reported upstream when it was written. No ref that contains its first commit may be pushed.
-private_root=308bcc6ec21618da589fc98db9230aa5216d74ce
-if git cat-file -e "$private_root^{commit}" 2>/dev/null; then
-  while read -r local_ref local_oid remote_ref remote_oid; do
-    case "$local_oid" in 0000000000000000000000000000000000000000) continue ;; esac
-    if git merge-base --is-ancestor "$private_root" "$local_oid" 2>/dev/null; then
-      echo "pre-push: $local_ref contains the private pre-publication history and must not be pushed." >&2
-      exit 1
-    fi
-  done
-fi
-exit 0
+# Every published commit must have the reviewed snapshot as its only root.
+# Peeling to a commit also checks annotated tags and rejects tags of trees or blobs.
+public_root=86ce2e71c3e07b95b72ff24e3c36fe3b03baab30
+while read -r local_ref local_oid remote_ref remote_oid; do
+  if [ "$local_ref" = "(delete)" ] && [ "$local_oid" = "0000000000000000000000000000000000000000" ]; then
+    continue
+  fi
+  if ! roots=$(GIT_GRAFT_FILE=/dev/null git --no-replace-objects rev-list --max-parents=0 "${local_oid}^{commit}" -- 2>/dev/null) ||
+     [ "$roots" != "$public_root" ]; then
+    echo "pre-push: $local_ref must descend solely from the reviewed publication snapshot." >&2
+    exit 1
+  fi
+done
