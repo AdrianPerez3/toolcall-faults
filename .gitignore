@@ -16,8 +16,6 @@ CLAUDE.local.md
 .claude/
 .codex/
 .codex-log/
-# Downloaded by the wrapper script and checked against wrapperSha256Sum.
-.mvn/wrapper/maven-wrapper.jar
 .env
 *.log
 hs_err_pid*

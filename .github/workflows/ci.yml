@@ -64,8 +64,7 @@ jobs:
         with:
           distribution: temurin
           java-version: ${{ matrix.jdk }}
-      # The wrapper fetches its jar and Maven from Maven Central. A refused request ends the
-      # script with a checksum message, so the download alone gets three attempts.
+      # The verified wrapper JAR comes from the checkout. Retry the Maven distribution download.
       - name: Fetch Maven
         run: n=0; until ./mvnw -q -B --version; do n=$((n+1)); [ "$n" -lt 3 ] || exit 1; sleep 15; done
       - run: ./mvnw -B verify

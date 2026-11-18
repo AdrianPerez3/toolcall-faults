@@ -38,3 +38,6 @@ Synthetic fixture shape sources (recordings are not copied):
   https://github.com/Arize-ai/openinference/blob/7dbbd93/js/packages/openinference-instrumentation-bedrock/test/recordings/should-handle-multiple-tools-in-single-request.json
 - pydantic-ai (MIT), commit eedabfc:
   https://github.com/pydantic/pydantic-ai/blob/eedabfc/tests/models/cassettes/test_groq/test_tool_use_failed_error_streaming.yaml
+
+The Apache Maven Wrapper JAR is distributed under the Apache License 2.0.
+Its LICENSE and NOTICE are included in the unmodified archive.

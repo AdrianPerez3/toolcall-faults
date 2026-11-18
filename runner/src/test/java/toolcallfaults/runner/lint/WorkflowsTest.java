@@ -217,14 +217,36 @@ class WorkflowsTest {
     assertEquals("        update-types: ['major']", config.get(major + 2));
   }
 
+  @Test
+  void private_workspace_inputs_stay_out_of_the_reference_build_context() throws Exception {
+    var excluded = Files.readAllLines(root.resolve(".dockerignore"));
+    for (String pattern : List.of("**/.local", "AGENTS.md", "CLAUDE.md", ".claude", ".codex",
+        ".codex-log", "**/.env", "**/probe", "**/research_notes", "**/evidence"))
+      assertTrue(excluded.contains(pattern), "Missing private build exclusion: " + pattern);
+  }
+
   private static final String THREE_ATTEMPTS =
       "; do n=$((n+1)); [ \"$n\" -lt 3 ] || exit 1; sleep 15; done";
 
   @Test
+  void a_clean_checkout_and_image_include_the_verified_wrapper_bootstrap() throws Exception {
+    var wrapper = root.resolve(".mvn/wrapper");
+    var properties = new java.util.Properties();
+    try (var input = Files.newInputStream(wrapper.resolve("maven-wrapper.properties"))) {
+      properties.load(input);
+    }
+    assertEquals("bin", properties.getProperty("distributionType"));
+    byte[] bytes = Files.readAllBytes(wrapper.resolve("maven-wrapper.jar"));
+    var digest = java.security.MessageDigest.getInstance("SHA-256").digest(bytes);
+    assertEquals(properties.getProperty("wrapperSha256Sum"), java.util.HexFormat.of().formatHex(digest));
+    for (String excludes : List.of(".gitignore", ".dockerignore"))
+      assertFalse(Files.readAllLines(root.resolve(excludes)).contains(".mvn/wrapper/maven-wrapper.jar"));
+  }
+
+  @Test
   void the_first_maven_call_of_a_fresh_environment_only_downloads_and_is_tried_three_times()
       throws Exception {
-    // The wrapper fetches its jar and Maven from Maven Central; a refused request ends the
-    // script with a checksum message. Tests are not part of a repeated command.
+    // The bootstrap retries distribution and dependency downloads before starting the tests.
     var image =
         Files.readAllLines(root.resolve("Dockerfile")).stream()
             .filter(l -> l.contains("./mvnw"))

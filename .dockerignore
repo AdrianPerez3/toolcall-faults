@@ -6,4 +6,19 @@ results
 site
 compat/agent-faultbench/results
 compat/agent-faultbench/rows.md
-.mvn/wrapper/maven-wrapper.jar
+# Maintainer-only files in a local checkout must stay outside the image build.
+AGENTS.md
+AGENTS.override.md
+CLAUDE.md
+CLAUDE.local.md
+.claude
+.codex
+.codex-log
+**/.env
+**/probe
+**/research_notes
+**/evidence
+**/.idea
+**/.vscode
+**/*.log
+**/.DS_Store

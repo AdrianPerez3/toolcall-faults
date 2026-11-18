@@ -11,8 +11,7 @@ COPY .mvn .mvn
 COPY kit/pom.xml kit/pom.xml
 COPY server/pom.xml server/pom.xml
 COPY runner/pom.xml runner/pom.xml
-# Downloads only. Maven Central now and then refuses a request, and the wrapper script then ends
-# with a checksum message for the jar it did not get: three attempts.
+# Retry dependency downloads before any tests run. The wrapper JAR is supplied by the checkout.
 RUN n=0; until ./mvnw -q -B dependency:go-offline; do n=$((n+1)); [ "$n" -lt 3 ] || exit 1; sleep 15; done
 COPY . .
 RUN ./mvnw -q -B package dependency:build-classpath -Dmdep.outputFile=target/cp.txt && touch runner/target/.tcf-build

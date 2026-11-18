@@ -276,3 +276,9 @@ The maintainer decided on this date that such rows stay published. The rule now 
 
 The rows for truncated tool calls on LangChain4j (a call with no argument bytes, a call with complete arguments, and a cut second call, each under a limit finish reason) are published with the report the maintainer filed on this date. The criterion is the one already used for the Spring AI rows: the report states the cause that produces the row's outcome.
 
+
+## 2026-11-18 — Maven bootstrap in a fresh checkout
+
+A public runner exhausted all three attempts to verify the Maven wrapper JAR during the image build. The checkout now includes Apache Maven Wrapper 3.3.4 in its binary distribution form. Both launchers check the existing SHA-256 pin. The Maven distribution retains its own checksum, and the download-only steps retain their retries. [Apache Maven Wrapper distributions](https://maven.apache.org/tools/wrapper/index.html)
+
+The reference build context also excludes local agent configuration, research inputs and scratch files. The same checkout can contain private maintainer work alongside the tracked source.
