@@ -368,7 +368,21 @@ public final class RunCommands {
         FixtureLoader.JSON.writerWithDefaultPrettyPrinter().writeValueAsString(document) + "\n");
   }
 
+  static void verifyPublishedCoverage(List<Cell> current, Path reference, Set<String> observed)
+      throws IOException {
+    var expected = new TreeSet<String>();
+    published(current, reference).forEach(cell -> expected.add(cell.key()));
+    if (expected.isEmpty() || !expected.equals(observed))
+      throw new IOException("Run does not contain the complete published current matrix");
+  }
+
   public static void check(Path root, Path runDir) throws Exception {
+    check(root, runDir, false);
+  }
+
+  public static void check(Path root, Path runDir, boolean publishedOnly) throws Exception {
+    if (publishedOnly && runDir == null)
+      throw new IllegalArgumentException("--published requires --run");
     boolean current = runDir == null;
     if (current) runDir = root.resolve("results");
     var store = new ResultStore(runDir, localResults(root, runDir));
@@ -389,6 +403,7 @@ public final class RunCommands {
     if (identities.isEmpty()) throw new IOException("No run records to check");
     var judgements = Judgements.load(root.resolve("suite/judgements.json"));
     int count = 0;
+    Set<String> observed = new HashSet<>();
     for (String identity : identities) {
       String[] parts = identity.split("@", 2);
       var baseline =
@@ -397,16 +412,23 @@ public final class RunCommands {
               root.resolve(".local/baseline"),
               parts[0],
               parts[1]);
+      var rows = store.read(parts[0], parts[1], true);
+      rows.forEach(row -> observed.add(row.cell()));
       for (var f :
           Check.check(
-              store.read(parts[0], parts[1], true),
+              rows,
               stored.read(parts[0], parts[1], true),
               judgements,
-              baseline)) {
+              baseline,
+              !current)) {
         System.out.println(f.kind() + " " + f.cell() + " " + f.detail());
         count++;
       }
     }
+    if (observed.isEmpty()) throw new IOException("No run records to check");
+    if (publishedOnly)
+      verifyPublishedCoverage(Matrix.load(root).cells("current", Runtime.version().feature()),
+          root.resolve("results"), observed);
     if (count > 0) throw new IOException("Check found differences");
   }
 }

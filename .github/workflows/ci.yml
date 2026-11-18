@@ -112,4 +112,4 @@ jobs:
         # In the container, because withheld rows are written owner-only by its user.
         run: |
           mkdir -p .local
-          ./tcf --container "$JDK" check --run .local/run > .local/ci-check.log 2>&1 || { echo "differing cells: $(grep -cE '^(CHANGED|NEW|STALE) ' .local/ci-check.log || true)"; echo "check failed; details stay in the workspace"; exit 1; }
+          ./tcf --container "$JDK" check --run .local/run --published > .local/ci-check.log 2>&1 || { echo "differing cells: $(grep -cE '^(CHANGED|NEW|STALE) ' .local/ci-check.log || true)"; echo "check failed; details stay in the workspace"; exit 1; }

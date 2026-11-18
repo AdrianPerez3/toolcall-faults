@@ -300,3 +300,7 @@ The silent-drop and stalled-body terminal criteria belong to this suite. Client 
 ## 2026-11-18 — Self-test coverage
 
 Each anchor requires an observed category and a nonempty value for any substring assertion. The self-test requires a public anchor register, fixtures for server checks, and a single-call control for each applicable module and surface.
+
+## 2026-11-18 — Published replay coverage
+
+Hosted checks require the complete set of published current cells for the running JDK. An alternate run compares with the stored same-JDK cell when one exists, or its JDK 21 reference otherwise. The comparison uses the registered stability fields. Empty output cannot verify a replay.

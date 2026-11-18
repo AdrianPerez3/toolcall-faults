@@ -80,10 +80,12 @@ public final class Main {
             Path.of("."), List.of(Path.of(args[2]), Path.of(args[3]), Path.of(args[4])));
         return;
       }
-      var options = options(args, 1);
+      var words = new ArrayList<>(List.of(args));
+      boolean published = words.remove("--published");
+      var options = options(words.toArray(String[]::new), 1);
       allowed(options, "--run");
       RunCommands.check(
-          Path.of("."), options.containsKey("--run") ? Path.of(options.get("--run")) : null);
+          Path.of("."), options.containsKey("--run") ? Path.of(options.get("--run")) : null, published);
       return;
     }
     if (List.of(args).equals(List.of("compat"))) {
@@ -278,7 +280,7 @@ public final class Main {
       if (!problems.isEmpty() || fixtureProblems > 0) System.exit(1);
     } else {
       System.err.println(
-          "usage: tcf lint [--scan] | run [filters] [--list] [--published] | check [--run dir] |"
+          "usage: tcf lint [--scan] | run [filters] [--list] [--published] | check [--run dir [--published]] |"
               + " report [--include-withheld] | cell"
               + " target@version scenario [options] | selftest [--server | --controls | --anchors |"
               + " --pins]");

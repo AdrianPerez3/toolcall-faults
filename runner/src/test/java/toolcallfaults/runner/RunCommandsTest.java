@@ -148,6 +148,42 @@ class RunCommandsTest {
   }
 
   @Test
+  void a_replay_on_another_jdk_is_compared_with_the_published_reference() throws Exception {
+    var reference = new ResultStore(root.resolve("results"), root.resolve(".local/results"));
+    reference.write("target", "1", rows(a, 1), Set.of());
+    var replay = root.resolve("run");
+    var store = new ResultStore(replay, replay.resolve(".local"));
+    String otherJdk = a.replace("|jdk21|", "|jdk17|");
+    store.write("target", "1", rows(otherJdk, 2), Set.of());
+    assertThrows(java.io.IOException.class, () -> RunCommands.check(root, replay));
+    store.write("target", "1", rows(otherJdk, 1), Set.of());
+    assertDoesNotThrow(() -> RunCommands.check(root, replay));
+    reference.write("target", "1", rows(otherJdk, 2), Set.of());
+    assertThrows(java.io.IOException.class, () -> RunCommands.check(root, replay));
+  }
+
+  @Test
+  void published_coverage_rejects_a_missing_cell_and_an_unexpected_cell() throws Exception {
+    var matrix = toolcallfaults.runner.matrix.Matrix.load(Path.of(".."));
+    var cells = matrix.cells("current", 21).subList(0, 2);
+    String first = cells.get(0).key();
+    String second = cells.get(1).key();
+    var reference = new ResultStore(root.resolve("results"), root.resolve(".local/results"));
+    for (var cell : cells)
+      reference.write(cell.target(), cell.version(), rows(cell.key(), 1), Set.of());
+    assertDoesNotThrow(() -> RunCommands.verifyPublishedCoverage(cells, root.resolve("results"), Set.of(first, second)));
+    assertThrows(java.io.IOException.class, () -> RunCommands.verifyPublishedCoverage(cells, root.resolve("results"), Set.of(first)));
+    assertThrows(java.io.IOException.class, () -> RunCommands.verifyPublishedCoverage(cells, root.resolve("results"), Set.of(first, a)));
+  }
+
+  @Test
+  void empty_result_files_are_not_a_verified_replay() throws Exception {
+    var dir = root.resolve("run");
+    new ResultStore(dir, dir.resolve(".local")).write("target", "1", List.of(), Set.of());
+    assertThrows(java.io.IOException.class, () -> RunCommands.check(root, dir));
+  }
+
+  @Test
   void alternate_output_does_not_mutate_default_comparison() throws Exception {
     save(a, 1);
     save(a, 2);

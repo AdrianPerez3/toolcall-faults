@@ -52,7 +52,7 @@ jobs:
         # In the container, because withheld rows are written owner-only by its user.
         run: |
           mkdir -p .local
-          ./tcf --container 21 check --run .local/run > .local/weekly-check.log 2>&1 || { echo "differing cells: $(grep -cE '^(CHANGED|NEW|STALE) ' .local/weekly-check.log || true)"; echo "check failed; details stay in the workspace"; exit 1; }
+          ./tcf --container 21 check --run .local/run --published > .local/weekly-check.log 2>&1 || { echo "differing cells: $(grep -cE '^(CHANGED|NEW|STALE) ' .local/weekly-check.log || true)"; echo "check failed; details stay in the workspace"; exit 1; }
       - name: Stamp successful run
         run: |
           python3 - <<'PY'

@@ -15,6 +15,12 @@ public final class Check {
 
   public static List<Finding> check(
       List<RunRecord> run, List<RunRecord> stored, Judgements j, Baseline b) {
+    return check(run, stored, j, b, false);
+  }
+
+  public static List<Finding> check(
+      List<RunRecord> run, List<RunRecord> stored, Judgements j, Baseline b,
+      boolean compareReferenceJdk) {
     List<Finding> findings = new ArrayList<>();
     var previous = groups(stored);
     for (var group : groups(run).entrySet()) {
@@ -44,6 +50,9 @@ public final class Check {
       if (!unsupported.isEmpty())
         findings.add(new Finding("NEW", cell, "unsupported outcome lacks a baseline entry"));
       var old = previous.get(cell);
+      // Hosted replays have a JDK 21 reference until a result for their own JDK exists.
+      if (old == null && compareReferenceJdk)
+        old = previous.get(cell.replaceFirst("\\|jdk[0-9]+\\|", "|jdk21|"));
       if (old != null) {
         Set<Object> before = new HashSet<>(), after = new HashSet<>();
         old.forEach(r -> before.add(Stability.signature(r)));

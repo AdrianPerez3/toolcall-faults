@@ -271,6 +271,13 @@ class WorkflowsTest {
   }
 
   @Test
+  void hosted_check_requires_all_published_cells() throws Exception {
+    for (String workflow : List.of("ci.yml", "weekly.yml"))
+      assertTrue(lines(workflow).stream().anyMatch(line ->
+          line.contains(" check --run .local/run --published ")), workflow);
+  }
+
+  @Test
   void hosted_runs_observe_only_published_cells() throws Exception {
     // A public checkout has no baselines for unpublished cells; it neither produces nor judges
     // their observations.
