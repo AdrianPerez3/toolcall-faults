@@ -79,4 +79,17 @@ class ResultStoreTest {
         java.nio.file.attribute.PosixFilePermissions.fromString("rw-------"),
         Files.getPosixFilePermissions(root.resolve("local/target/1.jsonl")));
   }
+
+  @Test
+  void row_identity_must_match_its_result_file_surface_and_fixture() throws Exception {
+    store.write("target", "1", List.of(row(CELL, 1, "SURFACED", 1)), Set.of());
+    Path path = root.resolve("public/target/1.jsonl");
+    var json = toolcallfaults.runner.fixture.FixtureLoader.JSON;
+    var original = (com.fasterxml.jackson.databind.node.ObjectNode) json.readTree(path.toFile());
+    for (var field : Map.of("surface", "model-stream", "fixtureId", "openai-chat/tools.single-call",
+            "cell", CELL.replace("target@1", "target@2")).entrySet()) {
+      Files.writeString(path, original.deepCopy().put(field.getKey(), field.getValue()).toString());
+      assertThrows(java.io.IOException.class, () -> store.read("target", "1", false), field.getKey());
+    }
+  }
 }

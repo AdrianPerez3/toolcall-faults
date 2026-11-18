@@ -8,10 +8,22 @@ import toolcallfaults.runner.fixture.FixtureLoader;
 
 public final class ResultStore {
   private final Path publicDir, localDir;
+  private final String visiblePermissions;
 
   public ResultStore(Path publicDir, Path localDir) {
+    this(publicDir, localDir, "rw-r--r--");
+  }
+
+  private ResultStore(Path publicDir, Path localDir, String visiblePermissions) {
+    this.visiblePermissions = visiblePermissions;
     this.publicDir = publicDir;
     this.localDir = localDir;
+  }
+
+  /** Both sides of the local comparison history can contain formerly withheld evidence. */
+  public static ResultStore previous(Path root) {
+    return new ResultStore(root.resolve(".local/previous-results"),
+        root.resolve(".local/previous-withheld"), "rw-------");
   }
 
   private Path file(Path dir, String target, String version) {
@@ -42,7 +54,14 @@ public final class ResultStore {
       if (n == null || !n.isObject() || !n.path("format").asText().equals("tcf.record/v1"))
         throw new IOException("Invalid result record in " + file);
       ((ObjectNode) n).remove("format");
-      rows.add(FixtureLoader.JSON.treeToValue(n, RunRecord.class));
+      RunRecord row = FixtureLoader.JSON.treeToValue(n, RunRecord.class);
+      String[] cell = row.cell() == null ? new String[0] : row.cell().split("\\|", -1);
+      String identity = file.getParent().getFileName() + "@"
+          + file.getFileName().toString().replaceFirst("\\.jsonl$", "");
+      if (cell.length != 7 || !cell[0].equals(identity)
+          || !cell[2].equals(row.surface()) || !cell[3].equals(row.fixtureId()))
+        throw new IOException("Result cell, file, surface and fixture must agree in " + file);
+      rows.add(row);
     }
     return List.copyOf(rows);
   }
@@ -56,9 +75,17 @@ public final class ResultStore {
     List<RunRecord> withheld = new ArrayList<>(readFile(file(localDir, target, version)));
     visible.removeIf(r -> ran.contains(r.cell()));
     withheld.removeIf(r -> ran.contains(r.cell()));
+    // A new observation can withhold an older public sibling even if it did not run again.
+    for (var it = visible.iterator(); it.hasNext(); ) {
+      var row = it.next();
+      if (withheldCells.contains(row.cell())) {
+        withheld.add(row);
+        it.remove();
+      }
+    }
     for (var row : records) (withheldCells.contains(row.cell()) ? withheld : visible).add(row);
     // Remove public copies before recording withheld results.
-    writeFile(file(publicDir, target, version), visible, "rw-r--r--");
+    writeFile(file(publicDir, target, version), visible, visiblePermissions);
     writeFile(file(localDir, target, version), withheld, "rw-------");
   }
 

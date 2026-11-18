@@ -267,6 +267,7 @@ public final class Main {
       if (args.length == 1) {
         var lint = new ArrayList<>(FixtureLint.check(Path.of("suite")));
         lint.addAll(toolcallfaults.runner.lint.ManifestLint.check(Path.of(".")));
+        lint.addAll(toolcallfaults.runner.lint.RepositoryScan.stagedData(Path.of(".")));
         lint.forEach(System.out::println);
         fixtureProblems = lint.size();
         System.out.println("lint: " + fixtureProblems + " problems");

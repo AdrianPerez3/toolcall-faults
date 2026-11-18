@@ -31,27 +31,17 @@ public final class Check {
       var status = Stability.of(repetitions);
       if (!status.stable())
         findings.add(new Finding("FLAKY", cell, status.distribution().toString()));
+      Set<String> unsupported = new TreeSet<>();
+      for (var row : repetitions)
+        if (j.judge(row.fixtureId(), row.surface(), Category.valueOf(row.category()), row.attributes())
+            .unsupported()) unsupported.add(row.category());
       var baseline = b.entry(cell);
-      if (baseline.isPresent()
-          && repetitions.stream().noneMatch(r -> r.category().equals(baseline.get().category())))
+      if (baseline.isPresent() && !unsupported.remove(baseline.get().category()))
         findings.add(
             new Finding(
-                "STALE",
-                cell,
-                "baseline "
-                    + baseline.get().category()
-                    + ", observed "
-                    + status.distribution().keySet()));
-      if (baseline.isEmpty()
-          && repetitions.stream()
-              .anyMatch(
-                  r ->
-                      j.judge(
-                              r.fixtureId(),
-                              r.surface(),
-                              Category.valueOf(r.category()),
-                              r.attributes())
-                          .unsupported()))
+                "STALE", cell, "the baseline outcome " + baseline.get().category()
+                    + " no longer meets its unsupported condition"));
+      if (!unsupported.isEmpty())
         findings.add(new Finding("NEW", cell, "unsupported outcome lacks a baseline entry"));
       var old = previous.get(cell);
       if (old != null) {

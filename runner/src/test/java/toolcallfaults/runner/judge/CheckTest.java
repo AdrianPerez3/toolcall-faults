@@ -241,4 +241,25 @@ class CheckTest {
     run.add(row(sibling, 1, "DROPPED", 1));
     assertEquals(Set.of(sibling), Check.withheld(run, judgements, baseline("filed")));
   }
+
+  @Test
+  void category_in_a_baseline_is_stale_when_the_judgement_condition_stops_matching()
+      throws Exception {
+    String cell = CELL.replace("truncation.name-only", "truncation.complete-args-under-limit");
+    baseline("filed");
+    var file = root.resolve("public/target@1.json");
+    var document = FixtureLoader.JSON.readTree(file.toFile());
+    ((com.fasterxml.jackson.databind.node.ObjectNode) document.path("entries").get(0))
+        .put("cell", cell).put("category", "EXECUTED_AS_SENT");
+    Files.writeString(file, document.toString());
+    var baseline = Baseline.load(root.resolve("public"), root.resolve("local"), "target", "1");
+    var rows = java.util.stream.IntStream.rangeClosed(1, 3)
+        .mapToObj(i -> row(cell, i, "EXECUTED_AS_SENT", 1)).toList();
+    assertTrue(Check.check(rows, List.of(), judgements, baseline).isEmpty());
+    for (var row : rows)
+      ((com.fasterxml.jackson.databind.node.ObjectNode) row.attributes())
+          .putArray("caller_finish_reasons").add("length");
+    assertEquals(List.of("STALE"), Check.check(rows, List.of(), judgements, baseline).stream()
+        .map(Finding::kind).toList());
+  }
 }

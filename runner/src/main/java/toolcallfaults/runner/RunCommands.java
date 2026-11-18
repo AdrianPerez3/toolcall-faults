@@ -306,9 +306,7 @@ public final class RunCommands {
   static void saveResults(Path root, Path publicDir, List<RunRecord> records) throws Exception {
     var judgements = Judgements.load(root.resolve("suite/judgements.json"));
     var store = new ResultStore(publicDir, localResults(root, publicDir));
-    var previous =
-        new ResultStore(
-            root.resolve(".local/previous-results"), root.resolve(".local/previous-withheld"));
+    var previous = ResultStore.previous(root);
     Map<String, List<RunRecord>> groups = new TreeMap<>();
     for (var r : records)
       groups.computeIfAbsent(r.cell().split("\\|", 2)[0], k -> new ArrayList<>()).add(r);
@@ -321,19 +319,23 @@ public final class RunCommands {
               root.resolve(".local/baseline"),
               identity[0],
               identity[1]);
+      Set<String> rerun = new HashSet<>();
+      rows.forEach(r -> rerun.add(r.cell()));
+      var existing = store.read(identity[0], identity[1], true);
       if (defaultResults(root, publicDir)) {
-        Set<String> rerun = new HashSet<>();
-        rows.forEach(r -> rerun.add(r.cell()));
         previous.write(
             identity[0],
             identity[1],
-            store.read(identity[0], identity[1], true).stream()
+            existing.stream()
                 .filter(r -> rerun.contains(r.cell()))
                 .toList(),
             Set.of());
       }
-      Set<String> withheld = new HashSet<>(Check.withheld(rows, judgements, baseline));
-      rows.stream()
+      // Disclosure applies to the family after this update, even when a filter ran one cell.
+      var combined = new ArrayList<>(rows);
+      existing.stream().filter(r -> !rerun.contains(r.cell())).forEach(combined::add);
+      Set<String> withheld = new HashSet<>(Check.withheld(combined, judgements, baseline));
+      combined.stream()
           .filter(r -> r.category().equals("HARNESS"))
           .forEach(r -> withheld.add(r.cell()));
       store.write(identity[0], identity[1], rows, withheld);
@@ -372,8 +374,7 @@ public final class RunCommands {
     var store = new ResultStore(runDir, localResults(root, runDir));
     var stored =
         current
-            ? new ResultStore(
-                root.resolve(".local/previous-results"), root.resolve(".local/previous-withheld"))
+            ? ResultStore.previous(root)
             : new ResultStore(root.resolve("results"), root.resolve(".local/results"));
     Set<String> identities = new TreeSet<>();
     for (Path dir : List.of(runDir, localResults(root, runDir)))

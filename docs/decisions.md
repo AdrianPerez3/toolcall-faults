@@ -288,3 +288,7 @@ The reference build context also excludes local agent configuration, research in
 The recorder identifies its successful tool returns in later requests, including JSON-quoted returns. The adapter records the invocation count at its first error and leaves a marker on its first terminal signal. A watchdog kill after that signal, a missing fixture route, or a last request with less than one client timeout available gives an invalid run where that evidence is needed to establish a hang. Historical rows retain the evidence captured by their suite version.
 
 The replay server reads both fixed-length and chunked HTTP/1.1 requests. Its request log retains a complete UTF-8 prefix within the 16 KiB byte limit.
+
+## 2026-11-18 — Disclosure across partial measurements
+
+A filtered run uses retained observations as well as new repetitions to decide which members of a family are public. A public report requires every unsupported outcome shown for a cell to be covered by its filed entry. A new unsupported category or a baseline whose judgement condition ceased to apply is reported by check. Lint verifies staged data, row identity and fixture hashes, and local comparison history is owner-readable.

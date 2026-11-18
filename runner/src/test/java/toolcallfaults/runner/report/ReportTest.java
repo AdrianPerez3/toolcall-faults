@@ -244,8 +244,17 @@ class ReportTest {
     var second = Records.row(CELL, 2, "EXECUTED_ALTERED", 2);
     new ResultStore(root.resolve("results"), root.resolve(".local/results"))
         .write("spring-ai", "2.0.2", List.of(first, second), Set.of());
+    // Both unsupported outcomes are visible in the local report; one has no filed entry.
+    String local = generate(true).split("## Observations", 2)[0];
+    assertTrue(local.contains("DROPPED"));
+    assertTrue(local.contains("EXECUTED_ALTERED"));
+
+    // An eligible public cell must still show both the supported and the filed repetition.
+    var supported = Records.row(CELL, 1, "SURFACED", 1);
+    new ResultStore(root.resolve("results"), root.resolve(".local/results"))
+        .write("spring-ai", "2.0.2", List.of(supported, second), Set.of());
     String table = generate(false).split("## Observations", 2)[0];
-    assertTrue(table.contains("DROPPED"));
+    assertTrue(table.contains("SURFACED"));
     assertTrue(table.contains("EXECUTED_ALTERED"));
   }
 

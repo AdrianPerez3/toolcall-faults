@@ -318,6 +318,8 @@ public final class ManifestLint {
     Path results = root.resolve("results"), judgements = root.resolve("suite/judgements.json");
     if (!Files.isDirectory(results) || !Files.exists(judgements)) return;
     var judge = toolcallfaults.runner.judge.Judgements.load(judgements);
+    var store = new toolcallfaults.runner.results.ResultStore(results, root.resolve(".local/results"));
+    Map<String, List<String>> fixtureHashes = new HashMap<>();
     try (var files = Files.walk(results)) {
       for (Path file : files.filter(p -> p.toString().endsWith(".jsonl")).sorted().toList())
         try {
@@ -359,15 +361,25 @@ public final class ManifestLint {
                       "unsupported row needs a filed baseline: " + row.cell()));
             }
           }
-          // Record-only rows of a family with an unfiled observation show the same behaviour.
-          for (String cell : toolcallfaults.runner.judge.Check.withheld(rows, judge, baseline))
-            if (!direct.contains(cell))
+          // Known private rows also identify a withheld family before its baseline is recorded.
+          var withheld = toolcallfaults.runner.judge.Check.withheld(
+              store.read(target, version, true), judge, baseline);
+          for (String cell : rows.stream().map(r -> r.cell()).distinct().toList())
+            if (withheld.contains(cell) && !direct.contains(cell))
               problems.add(
                   new Problem(
                       file.toString(),
                       "$",
                       "row of a family with an unfiled observation must not be tracked: "
                           + cell));
+          for (var row : rows) {
+            if (!fixtureHashes.containsKey(row.fixtureId()))
+              fixtureHashes.put(row.fixtureId(), toolcallfaults.runner.fixture.ControlFixtures
+                  .load(root, row.fixtureId()).bodySha256());
+            if (!fixtureHashes.get(row.fixtureId()).equals(row.bodySha256()))
+              problems.add(new Problem(file.toString(), "$", "record body hashes differ from fixture "
+                  + row.fixtureId()));
+          }
         } catch (Exception e) {
           problems.add(new Problem(file.toString(), "$", e.getMessage()));
         }

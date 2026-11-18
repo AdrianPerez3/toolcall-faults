@@ -43,7 +43,7 @@ class ReportWithholdingTest {
   }
 
   @Test
-  void public_report_never_reads_local_results() throws Exception {
+  void public_report_never_renders_local_results() throws Exception {
     String other = ReportTest.CELL.replace("loop-stream", "model-stream");
     t.writeRow(other, "SURFACED", true);
     t.generate(false);
@@ -88,5 +88,27 @@ class ReportWithholdingTest {
     t.writeRow(ReportTest.CELL, "SURFACED", false);
     t.generate(false);
     assertFalse(t.pages().contains(ReportTest.CELL));
+  }
+
+  @Test
+  void one_filed_repetition_does_not_release_another_unsupported_outcome() throws Exception {
+    var rows = List.of(
+        Records.row(ReportTest.CELL, 1, "EXECUTED_ALTERED", 1),
+        Records.row(ReportTest.CELL, 2, "DROPPED", 1));
+    new ResultStore(dir.resolve("results"), dir.resolve(".local/results"))
+        .write("spring-ai", "2.0.2", rows, Set.of());
+    t.generate(false);
+    assertFalse(t.pages().contains(ReportTest.CELL));
+    assertTrue(t.generate(true).contains(ReportTest.CELL));
+  }
+
+  @Test
+  void public_sibling_waits_even_before_a_private_baseline_has_been_written() throws Exception {
+    Files.delete(dir.resolve("expectations/baseline/spring-ai@2.0.2.json"));
+    t.writeRow(ReportTest.CELL, "EXECUTED_ALTERED", true);
+    String sibling = ReportTest.CELL.replace("loop-stream", "model-stream");
+    t.writeRow(sibling, "SURFACED", false);
+    t.generate(false);
+    assertFalse(t.pages().contains(sibling));
   }
 }

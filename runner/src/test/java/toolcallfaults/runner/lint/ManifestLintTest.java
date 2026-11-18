@@ -170,7 +170,8 @@ class ManifestLintTest {
   private void rowsFor(String version, boolean withheld) throws Exception {
     var row =
         toolcallfaults.runner.results.Records.row(
-            toolcallfaults.runner.results.Records.CELL, 1, "EXECUTED_AS_SENT", 1);
+            toolcallfaults.runner.results.Records.CELL.replace("target@1", "target@" + version),
+            1, "EXECUTED_AS_SENT", 1);
     new toolcallfaults.runner.results.ResultStore(
             root.resolve("results"), root.resolve(".local/results"))
         .write(
@@ -512,5 +513,30 @@ class ManifestLintTest {
     assertTrue(
         ManifestLint.check(root).stream()
             .anyMatch(x -> x.jsonPath().equals("$.control_failures[0].versions")));
+  }
+
+  @Test
+  void recorded_body_hashes_must_match_the_fixture_for_the_cell() throws Exception {
+    trackedRow("ERROR_TYPED");
+    Path fixture = Path.of("suite/fixtures/openai-chat/truncation.name-only.json");
+    Files.createDirectories(root.resolve(fixture).getParent());
+    Files.copy(Path.of("..").resolve(fixture), root.resolve(fixture));
+    assertTrue(ManifestLint.check(root).stream()
+        .anyMatch(p -> p.message().contains("body hashes differ from fixture")));
+  }
+
+  @Test
+  void lint_detects_a_public_sibling_before_a_new_private_baseline_exists() throws Exception {
+    trackedRow("EXECUTED_ALTERED");
+    var store = new toolcallfaults.runner.results.ResultStore(root.resolve("results"),
+        root.resolve(".local/results"));
+    var cell = toolcallfaults.runner.results.Records.CELL;
+    var sibling = cell.replace("loop-stream", "model-stream");
+    store.write("target", "1", java.util.List.of(
+        toolcallfaults.runner.results.Records.row(cell, 1, "EXECUTED_ALTERED", 1),
+        toolcallfaults.runner.results.Records.row(sibling, 1, "SURFACED", 1)),
+        java.util.Set.of(cell));
+    assertTrue(ManifestLint.check(root).stream().anyMatch(p ->
+        p.message().startsWith("row of a family with an unfiled observation")));
   }
 }

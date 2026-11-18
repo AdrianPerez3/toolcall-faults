@@ -34,6 +34,33 @@ public final class RepositoryScan {
     return List.copyOf(problems);
   }
 
+  /** Lint the data a commit will contain, using local disclosure context if it is available. */
+  public static List<Problem> stagedData(Path root) throws IOException, InterruptedException {
+    // If the index and working inputs agree, the normal lint pass already checked them.
+    if (git(root, "diff", "--name-only", "-z", "--", "adapters", "suite", "expectations",
+            "results", "matrix.json").length == 0
+        && git(root, "ls-files", "--others", "--exclude-standard", "-z", "--", "adapters",
+                "suite", "expectations", "results", "matrix.json").length == 0)
+      return List.of();
+
+    Path staged = Files.createTempDirectory("tcf-index-");
+    try {
+      git(root, "checkout-index", "--all", "--prefix=" + staged.toAbsolutePath() + "/");
+      Path local = root.resolve(".local").toAbsolutePath();
+      if (Files.isDirectory(local)) Files.createSymbolicLink(staged.resolve(".local"), local);
+      var problems = new ArrayList<>(FixtureLint.check(staged.resolve("suite")));
+      problems.addAll(ManifestLint.check(staged));
+      return problems.stream()
+          .map(p -> new Problem(staged.relativize(Path.of(p.file())) + " (index)",
+              p.jsonPath(), p.message()))
+          .toList();
+    } finally {
+      try (var files = Files.walk(staged)) {
+        for (Path path : files.sorted(Comparator.reverseOrder()).toList()) Files.delete(path);
+      }
+    }
+  }
+
   private static Set<String> allow(byte[] bytes) {
     return new LinkedHashSet<>(new String(bytes, StandardCharsets.UTF_8).lines().toList());
   }

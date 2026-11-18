@@ -66,14 +66,12 @@ public final class Report {
               parts[1]);
       Map<String, List<RunRecord>> groups = new TreeMap<>();
       var rowsOfVersion = store.read(parts[0], parts[1], includeWithheld);
-      // The public report applies the routing rule again, in case a row was tracked by mistake.
-      Set<String> withheldCells =
-          includeWithheld ? Set.of() : Check.withheld(rowsOfVersion, judgements, baseline);
+      // Private records provide disclosure context for their public siblings. Only rowsOfVersion
+      // can be rendered. This also protects a newly discovered family before it has a baseline.
+      Set<String> withheldCells = includeWithheld ? Set.of()
+          : Check.withheld(store.read(parts[0], parts[1], true), judgements, baseline);
       for (var row : rowsOfVersion) {
-        // Only a filed entry lets a cell of a withheld family through to the reply-window rule.
-        if (withheldCells.contains(row.cell())
-            && baseline.entry(row.cell()).filter(e -> "filed".equals(e.disclosure())).isEmpty())
-          continue;
+        if (withheldCells.contains(row.cell())) continue;
         all.add(row);
         groups.computeIfAbsent(row.cell(), k -> new ArrayList<>()).add(row);
       }
@@ -87,7 +85,6 @@ public final class Report {
                 first.surface(),
                 Category.valueOf(first.category()),
                 first.attributes());
-        Set<String> unsupportedCategories = new HashSet<>();
         for (var row : rows) {
           var candidate =
               judgements.judge(
@@ -95,20 +92,13 @@ public final class Report {
                   row.surface(),
                   Category.valueOf(row.category()),
                   row.attributes());
-          if (candidate.unsupported()) {
-            verdict = candidate;
-            unsupportedCategories.add(row.category());
-          }
+          if (candidate.unsupported()) verdict = candidate;
         }
         var entry = baseline.entry(group.getKey()).orElse(null);
-        // A filed report covers the outcome it names; a cell showing only other unsupported
-        // outcomes is not covered by it. (Result routing withholds mixed cells per row.)
-        boolean named = entry != null && unsupportedCategories.contains(entry.category());
         if (!includeWithheld
             && (rows.stream().anyMatch(r -> r.category().equals("HARNESS"))
                 || verdict.unsupported()
-                    && !(named
-                        && publishable(entry, config.path("window_days").asInt(14), today))))
+                    && !publishable(entry, config.path("window_days").asInt(14), today)))
           continue;
         views.add(
             new View(

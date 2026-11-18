@@ -68,4 +68,42 @@ class SaveResultsTest {
     assertEquals(
         List.of(), RunCommands.published(List.of(withoutRows), root.resolve("no-such-directory")));
   }
+
+  @Test
+  void partial_run_moves_an_older_public_sibling_to_private_storage() throws Exception {
+    String sibling = CELL.replace("loop-stream", "model-stream");
+    var store = new ResultStore(root.resolve("results"), root.resolve(".local/results"));
+    RunCommands.saveResults(root, root.resolve("results"), rows(sibling, "SURFACED"));
+    assertEquals(3, store.read("target", "1", false).size());
+    RunCommands.saveResults(root, root.resolve("results"), rows(CELL, "EXECUTED_ALTERED"));
+    assertTrue(store.read("target", "1", false).isEmpty());
+    assertEquals(6, store.read("target", "1", true).size());
+  }
+
+  @Test
+  void partial_run_considers_existing_private_rows_without_a_baseline() throws Exception {
+    String sibling = CELL.replace("loop-stream", "model-stream");
+    var store = new ResultStore(root.resolve("results"), root.resolve(".local/results"));
+    RunCommands.saveResults(root, root.resolve("results"), rows(CELL, "EXECUTED_ALTERED"));
+    RunCommands.saveResults(root, root.resolve("results"), rows(sibling, "SURFACED"));
+    assertTrue(store.read("target", "1", false).isEmpty());
+    assertEquals(6, store.read("target", "1", true).size());
+  }
+
+  @Test
+  void comparison_history_preserves_owner_only_access_to_withheld_rows() throws Exception {
+    Assumptions.assumeTrue(FileSystems.getDefault().supportedFileAttributeViews().contains("posix"));
+    var dir = root.resolve("results");
+    RunCommands.saveResults(root, dir, rows(CELL, "EXECUTED_ALTERED"));
+    RunCommands.saveResults(root, dir, rows(CELL, "SURFACED"));
+    var history = new ResultStore(root.resolve(".local/previous-results"),
+        root.resolve(".local/previous-withheld"));
+    assertEquals(3, history.read("target", "1", true).size());
+    for (String name : List.of("previous-results", "previous-withheld")) {
+      Path path = root.resolve(".local").resolve(name).resolve("target/1.jsonl");
+      if (Files.exists(path) && !Files.readString(path).isBlank())
+        assertEquals(java.nio.file.attribute.PosixFilePermissions.fromString("rw-------"),
+            Files.getPosixFilePermissions(path));
+    }
+  }
 }
