@@ -305,6 +305,8 @@ class ReportTest {
     assertTrue(register.contains("With fine-grained tool streaming,"));
     assertTrue(register.contains("https://platform.claude.com/docs/en/build-with-claude/streaming"));
     assertTrue(register.contains("basis on: anthropic"));
+    String structuredOutputs = register.split("## N-OA6", 2)[1].split("## ", 2)[0];
+    assertTrue(structuredOutputs.contains("context for: openai-chat"));
     assertTrue(Files.readString(root.resolve("site/index.md")).contains("(register.md)"));
   }
 

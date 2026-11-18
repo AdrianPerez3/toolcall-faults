@@ -259,8 +259,8 @@ public final class Report {
     StringBuilder out =
         new StringBuilder(
             "# Register of cited provider sentences\n\n"
-                + "A sentence is a basis only for cells that replay the wire format of the provider"
-                + " that wrote it. On other wires it is listed as related guidance.\n\n");
+                + "A source applies to cells whose wire, service and request mode it describes."
+                + " Other sources are listed as related guidance.\n\n");
     var keys = judgements.path("register").fields();
     while (keys.hasNext()) {
       var key = keys.next();
@@ -272,7 +272,11 @@ public final class Report {
           .append(escape(key.getValue().path("text").asText()))
           .append("\n\nSource: ")
           .append(escape(key.getValue().path("url").asText()))
-          .append("; basis on: ")
+          .append(switch (key.getValue().path("applicability").asText()) {
+            case "context-only" -> "; context for: ";
+            case "streaming" -> "; basis on streaming calls for: ";
+            default -> "; basis on: ";
+          })
           .append(String.join(", ", wires))
           .append(".");
       if (key.getValue().path("scope").isTextual())

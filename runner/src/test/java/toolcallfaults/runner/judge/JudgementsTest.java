@@ -35,9 +35,26 @@ class JudgementsTest {
     assertTrue(v.related().contains("N-AN7"));
     assertFalse(v.basis().isBlank());
     var anthropic = judge("anthropic/truncation.name-only@no-block-stop", EXECUTED_ALTERED);
-    assertTrue(anthropic.keys().containsAll(java.util.List.of("N-AN6", "N-AN7", "N-AN11", "N-BR4")));
+    assertTrue(anthropic.keys().containsAll(java.util.List.of("N-AN7", "N-AN11")));
+    assertTrue(anthropic.related().containsAll(java.util.List.of("N-AN6", "N-BR4")));
     assertTrue(anthropic.related().contains("N-OA1"));
     assertFalse(anthropic.keys().contains("N-OA1"));
+  }
+
+  @Test
+  void optional_provider_modes_are_context_for_ordinary_tool_requests() {
+    var openAi = judge("openai-chat/truncation.args-cut-mid-string", EXECUTED_ALTERED);
+    assertFalse(openAi.keys().contains("N-OA6"));
+    assertTrue(openAi.related().contains("N-OA6"));
+    var anthropic = judge("anthropic/truncation.name-only@no-block-stop", EXECUTED_ALTERED);
+    for (String key : java.util.List.of("N-AN6", "N-BR4")) {
+      assertFalse(anthropic.keys().contains(key), key);
+      assertTrue(anthropic.related().contains(key), key);
+    }
+    assertTrue(anthropic.keys().containsAll(java.util.List.of("N-AN7", "N-AN11")));
+    var blocking = judgements.judge("anthropic/truncation.name-only@nonstream", "loop-call", EXECUTED_ALTERED, attributes);
+    assertTrue(blocking.related().contains("N-AN11"));
+    assertFalse(blocking.keys().contains("N-AN11"));
   }
 
   @Test
@@ -136,7 +153,7 @@ class JudgementsTest {
         judge("openai-chat/truncation.complete-args-under-limit", EXECUTED_AS_SENT).criterion());
     attributes.put("elapsed_ms", 12000).put("timeout_ms", 3000);
     assertEquals(
-        "target-documentation", judge("openai-chat/stream.stall-mid-args", HANG).criterion());
+        "suite", judge("openai-chat/stream.stall-mid-args", HANG).criterion());
     assertEquals(
         "provider", judge("openai-chat/stream.abort-after-call-start@fin", EXECUTED_ALTERED).criterion());
     attributes.putArray("terminal_signals").add("error").add("complete");
@@ -144,6 +161,24 @@ class JudgementsTest {
         "suite", judge("openai-chat/stream.abort-after-call-start@fin", ERROR_TYPED).criterion());
     assertEquals(
         "suite", judge("openai-chat/stream.error-after-call-start@data-error", ERROR_UNTYPED).criterion());
+  }
+
+  @Test
+  void a_clean_silent_drop_is_judged_by_the_suite() {
+    for (String fixture : java.util.List.of("truncation.args-cut-mid-string", "truncation.name-only",
+        "stream.abort-after-call-start@fin", "stream.error-after-call-start@data-error")) {
+      var verdict = judge("openai-chat/" + fixture, DROPPED);
+      assertTrue(verdict.unsupported(), fixture);
+      assertEquals("suite", verdict.criterion(), fixture);
+    }
+  }
+
+  @Test
+  void a_stalled_body_is_compared_to_the_suites_terminal_deadline() {
+    attributes.put("elapsed_ms", 12000).put("timeout_ms", 3000);
+    var verdict = judge("openai-chat/stream.stall-mid-args", HANG);
+    assertTrue(verdict.unsupported());
+    assertEquals("suite", verdict.criterion());
   }
 
   @Test

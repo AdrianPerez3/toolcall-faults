@@ -20,6 +20,7 @@ public final class Completeness {
         String path = "$.exchanges[" + i + "].response.body.sse[" + j++ + "]",
             s = frame.asText().trim();
         if (s.equals("data: [DONE]")) {
+          if (j != frames.size()) add(out, f, path, "done marker must end the exchange");
           done = true;
           continue;
         }
@@ -84,7 +85,7 @@ public final class Completeness {
     for (int i = 0; i < f.exchanges().size(); i++) {
       JsonNode frames = f.exchanges().get(i).path("response").path("body").path("sse");
       if (!frames.isArray()) continue;
-      boolean stop = false, messageDelta = false;
+      boolean start = false, stop = false, messageDelta = false;
       Map<Integer, String> pending = new LinkedHashMap<>(), open = new LinkedHashMap<>();
       int j = 0;
       for (JsonNode frame : frames) {
@@ -101,6 +102,15 @@ public final class Completeness {
           String type = n.path("type").asText();
           if (event != null && !event.equals(type))
             add(out, f, path, "event: line must match type");
+          if (type.equals("message_start")) {
+            if (start || !open.isEmpty() || messageDelta)
+              add(out, f, path, "message_start must open the exchange");
+            start = true;
+          }
+          if (stop && (type.startsWith("message_") || type.startsWith("content_block_")))
+            add(out, f, path, "message_stop must end the exchange");
+          if (!start && type.startsWith("content_block_"))
+            add(out, f, path, "content block before message_start");
           if (type.equals("message_start") && !n.path("message").path("usage").isObject()
               || type.equals("message_delta") && !n.path("usage").isObject())
             add(out, f, path, "missing usage object");
@@ -123,6 +133,7 @@ public final class Completeness {
           add(out, f, path, "invalid event JSON: " + e.getMessage());
         }
       }
+      if (!start) add(out, f, "$.exchanges[" + i + "].response.body.sse", "missing message_start");
       for (String path : pending.values())
         add(out, f, path, "leading empty input_json_delta required");
       // Removals describe the damaged first exchange; follow-up exchanges stay complete.

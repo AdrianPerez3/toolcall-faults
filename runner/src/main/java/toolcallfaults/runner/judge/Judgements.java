@@ -61,9 +61,13 @@ public final class Judgements {
     // A provider's sentence is a basis on that provider's wire; elsewhere it is context.
     List<String> keys = new ArrayList<>(), related = new ArrayList<>();
     for (JsonNode k : chosen.path("keys")) {
-      JsonNode wires = register.path(k.asText()).path("wires");
+      JsonNode source = register.path(k.asText());
+      JsonNode wires = source.path("wires");
       boolean own = !wires.isArray() || wires.isEmpty();
       for (JsonNode w : wires) if (w.asText().equals(parts[0])) own = true;
+      String applicability = source.path("applicability").asText();
+      if (applicability.equals("context-only")
+          || applicability.equals("streaming") && !surface.endsWith("-stream")) own = false;
       (own ? keys : related).add(k.asText());
     }
     String basis = chosen.path("basis").asText();

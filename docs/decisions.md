@@ -292,3 +292,7 @@ The replay server reads both fixed-length and chunked HTTP/1.1 requests. Its req
 ## 2026-11-18 — Disclosure across partial measurements
 
 A filtered run uses retained observations as well as new repetitions to decide which members of a family are public. A public report requires every unsupported outcome shown for a cell to be covered by its filed entry. A new unsupported category or a baseline whose judgement condition ceased to apply is reported by check. Lint verifies staged data, row identity and fixture hashes, and local comparison history is owner-readable.
+
+## 2026-11-18 — Source scope in the judgement register
+
+The silent-drop and stalled-body terminal criteria belong to this suite. Client timeouts can cover different parts of an HTTP response. The register distinguishes guidance for the tested request from guidance for an optional mode or a different service. Streaming-only guidance applies directly to streaming surfaces. Synthetic fixtures must retain message boundaries except where they declare a removal.

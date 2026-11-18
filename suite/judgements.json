@@ -21,7 +21,8 @@
       "scope": "Structured Outputs guide.",
       "wires": [
         "openai-chat"
-      ]
+      ],
+      "applicability": "context-only"
     },
     "N-OA8": {
       "text": "`ChatCompletionMessageToolCallChunk`: `required: [index]`; choice: `required: [delta, index]`; chunk: `required: [choices, created, id, model, object]`",
@@ -45,7 +46,7 @@
       ]
     },
     "N-AN4": {
-      "text": "\"You can accumulate the string deltas and parse the JSON once you receive a `content_block_stop` event\" / \"3. On `content_block_stop`, parse the accumulated string.\"",
+      "text": "\"You can accumulate the string deltas and parse the JSON once you receive a `content_block_stop` event\"",
       "url": "https://platform.claude.com/docs/en/build-with-claude/streaming",
       "wires": [
         "anthropic"
@@ -57,10 +58,11 @@
       "scope": "Section \"Handling invalid JSON in tool responses\" of the fine-grained tool streaming page.",
       "wires": [
         "anthropic"
-      ]
+      ],
+      "applicability": "context-only"
     },
     "N-AN7": {
-      "text": "\"If Claude's response is cut off because it hit the `max_tokens` limit, and the truncated response contains an incomplete tool use block, you'll need to retry the request with a higher `max_tokens` value to get the full tool use.\"",
+      "text": "\"If Claude’s response is cut off because it hit the `max_tokens` limit, and the truncated response contains an incomplete tool use block, you’ll need to retry the request with a higher `max_tokens` value to get the full tool use.\"",
       "url": "https://platform.claude.com/docs/en/build-with-claude/handling-stop-reasons",
       "wires": [
         "anthropic"
@@ -74,7 +76,7 @@
       ]
     },
     "N-AN10": {
-      "text": "\"an error can occur after the API returns a 200 response. In that case, error handling doesn't follow these standard mechanisms.\"",
+      "text": "\"an error can occur after the API returns a 200 response. In that case, error handling doesn’t follow these standard mechanisms.\"",
       "url": "https://platform.claude.com/docs/en/api/errors",
       "wires": [
         "anthropic"
@@ -86,7 +88,8 @@
       "scope": "Amazon Bedrock documentation of the Anthropic Messages wire; a note on fine-grained streaming.",
       "wires": [
         "anthropic"
-      ]
+      ],
+      "applicability": "context-only"
     },
     "N-AN11": {
       "text": "\"A response can also stop at `max_tokens` midway through a parameter. Check the stop reason and decide whether to retry the request with a higher `max_tokens` or repair the partial input.\"",
@@ -94,7 +97,8 @@
       "scope": "Section \"Accumulating tool input deltas\", which the page says applies with and without fine-grained tool streaming.",
       "wires": [
         "anthropic"
-      ]
+      ],
+      "applicability": "streaming"
     }
   },
   "entries": [
@@ -257,7 +261,8 @@
         },
         {
           "category": "DROPPED",
-          "when": "always"
+          "when": "always",
+          "criterion": "suite"
         }
       ],
       "flag": [],
@@ -271,7 +276,7 @@
         "N-OA1",
         "N-OA6"
       ],
-      "basis": "The cited sentences tell the application to validate arguments before calling the function (OpenAI) and, for an incomplete tool input, to retry with a higher limit, repair the input, or report the failure back to the model (Anthropic). Running the tool on a cut input and dropping the call without a sign are none of these. Returning the parse failure to the model is listed as defensible.",
+      "basis": "OpenAI advises validating arguments before invocation. Anthropic describes retrying a truncated response, repairing partial input, and returning a parse failure under fine-grained streaming. This suite also treats a turn that silently drops the call as unsupported.",
       "criterion": "provider"
     },
     {
@@ -286,7 +291,8 @@
         },
         {
           "category": "DROPPED",
-          "when": "always"
+          "when": "always",
+          "criterion": "suite"
         }
       ],
       "flag": [],
@@ -299,7 +305,7 @@
         "N-OA6",
         "N-BR4"
       ],
-      "basis": "The cited sentences tell the application to validate arguments before calling the function (OpenAI) and, for an incomplete tool input, to retry with a higher limit, repair the input, or report the failure back to the model (Anthropic). Running the tool with defaults in place of arguments that never arrived and dropping the call without a sign are none of these.",
+      "basis": "OpenAI advises validating arguments before invocation. Anthropic describes retrying a truncated response or handling its incomplete input. These sources give no basis for substituting defaults for the missing arguments. This suite also treats a turn that silently drops the call as unsupported.",
       "criterion": "provider"
     },
     {
@@ -335,7 +341,7 @@
       "flag": [],
       "defensible": [],
       "keys": [],
-      "basis": "Suite criterion; no provider sentence. Running a complete call under a token limit is recorded as unsupported only when no limit reason is visible to the caller. Provider guidance on this case is not uniform, so the level is recommended.",
+      "basis": "This suite treats execution of a complete call under a token limit as unsupported when the caller sees only normal completion reasons or no finish reason. Any non-completion reason signals an abnormal turn. Provider guidance on this case varies.",
       "criterion": "suite"
     },
     {
@@ -407,7 +413,8 @@
         },
         {
           "category": "DROPPED",
-          "when": "always"
+          "when": "always",
+          "criterion": "suite"
         },
         {
           "category": "*",
@@ -422,7 +429,7 @@
         "N-OA3",
         "N-AN8"
       ],
-      "basis": "The cited sentences say that a stream can be interrupted, that a tool block cannot be partially recovered (Anthropic), and that arguments are validated before the function is called (OpenAI). Running the tool on a call whose arguments never arrived and dropping it without a sign are neither. One terminal signal per call is the criterion this suite applies.",
+      "basis": "OpenAI documents interrupted streams and validation before invocation. Anthropic describes the limits on recovering partial tool blocks. This suite also looks for a visible indication of the interrupted call and a single terminal signal.",
       "criterion": "provider"
     },
     {
@@ -439,8 +446,8 @@
       "flag": [],
       "defensible": [],
       "keys": [],
-      "basis": "Not a provider sentence. The adapter sets the timeout the target documents, to 3 seconds; the cell is recorded as unsupported when no terminal signal arrives within the 12-second watchdog. What that timeout covers in each target is stated in the adapter manifest.",
-      "criterion": "target-documentation"
+      "basis": "The adapter configures the documented timeout to 3 seconds. Its coverage depends on the transport and is described in the adapter manifest. The suite expects a terminal signal within its 12-second watchdog.",
+      "criterion": "suite"
     },
     {
       "scenario": "finish.stop-with-tool-call",
@@ -522,7 +529,8 @@
         },
         {
           "category": "DROPPED",
-          "when": "always"
+          "when": "always",
+          "criterion": "suite"
         },
         {
           "category": "ERROR_UNTYPED",
@@ -540,9 +548,11 @@
       "keys": [
         "N-OA3",
         "N-AN3",
-        "N-AN10"
+        "N-AN10",
+        "N-OA1",
+        "N-AN4"
       ],
-      "basis": "The cited sentences say that an error can arrive inside a response that began with HTTP 200. Running the tool on the unfinished call and ending the turn without a sign of the error are not described as handling it. A typed error and one terminal signal per call are criteria this suite applies.",
+      "basis": "Both providers describe error events after a successful HTTP response. OpenAI advises validating arguments before invocation. Anthropic describes parsing tool input after the block closes. This suite also looks for a visible error, its type, and a single terminal signal.",
       "criterion": "provider"
     },
     {

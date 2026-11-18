@@ -82,6 +82,35 @@ class CompletenessTest {
   }
 
   @Test
+  void anthropic_pings_do_not_count_as_message_boundaries() throws Exception {
+    var fixture = anthropic();
+    var frames = (ArrayNode) response(fixture).path("body").path("sse");
+    frames.insert(0, anthropicEvent("{\"type\":\"ping\"}"));
+    frames.insert(2, anthropicEvent("{\"type\":\"ping\"}"));
+    assertTrue(check(fixture).isEmpty(), check(fixture).toString());
+  }
+
+  @Test
+  void first_anthropic_event_must_start_the_message() throws Exception {
+    var fixture = anthropic();
+    ((ArrayNode) response(fixture).path("body").path("sse")).remove(0);
+    assertTrue(check(fixture).stream().anyMatch(p -> p.message().contains("message_start")));
+  }
+
+  @Test
+  void completion_markers_end_the_exchange() throws Exception {
+    var anthropic = anthropic();
+    var events = (ArrayNode) response(anthropic).path("body").path("sse");
+    events.insert(1, events.remove(events.size() - 1));
+    assertTrue(check(anthropic).stream().anyMatch(p -> p.message().contains("message_stop")));
+
+    var openAi = example();
+    events = (ArrayNode) response(openAi).path("body").path("sse");
+    events.insert(1, events.remove(events.size() - 1));
+    assertTrue(check(openAi).stream().anyMatch(p -> p.message().contains("done marker")));
+  }
+
+  @Test
   void leading_empty_input_json_delta_required() throws Exception {
     var n = anthropic();
     ((ArrayNode) response(n).path("body").path("sse")).remove(2);

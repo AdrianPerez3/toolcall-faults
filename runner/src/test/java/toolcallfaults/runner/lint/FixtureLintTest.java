@@ -26,6 +26,17 @@ class FixtureLintTest {
   }
 
   @Test
+  void unknown_source_applicability_fails_manifest_lint() throws Exception {
+    Path suite = Files.createDirectories(dir.resolve("suite"));
+    var register = JSON.readTree(Path.of("../suite/judgements.json").toFile());
+    ((com.fasterxml.jackson.databind.node.ObjectNode) register.path("register").path("N-AN4"))
+        .put("applicability", "unknown");
+    Files.writeString(suite.resolve("judgements.json"), register.toString());
+    assertTrue(ManifestLint.check(dir).stream()
+        .anyMatch(p -> p.jsonPath().equals("$.register.N-AN4.applicability")));
+  }
+
+  @Test
   void recorded_fixtures_skip_completeness() throws Exception {
     var n = example();
     n.put("tier", "recorded");

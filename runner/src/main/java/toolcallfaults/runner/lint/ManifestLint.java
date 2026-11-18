@@ -496,6 +496,11 @@ public final class ManifestLint {
                       file.toString(),
                       "$.register." + key + "." + field,
                       "required register source"));
+          JsonNode applicability = n.path("register").path(key).path("applicability");
+          if (!applicability.isMissingNode()
+              && !Set.of("context-only", "streaming").contains(applicability.asText()))
+            problems.add(new Problem(file.toString(), "$.register." + key + ".applicability",
+                "expected context-only or streaming"));
           JsonNode wires = n.path("register").path(key).path("wires");
           boolean known = wires.isArray() && !wires.isEmpty();
           for (JsonNode w : wires)

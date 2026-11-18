@@ -4,7 +4,7 @@ import java.util.List;
 
 /**
  * @param keys register sentences of the provider whose wire the cell replays
- * @param related register sentences of other providers on the same fault; context, not basis
+ * @param related source sentences about another wire, service or request mode
  * @param criterion whose criterion made the outcome unsupported: provider, suite,
  *     target-documentation or control
  */
@@ -21,7 +21,7 @@ public record Verdict(
   public String citation() {
     String text = String.join(", ", keys);
     if (!related.isEmpty())
-      text += (text.isEmpty() ? "" : "; ") + "other providers on the same fault: " + String.join(", ", related);
+      text += (text.isEmpty() ? "" : "; ") + "related guidance: " + String.join(", ", related);
     return text;
   }
 
