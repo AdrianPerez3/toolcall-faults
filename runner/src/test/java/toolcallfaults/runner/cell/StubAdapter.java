@@ -10,11 +10,12 @@ public class StubAdapter {
         c.getOutputStream().write("{}".getBytes(StandardCharsets.UTF_8));c.getInputStream().readAllBytes();c.disconnect();
     }
     public static void main(String[] argv) throws Exception {
-        var f=Flags.parse(argv);var r=ResultLine.start(f,"stub","test");var rec=new Recorder(f.workdir());var signals=new Signals();long start=System.currentTimeMillis();
+        var f=Flags.parse(argv);var r=ResultLine.start(f,"stub","test");var rec=new Recorder(f.workdir());var signals=new Signals(rec);long start=System.currentTimeMillis();
         Map<String,Object> args=new LinkedHashMap<>();for(String key:List.of("priority","title","body"))args.put(key,null);
         post(f.baseUrl());
         switch(f.module()) {
             case "hang" -> {Files.writeString(f.workdir().resolve("pid"),Long.toString(ProcessHandle.current().pid()));Thread.sleep(60000);}
+            case "terminal-before-kill" -> {signals.complete();Thread.sleep(60000);}
             case "no-line" -> {return;}
             case "late-tool" -> {
                 var out=new java.io.FileOutputStream(java.io.FileDescriptor.out);

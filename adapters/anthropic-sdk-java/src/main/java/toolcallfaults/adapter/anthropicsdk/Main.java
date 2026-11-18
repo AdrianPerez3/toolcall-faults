@@ -132,8 +132,8 @@ public final class Main {
   public static void main(String[] args) throws Exception {
     long start = System.currentTimeMillis();
     Flags flags = Flags.parse(args);
-    Signals signals = new Signals();
     Recorder recorder = new Recorder(flags.workdir());
+    Signals signals = new Signals(recorder);
     String api =
         switch (flags.surface()) {
           case "loop-stream" -> "beta().messages().toolRunner().streaming()";

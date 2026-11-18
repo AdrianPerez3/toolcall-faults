@@ -3,6 +3,7 @@ package toolcallfaults.runner.oracle;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.node.*;
 import java.util.*;
+import toolcallfaults.kit.Recorder;
 import toolcallfaults.kit.Signals;
 import toolcallfaults.runner.cell.*;
 import toolcallfaults.runner.fixture.*;
@@ -34,6 +35,54 @@ public final class Oracle {
       }
     }
     return false;
+  }
+
+  private record Feedback(List<String> texts, boolean incomplete) {}
+
+  private static Feedback feedback(String wire, CellResult result, List<TruthCall> unmatched) {
+    Map<String, String> namesById = new HashMap<>();
+    for (TruthCall call : unmatched) namesById.put(call.id(), call.name());
+    Set<String> invokedNames = new HashSet<>();
+    for (JsonNode invocation : result.invocations()) invokedNames.add(invocation.path("name").asText());
+
+    List<String> texts = new ArrayList<>();
+    boolean incomplete = false;
+    for (int i = 1; i < result.requests().size(); i++) {
+      // The server logs a bounded body. A non-JSON prefix cannot establish absence of feedback.
+      JsonNode request = RequestBodies.parse(result.requests().get(i).body());
+      if (request == null) {
+        incomplete = true;
+        continue;
+      }
+      for (ToolResult tool : RequestBodies.toolResults(wire, request)) {
+        String name = namesById.get(tool.callId());
+        if (name == null) continue;
+        // An altered invocation still ran. Its ordinary return value is not error feedback.
+        if (invokedNames.contains(name) && Recorder.isSuccessReply(name, tool.text())) continue;
+        texts.add(tool.text());
+      }
+    }
+    return new Feedback(texts, incomplete);
+  }
+
+  private static String invalidRun(CellResult result, JsonNode line, JsonNode signals, boolean error) {
+    if (result.requests().isEmpty()) return "no request reached server";
+    if (result.requests().stream().anyMatch(r -> r.exchangeIndex() < 0))
+      return "request did not match a fixture exchange";
+    if (result.recorderTorn()) return "recorder file torn";
+    if (!result.watchdogKilled() && result.exitCode() != null && result.exitCode() != 0)
+      return "adapter exited " + result.exitCode();
+    boolean served = result.requests().get(result.requests().size() - 1).servedAsScripted();
+    if (result.resultLine() == null)
+      return result.watchdogKilled() && served ? null : "missing or malformed result line";
+    if (!line.path("format").asText().equals("tcf.result/v1"))
+      return "missing or malformed result line";
+    if (!signals.isArray() || signals.isEmpty()) return "adapter returned without a terminal signal";
+    for (JsonNode signal : signals)
+      if (!Set.of("complete", "error").contains(signal.asText())) return "unrecognized terminal signal";
+    if (error && line.path("error").path("chain").path(0).path("type").asText().isBlank())
+      return "error signal without an exception type";
+    return null;
   }
 
   public static Classified classify(
@@ -86,26 +135,18 @@ public final class Oracle {
       if (match == null) altered = true;
       else unmatched.remove(match);
     }
-    List<ToolResult> feedback = new ArrayList<>();
-    boolean feedbackUndecidable = false;
-    for (int i = 1; i < result.requests().size(); i++) {
-      String body = result.requests().get(i).body();
-      // The server logs bodies up to 16 kB; a cut or non-JSON body cannot show a tool result.
-      if (body != null && !body.isBlank() && !RequestBodies.parseable(body))
-        feedbackUndecidable = true;
-      for (ToolResult tool : RequestBodies.toolResults(fixture.wire(), body))
-        if (unmatched.stream().anyMatch(c -> c.id().equals(tool.callId()))) feedback.add(tool);
-    }
+    Feedback feedback = feedback(fixture.wire(), result, unmatched);
     ObjectNode attr = FixtureLoader.JSON.createObjectNode();
     attr.put("request_count", result.requests().size())
         .put("invocation_count", effectiveInvocations.size())
-        .put("fed_back", !feedback.isEmpty())
+        .put("fed_back", !feedback.texts().isEmpty())
         .put(
             "fed_back_text",
-            Signals.cut(String.join("\n", feedback.stream().map(ToolResult::text).toList())));
+            Signals.cut(String.join("\n", feedback.texts())));
     attr.set(
         "terminal_signals", signals.isArray() ? signals : FixtureLoader.JSON.createArrayNode());
-    attr.put("tools_ran_before_error", error && !result.invocations().isEmpty());
+    if (!error || result.invocations().isEmpty()) attr.put("tools_ran_before_error", false);
+    else attr.set("tools_ran_before_error", line.get("tools_ran_before_error"));
     attr.set(
         "caller_finish_reasons",
         caller.path("finish_reasons").isArray()
@@ -118,21 +159,16 @@ public final class Oracle {
         .put("elapsed_ms", result.elapsedMs())
         .put("timeout_fired", timeout)
         .put("watchdog_killed", result.watchdogKilled());
-    boolean served =
-        !result.requests().isEmpty()
-            && result.requests().get(result.requests().size() - 1).servedAsScripted();
-    if (result.requests().isEmpty())
-      return new Classified(Category.HARNESS, "no request reached server", attr);
-    if (result.recorderTorn()) return new Classified(Category.HARNESS, "recorder file torn", attr);
-    if (!result.watchdogKilled() && result.exitCode() != null && result.exitCode() != 0)
-      return new Classified(Category.HARNESS, "adapter exited " + result.exitCode(), attr);
-    if ((result.resultLine() == null || !line.path("format").asText().equals("tcf.result/v1"))
-        && !(result.watchdogKilled() && served))
-      return new Classified(Category.HARNESS, "missing or malformed result line", attr);
+    String invalidRun = invalidRun(result, line, signals, error);
+    if (invalidRun != null) return new Classified(Category.HARNESS, invalidRun, attr);
     if (altered)
       return new Classified(
           Category.EXECUTED_ALTERED, "invocation differs from complete wire call", attr);
-    if (result.watchdogKilled() && served)
+    if (result.watchdogProblem() != null)
+      return new Classified(Category.HARNESS, result.watchdogProblem(), attr);
+    if (result.watchdogKilled() && !signals.isEmpty())
+      return new Classified(Category.HARNESS, "watchdog after a terminal signal", attr);
+    if (result.watchdogKilled())
       return new Classified(Category.HANG, "watchdog after scripted response", attr);
     if (error) {
       String type = line.path("error").path("chain").path(0).path("type").asText();
@@ -143,10 +179,10 @@ public final class Oracle {
           type,
           attr);
     }
-    if (!unmatched.isEmpty() && feedbackUndecidable)
+    if (!unmatched.isEmpty() && feedback.incomplete())
       return new Classified(Category.HARNESS, "later request body is not parseable JSON", attr);
     if (!unmatched.isEmpty()
-        && !feedback.isEmpty()
+        && !feedback.texts().isEmpty()
         && signals.size() == 1
         && signals.path(0).asText().equals("complete")
         && !limit)

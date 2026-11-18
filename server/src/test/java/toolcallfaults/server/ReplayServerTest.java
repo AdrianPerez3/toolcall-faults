@@ -79,6 +79,29 @@ class ReplayServerTest {
             assertEquals("a".repeat(16384),s.log("a1").get(0).body());
         }
     }
+    @Test void chunked_request_body_is_logged_without_its_framing() throws Exception {
+        try (var server = ReplayServer.start(0); var client = new RawClient(server.port())) {
+            server.register("body", new Script(List.of(whole("/x", "ok"))));
+            String request = "POST /c/body/x HTTP/1.1\r\nHost: localhost\r\n"
+                    + "Transfer-Encoding: chunked\r\n\r\n"
+                    + "3;part=first\r\nhel\r\n2\r\nlo\r\n0\r\nX-End: yes\r\n\r\n";
+            client.socket.getOutputStream().write(request.getBytes(StandardCharsets.US_ASCII));
+            assertTrue(new String(client.all(), StandardCharsets.UTF_8).endsWith("ok"));
+            assertEquals("hello", server.log("body").get(0).body());
+        }
+    }
+
+    @Test void logged_prefix_counts_utf8_bytes_and_preserves_complete_characters() throws Exception {
+        try (var server = ReplayServer.start(0)) {
+            server.register("body", new Script(List.of(whole("/x", "ok"))));
+            String prefix = "a" + "é".repeat(8191);
+            RawClient.request(server.port(), "POST", "/c/body/x", Map.of(), prefix + "界");
+            String logged = server.log("body").get(0).body();
+            assertEquals(prefix.length(), logged.length());
+            assertEquals(prefix, logged);
+        }
+    }
+
     @Test void ninety_concurrent_requests_three_cells() throws Exception {
         try(var s=ReplayServer.start(0)) {
             var pool=Executors.newFixedThreadPool(30);

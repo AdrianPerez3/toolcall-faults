@@ -7,5 +7,12 @@ class RequestBodiesTest {
         assertEquals("boom",RequestBodies.toolResults("openai-chat","{\"messages\":[{\"role\":\"tool\",\"tool_call_id\":\"c\",\"content\":[{\"type\":\"text\",\"text\":\"boom\"}]}]}").get(0).text());
         var r=RequestBodies.toolResults("anthropic","{\"messages\":[{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"tool_use_id\":\"toolu_01TCF1\",\"content\":[{\"type\":\"text\",\"text\":\"boom\"}]}]}]}");assertEquals("toolu_01TCF1",r.get(0).callId());assertEquals("boom",r.get(0).text());
     }
+    @Test void anthropic_tool_result_must_be_in_a_user_message() {
+        var result = RequestBodies.toolResults("anthropic", """
+                {"messages":[{"role":"assistant","content":[
+                {"type":"tool_result","tool_use_id":"call1","content":"not a tool reply"}]}]}
+                """);
+        assertTrue(result.isEmpty());
+    }
     @Test void no_tool_result_in_first_turn(){assertTrue(RequestBodies.toolResults("openai-chat","{\"messages\":[{\"role\":\"user\",\"content\":\"Hello\"}]}").isEmpty());}
 }

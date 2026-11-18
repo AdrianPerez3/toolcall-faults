@@ -282,3 +282,9 @@ The rows for truncated tool calls on LangChain4j (a call with no argument bytes,
 A public runner exhausted all three attempts to verify the Maven wrapper JAR during the image build. The checkout now includes Apache Maven Wrapper 3.3.4 in its binary distribution form. Both launchers check the existing SHA-256 pin. The Maven distribution retains its own checksum, and the download-only steps retain their retries. [Apache Maven Wrapper distributions](https://maven.apache.org/tools/wrapper/index.html)
 
 The reference build context also excludes local agent configuration, research inputs and scratch files. The same checkout can contain private maintainer work alongside the tracked source.
+
+## 2026-11-18 — Evidence used by the oracle
+
+The recorder identifies its successful tool returns in later requests, including JSON-quoted returns. The adapter records the invocation count at its first error and leaves a marker on its first terminal signal. A watchdog kill after that signal, a missing fixture route, or a last request with less than one client timeout available gives an invalid run where that evidence is needed to establish a hang. Historical rows retain the evidence captured by their suite version.
+
+The replay server reads both fixed-length and chunked HTTP/1.1 requests. Its request log retains a complete UTF-8 prefix within the 16 KiB byte limit.

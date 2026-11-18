@@ -11,11 +11,14 @@ import static toolcallfaults.runner.fixture.FixtureTestSupport.*;
 class CellRunnerTest {
     @TempDir Path dir;
     CellResult run(String mode,long watchdog) throws Exception {
+        return run(mode, 3000, watchdog);
+    }
+    CellResult run(String mode,long timeout,long watchdog) throws Exception {
         var n=example();for(var e:n.path("exchanges"))((com.fasterxml.jackson.databind.node.ObjectNode)e.path("match")).put("path","/v1/x");
         var fixture=FixtureLoader.load(save(dir,n));
         try(var server=ReplayServer.start(0)) {
             var adapter=new BuiltAdapter("stub","1",StubAdapter.class.getName(),List.of(System.getProperty("java.class.path").split(java.io.File.pathSeparator)),List.of());
-            return new CellRunner(server,3000,watchdog).run(new Cell("stub","1",mode,"loop-stream",fixture.id(),"record_note",21,"jdk"),fixture,adapter,1);
+            return new CellRunner(server,timeout,watchdog).run(new Cell("stub","1",mode,"loop-stream",fixture.id(),"record_note",21,"jdk"),fixture,adapter,1);
         }
     }
     @Test void runs_cell_and_reads_three_sources() throws Exception {var r=run("ok",4000);assertEquals(2,r.requests().size());assertEquals(1,r.invocations().size());assertNotNull(r.resultLine());assertFalse(r.watchdogKilled());}

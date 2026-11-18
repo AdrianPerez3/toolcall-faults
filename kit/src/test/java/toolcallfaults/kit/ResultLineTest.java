@@ -87,6 +87,21 @@ class ResultLineTest {
     assertTrue(s.contains("\"arguments_parsed_ok\":false,\"arguments\":null"));
   }
 
+  @Test
+  void records_whether_a_tool_ran_before_the_first_error() {
+    for (boolean before : List.of(true, false)) {
+      var r = ResultLine.start(Flags.parse(FlagsTest.args(dir.toString())), "target", "api");
+      var recorder = new Recorder(dir);
+      var signals = new Signals(recorder);
+      if (before) recorder.invoked("flush_notes", Map.of());
+      signals.error(new IllegalStateException());
+      if (!before) recorder.invoked("flush_notes", Map.of());
+      signals.error(new IllegalStateException());
+      String output = r.render(signals, recorder, 0);
+      assertTrue(output.contains("\"tools_ran_before_error\":" + before));
+    }
+  }
+
   private static final String PRETTY =
       "{\n"
           + " \"priority\": 3,\n"

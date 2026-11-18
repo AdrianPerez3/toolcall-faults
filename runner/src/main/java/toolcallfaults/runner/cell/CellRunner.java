@@ -7,6 +7,7 @@ import java.nio.file.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import toolcallfaults.kit.Recorder;
+import toolcallfaults.kit.Signals;
 import toolcallfaults.runner.fixture.*;
 import toolcallfaults.server.*;
 
@@ -71,10 +72,10 @@ public final class CellRunner {
     builder.environment().clear();
     long started = System.nanoTime();
     Process process = builder.start();
-    boolean killed = false;
+    Long watchdogAtMs = null;
     try {
       if (!process.waitFor(watchdogMs, TimeUnit.MILLISECONDS)) {
-        killed = true;
+        watchdogAtMs = System.currentTimeMillis();
         terminate(process);
       }
     } catch (InterruptedException e) {
@@ -121,17 +122,27 @@ public final class CellRunner {
           torn = true;
         }
     }
+    List<RequestRecord> requests = server.log(id);
+    String watchdogProblem = null;
+    if (watchdogAtMs != null) {
+      if (Files.exists(work.resolve(Signals.FIRST_SIGNAL_FILE)))
+        watchdogProblem = "adapter received a terminal signal before watchdog";
+      else if (!requests.isEmpty()
+          && watchdogAtMs - requests.get(requests.size() - 1).receivedAtMs() < timeoutMs)
+        watchdogProblem = "last request reached server less than one client timeout before watchdog";
+    }
     return new CellResult(
         cell,
         rep,
         line,
         List.copyOf(invocations),
         torn,
-        server.log(id),
+        requests,
         server.flagged(id),
-        killed,
+        watchdogAtMs != null,
         process.exitValue(),
-        elapsed);
+        elapsed,
+        watchdogProblem);
   }
 
   private static void terminate(Process process) {

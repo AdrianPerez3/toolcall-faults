@@ -2,6 +2,9 @@ package toolcallfaults.server;
 
 import java.io.*;
 import java.net.*;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.*;
@@ -59,6 +62,43 @@ public final class ReplayServer implements AutoCloseable {
         }
         throw new EOFException();
     }
+    private static final int BODY_LOG_LIMIT = 16 * 1024;
+
+    /** Consume the entire framed body, retaining only the prefix used for observations. */
+    private static String requestBody(InputStream in, Map<String,String> headers) throws IOException {
+        ByteArrayOutputStream prefix = new ByteArrayOutputStream();
+        String encoding = headers.get("transfer-encoding");
+        if (encoding == null) {
+            long length = Long.parseLong(headers.getOrDefault("content-length", "0"));
+            appendPrefix(in, length, prefix);
+        } else {
+            if (!encoding.equalsIgnoreCase("chunked") || headers.containsKey("content-length"))
+                throw new IOException("Unsupported request framing");
+            while (true) {
+                String chunk = line(in).split(";", 2)[0].trim();
+                if (!chunk.matches("[0-9a-fA-F]+")) throw new IOException("Invalid chunk size");
+                long size = Long.parseLong(chunk, 16);
+                if (size == 0) break;
+                appendPrefix(in, size, prefix);
+                if (in.read() != '\r' || in.read() != '\n') throw new IOException("Invalid chunk end");
+            }
+            while (!line(in).isEmpty()) { /* consume optional trailers */ }
+        }
+        // A byte limit can cut a UTF-8 character. Decode only complete characters in the prefix.
+        var decoder = StandardCharsets.UTF_8.newDecoder().onMalformedInput(CodingErrorAction.REPLACE);
+        CharBuffer text = CharBuffer.allocate(prefix.size());
+        decoder.decode(ByteBuffer.wrap(prefix.toByteArray()), text, false);
+        return text.flip().toString();
+    }
+
+    private static void appendPrefix(InputStream in, long length, ByteArrayOutputStream prefix) throws IOException {
+        if (length < 0) throw new IOException("Invalid request length");
+        int keep = (int) Math.min(length, BODY_LOG_LIMIT - prefix.size());
+        byte[] part = in.readNBytes(keep);
+        if (part.length != keep) throw new EOFException();
+        prefix.writeBytes(part);
+        in.skipNBytes(length - keep);
+    }
     private static byte[] ascii(String s) { return s.getBytes(StandardCharsets.US_ASCII); }
     private static boolean matches(String pattern, String path) {
         String regex = Arrays.stream(pattern.split("\\*", -1)).map(Pattern::quote)
@@ -86,14 +126,7 @@ public final class ReplayServer implements AutoCloseable {
                 if (colon < 1) throw new IOException("Invalid HTTP header");
                 headers.put(h.substring(0,colon).toLowerCase(Locale.ROOT), h.substring(colon+1).trim());
             }
-            int length = Integer.parseInt(headers.getOrDefault("content-length", "0"));
-            if (length < 0) throw new IOException("Invalid content length");
-            byte[] bodyPrefix = in.readNBytes(Math.min(length,65536));
-            if (bodyPrefix.length != Math.min(length,65536)) throw new EOFException();
-            long left = length - bodyPrefix.length;
-            while (left > 0) { long n = in.skip(left); if (n == 0) { if (in.read() < 0) throw new EOFException(); n = 1; } left -= n; }
-            String body = new String(bodyPrefix, StandardCharsets.UTF_8);
-            if (body.length() > 16384) body = body.substring(0,16384);
+            String body = requestBody(in, headers);
             String[] route = start[1].split("/", 4);
             String id = route.length == 4 && route[1].equals("c") ? route[2] : "";
             String path = route.length == 4 ? "/" + route[3] : start[1];

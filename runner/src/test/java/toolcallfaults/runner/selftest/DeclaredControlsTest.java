@@ -84,7 +84,7 @@ class DeclaredControlsTest {
               false,
               false,
               0,
-              100);
+              100, null);
         });
   }
 

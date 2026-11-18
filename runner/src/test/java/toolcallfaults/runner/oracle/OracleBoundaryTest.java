@@ -128,6 +128,84 @@ class OracleBoundaryTest {
   }
 
   @Test
+  void a_successful_tool_return_after_altered_arguments_is_not_error_feedback() throws Exception {
+    b.nulls();
+    for (String text : List.of("note recorded", "\"note recorded\"")) {
+      var body = JSON.createObjectNode();
+      body.putArray("messages").addObject().put("role", "tool")
+          .put("tool_call_id", "call_TCF1").put("content", text);
+      b.requests.add(b.request(2, body.toString()));
+      var classified = b.classify();
+      assertEquals(Category.EXECUTED_ALTERED, classified.category());
+      assertFalse(classified.attributes().path("fed_back").asBoolean());
+      assertEquals("", classified.attributes().path("fed_back_text").asText());
+      b.requests.remove(1);
+    }
+  }
+
+  @Test
+  void a_successful_altered_call_does_not_hide_another_calls_error() throws Exception {
+    b.f = FixtureLoader.load(Path.of("../suite/fixtures/openai-chat/truncation.second-call-cut.json"));
+    b.nulls();
+    var body = JSON.createObjectNode();
+    var messages = body.putArray("messages");
+    messages.addObject().put("role", "tool").put("tool_call_id", b.f.truth().calls().get(0).id())
+        .put("content", "note recorded");
+    messages.addObject().put("role", "tool").put("tool_call_id", b.f.truth().calls().get(1).id())
+        .put("content", "invalid input");
+    b.requests.add(b.request(2, body.toString()));
+    var attributes = b.classify().attributes();
+    assertTrue(attributes.path("fed_back").asBoolean());
+    assertEquals("invalid input", attributes.path("fed_back_text").asText());
+  }
+
+  @Test
+  void a_replay_route_miss_is_an_invalid_measurement() {
+    b.requests.add(new toolcallfaults.server.RequestRecord(
+        "c", 2, "POST", "/unexpected", -1, "t", true, java.util.Map.of(), "{}", 1, 2, false));
+    b.error("com.openai.errors.NotFoundException");
+    assertEquals(Category.HARNESS, b.classify().category());
+  }
+
+  @Test
+  void missing_error_order_on_older_adapter_lines_is_unknown() throws Exception {
+    b.nulls();
+    b.error("java.io.IOException");
+    assertTrue(b.classify().attributes().get("tools_ran_before_error").isNull());
+    for (boolean observed : List.of(true, false)) {
+      b.line.put("tools_ran_before_error", observed);
+      assertEquals(observed, b.classify().attributes().get("tools_ran_before_error").booleanValue());
+    }
+  }
+
+  @Test
+  void empty_followup_body_does_not_prove_absence_of_feedback() {
+    b.requests.add(b.request(2, ""));
+    assertEquals(Category.HARNESS, b.classify().category());
+  }
+
+  @Test
+  void a_clean_exit_needs_a_recognized_terminal_signal() {
+    b.line.putArray("terminal_signals");
+    assertEquals(Category.HARNESS, b.classify().category());
+    b.line.putArray("terminal_signals").add("done");
+    assertEquals(Category.HARNESS, b.classify().category());
+  }
+
+  @Test
+  void an_error_signal_without_a_measured_exception_cannot_be_typed() {
+    b.line.putArray("terminal_signals").add("error");
+    assertEquals(Category.HARNESS, b.classify().category());
+  }
+
+  @Test
+  void a_complete_result_line_after_terminal_signal_cannot_be_a_hang() {
+    b.killed = true;
+    b.exit = 137;
+    assertEquals(Category.HARNESS, b.classify().category());
+  }
+
+  @Test
   void attributes_feed_the_judgement_conditions() throws Exception {
     asSent();
     b.line.withObject("caller").putArray("finish_reasons").add("length");

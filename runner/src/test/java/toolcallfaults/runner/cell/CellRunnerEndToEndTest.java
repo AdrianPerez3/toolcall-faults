@@ -31,9 +31,33 @@ class CellRunnerEndToEndTest {
   void hang_is_classified_hang_end_to_end_and_exit_code_is_kill() throws Exception {
     var t = new CellRunnerTest();
     t.dir = dir;
-    var r = t.run("hang", 1500);
+    var r = t.run("hang", 300, 1500);
     var fixture = FixtureLoader.load(FixtureTestSupport.save(dir, FixtureTestSupport.example()));
     assertEquals(Category.HANG, Oracle.classify(fixture, r, List.of()).category());
+  }
+
+  @Test
+  void terminal_signal_before_watchdog_is_an_incomplete_measurement() throws Exception {
+    var t = new CellRunnerTest();
+    t.dir = dir;
+    var result = t.run("terminal-before-kill", 300, 1500);
+    var fixture = FixtureLoader.load(FixtureTestSupport.save(dir, FixtureTestSupport.example()));
+    assertTrue(result.watchdogKilled());
+    var classified = Oracle.classify(fixture, result, List.of());
+    assertEquals(Category.HARNESS, classified.category());
+    assertEquals("adapter received a terminal signal before watchdog", classified.reason());
+  }
+
+  @Test
+  void watchdog_cannot_prove_hang_before_the_client_timeout_has_elapsed() throws Exception {
+    var t = new CellRunnerTest();
+    t.dir = dir;
+    var result = t.run("hang", 1500, 1500);
+    var fixture = FixtureLoader.load(FixtureTestSupport.save(dir, FixtureTestSupport.example()));
+    assertTrue(result.requests().get(0).servedAsScripted());
+    var classified = Oracle.classify(fixture, result, List.of());
+    assertEquals(Category.HARNESS, classified.category());
+    assertEquals("last request reached server less than one client timeout before watchdog", classified.reason());
   }
 
   @Test
