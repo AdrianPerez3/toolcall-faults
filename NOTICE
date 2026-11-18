@@ -1,0 +1,40 @@
+toolcall-faults
+Copyright 2026 toolcall-faults contributors
+
+Provider and framework names identify them and imply no endorsement.
+
+The compatibility wrapper uses the Apache-2.0 agent-cutoff-bench server,
+fetched unmodified at commit 6a575c59fae1bf593554d78b88b22986e72064fa.
+The server is not included in this repository. Its LICENSE and NOTICE are
+retained in the local compatibility image.
+Source: https://github.com/simin-yuan/agent-cutoff-bench
+
+Recorded OpenAI Chat fixture:
+Copyright (c) 2026 kartsan03. MIT; licence text in
+third-party-licenses/wiretruth.txt.
+Source: https://github.com/kartsan03/wiretruth/blob/b65af93e0186d1a9d8076f85ea4e6614a9102faf/suite/fixtures/openai-chat/truncation.tool-call-args-stream.json
+The exchange bytes are unchanged; the toolcall-faults envelope and truth
+fields were added. The exchange structure follows wiretruth's format.
+The derivation recipe document also uses wiretruth's format and transform
+names from the same pinned source; their implementation is not copied.
+
+Recorded Anthropic fixture:
+Copyright 2023 Anthropic, PBC. Apache-2.0; licence text in
+third-party-licenses/anthropic.txt.
+Source: https://github.com/anthropics/anthropic-sdk-python/blob/d4976414f2cc4652a7ec19947627f993a2959645/tests/lib/streaming/fixtures/incomplete_partial_json_response.txt
+The SSE bytes are unchanged, including whitespace and the missing final
+newline; the toolcall-faults envelope and truth fields were added.
+A derived copy, anthropic/truncation.args-cut-mid-string@recorded-terminated,
+appends one blank line to the final event; nothing else is changed.
+
+Synthetic fixture shape sources (recordings are not copied):
+- anthropic-sdk-python (Apache-2.0), commit d497641:
+  https://github.com/anthropics/anthropic-sdk-python/blob/d4976414f2cc4652a7ec19947627f993a2959645/tests/lib/streaming/fixtures/incomplete_partial_json_response.txt
+- openai-python (Apache-2.0):
+  https://github.com/openai/openai-python/blob/main/.inline-snapshot/external/2018feb66ae13fcf5333d61b95849decc68d3f63bd38172889367e1afb1e04f7.bin
+- openllmetry (Apache-2.0), commit e3d651a:
+  https://github.com/traceloop/openllmetry/blob/e3d651a/packages/opentelemetry-instrumentation-openai/tests/traces/cassettes/test_functions/test_open_ai_function_calls_tools_streaming_parallel.yaml
+- Arize-ai/openinference (Apache-2.0), commit 7dbbd93:
+  https://github.com/Arize-ai/openinference/blob/7dbbd93/js/packages/openinference-instrumentation-bedrock/test/recordings/should-handle-multiple-tools-in-single-request.json
+- pydantic-ai (MIT), commit eedabfc:
+  https://github.com/pydantic/pydantic-ai/blob/eedabfc/tests/models/cassettes/test_groq/test_tool_use_failed_error_streaming.yaml

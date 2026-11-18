@@ -1,0 +1,35 @@
+{
+  "format": "tcf.baseline/v1",
+  "entries": [
+    {
+      "cell": "spring-ai@2.0.0|spring-ai-deepseek|loop-call|openai-chat/tools.single-call@nonstream+set_level|set_level|jdk21|reactor-netty",
+      "category": "ERROR_UNTYPED",
+      "issue": "https://github.com/spring-projects/spring-ai/pull/6775",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-08-09",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "spring-ai@2.0.0|spring-ai-deepseek|loop-call|openai-chat/tools.single-call@nonstream|record_note|jdk21|reactor-netty",
+      "category": "ERROR_UNTYPED",
+      "issue": "https://github.com/spring-projects/spring-ai/pull/6775",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-08-09",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "spring-ai@2.0.0|spring-ai-openai|loop-stream|openai-chat/tools.parallel-interleaved|record_note|jdk21|okhttp",
+      "category": "EXECUTED_ALTERED",
+      "issue": "https://github.com/spring-projects/spring-ai/issues/6374",
+      "status": "released",
+      "disclosure": "filed",
+      "filedOn": "2026-06-10",
+      "maintainerAnswered": true,
+      "maintainerPosition": null
+    }
+  ]
+}

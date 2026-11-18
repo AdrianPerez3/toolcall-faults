@@ -1,0 +1,23 @@
+{
+  "format" : "tcf.scenario/v1",
+  "id" : "stream.error-after-call-start",
+  "spec_id" : "S15",
+  "title" : "Call started, then an in-band error",
+  "summary" : "Call started, then an in-band error",
+  "wire_class" : "X3, P16",
+  "evidence" : [ "https://github.com/pydantic/pydantic-ai/blob/eedabfc/tests/models/cassettes/test_groq/test_tool_use_failed_error_streaming.yaml", "https://platform.claude.com/docs/en/api/streaming" ],
+  "sighting" : "In-band errors recorded; no sighting with a tool call open",
+  "tools" : [ "record_note" ],
+  "surfaces" : [ "loop-stream", "model-stream" ],
+  "http_client_axis" : true,
+  "wires" : {
+    "openai-chat" : {
+      "modes" : [ "stream" ],
+      "variants" : [ "data-error", "event-error" ]
+    },
+    "anthropic" : {
+      "modes" : [ "stream" ],
+      "variants" : [ "" ]
+    }
+  }
+}

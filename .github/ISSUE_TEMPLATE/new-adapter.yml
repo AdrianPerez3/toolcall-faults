@@ -1,0 +1,31 @@
+name: New adapter
+description: Propose a JVM client adapter and its supported surfaces.
+body:
+  - type: input
+    id: target
+    attributes:
+      label: Target and released version
+      description: Maven coordinates and official documentation link.
+    validations:
+      required: true
+  - type: textarea
+    id: surfaces
+    attributes:
+      label: Wires, modules and surfaces
+      description: State the public APIs, required configuration and any documented exclusions.
+    validations:
+      required: true
+  - type: textarea
+    id: controls
+    attributes:
+      label: Control evidence
+      description: S01 as EXECUTED_AS_SENT on every declared surface, with exact offline container commands, versions and three stable repetitions. Link existing public evidence only.
+    validations:
+      required: true
+  - type: textarea
+    id: ownership
+    attributes:
+      label: Ownership and implementation
+      description: Who will maintain the adapter? Describe the manifest, version-property POM, source file on the kit and reviewed baseline from docs/adding-an-adapter.md.
+    validations:
+      required: true

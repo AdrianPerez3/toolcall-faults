@@ -1,0 +1,23 @@
+{
+  "format" : "tcf.scenario/v1",
+  "id" : "truncation.complete-args-under-limit",
+  "spec_id" : "S04",
+  "title" : "Complete arguments under a limit reason",
+  "summary" : "Complete arguments under a limit reason",
+  "wire_class" : "F4, T9",
+  "evidence" : [ "https://github.com/Arize-ai/openinference/blob/7dbbd93/js/packages/openinference-instrumentation-bedrock/test/recordings/should-handle-tool-configuration.json" ],
+  "sighting" : "third-party",
+  "tools" : [ "record_note", "set_level" ],
+  "surfaces" : [ "loop-stream", "model-stream", "loop-call", "model-call" ],
+  "http_client_axis" : false,
+  "wires" : {
+    "openai-chat" : {
+      "modes" : [ "stream", "nonstream" ],
+      "variants" : [ "", "nonstream", "set_level", "nonstream+set_level" ]
+    },
+    "anthropic" : {
+      "modes" : [ "stream", "nonstream" ],
+      "variants" : [ "", "nonstream", "set_level", "nonstream+set_level" ]
+    }
+  }
+}

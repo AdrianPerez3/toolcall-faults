@@ -1,0 +1,24 @@
+{
+  "format" : "tcf.scenario/v1",
+  "id" : "truncation.second-call-cut",
+  "spec_id" : "S05",
+  "title" : "First call complete, second cut inside a string",
+  "summary" : "First call complete, second cut inside a string",
+  "wire_class" : "T10",
+  "evidence" : [ "https://github.com/Arize-ai/openinference/blob/7dbbd93/js/packages/openinference-instrumentation-bedrock/test/recordings/should-handle-multiple-tools-in-single-request.json", "https://github.com/spring-projects/spring-ai/issues/7360" ],
+  "sighting" : "third-party",
+  "tools" : [ "record_note" ],
+  "surfaces" : [ "loop-stream", "model-stream" ],
+  "http_client_axis" : false,
+  "wires" : {
+    "openai-chat" : {
+      "modes" : [ "stream" ],
+      "variants" : [ "" ]
+    },
+    "anthropic" : {
+      "modes" : [ "stream" ],
+      "variants" : [ "" ]
+    }
+  },
+  "evidence_notes" : "spring-ai#7358 and #7360 were filed by this project's maintainer; they show what a client does with the shape, not that a provider sends it."
+}

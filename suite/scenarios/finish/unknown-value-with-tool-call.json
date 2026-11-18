@@ -1,0 +1,24 @@
+{
+  "format" : "tcf.scenario/v1",
+  "id" : "finish.unknown-value-with-tool-call",
+  "spec_id" : "S10",
+  "title" : "Complete call under an unknown finish reason",
+  "summary" : "Complete call under an unknown finish reason",
+  "wire_class" : "F8",
+  "evidence" : [ "https://api-docs.deepseek.com/api/create-chat-completion", "https://github.com/spring-projects/spring-ai/issues/7358" ],
+  "sighting" : "third-party documentation of further finish values on the OpenAI wire; the Anthropic value is invented",
+  "tools" : [ "record_note" ],
+  "surfaces" : [ "loop-stream", "model-stream", "loop-call", "model-call" ],
+  "http_client_axis" : false,
+  "wires" : {
+    "openai-chat" : {
+      "modes" : [ "stream", "nonstream" ],
+      "variants" : [ "", "nonstream" ]
+    },
+    "anthropic" : {
+      "modes" : [ "stream", "nonstream" ],
+      "variants" : [ "", "nonstream" ]
+    }
+  },
+  "evidence_notes" : "spring-ai#7358 and #7360 were filed by this project's maintainer; they show what a client does with the shape, not that a provider sends it."
+}

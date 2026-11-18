@@ -1,0 +1,23 @@
+{
+  "format" : "tcf.scenario/v1",
+  "id" : "stream.stall-mid-args",
+  "spec_id" : "S08",
+  "title" : "Partial arguments, then silence with the connection open",
+  "summary" : "Partial arguments, then silence with the connection open",
+  "wire_class" : "X11",
+  "evidence" : [ "https://github.com/BerriAI/litellm/issues/31877" ],
+  "sighting" : "third-party",
+  "wires" : {
+    "openai-chat" : {
+      "modes" : [ "stream" ],
+      "variants" : [ "" ]
+    },
+    "anthropic" : {
+      "modes" : [ "stream" ],
+      "variants" : [ "" ]
+    }
+  },
+  "tools" : [ "record_note" ],
+  "surfaces" : [ "loop-stream", "model-stream" ],
+  "http_client_axis" : true
+}

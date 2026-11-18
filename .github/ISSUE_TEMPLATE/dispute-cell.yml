@@ -1,0 +1,37 @@
+name: Dispute a cell
+description: Correct a public observation or its documentary judgement.
+body:
+  - type: markdown
+    attributes:
+      value: "Use SECURITY.md for sensitive behavior. Do not attach private findings, credentials or personal data."
+  - type: input
+    id: cell
+    attributes:
+      label: Complete cell key
+      description: Target, version, module, surface, wire, scenario/variant, tool, JDK and HTTP client.
+    validations:
+      required: true
+  - type: dropdown
+    id: layer
+    attributes:
+      label: Disputed layer
+      options:
+        - Observation
+        - Judgement
+        - Both
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Suite commit, fixture/hash/provenance, resolved versions, exact command and three scrubbed repetitions; or the judgement key and provider contract that support a different interpretation.
+    validations:
+      required: true
+  - type: textarea
+    id: correction
+    attributes:
+      label: Proposed correction and upstream context
+      description: Name the field or interpretation that should change and link any existing upstream position.
+    validations:
+      required: true

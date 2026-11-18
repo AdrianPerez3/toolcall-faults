@@ -1,0 +1,9 @@
+{
+  "format": "tcf.prediction-commitment/v1",
+  "algorithm": "SHA-256",
+  "sha256": "17d40233f94bece1d2dc41ca8d6debb8f653a93d475a6814944583bcebf863d3",
+  "bytes": 29626,
+  "file": "predictions.json, byte for byte as frozen before the first full matrix run",
+  "note": "The frozen predictions name behaviours that are not reported upstream yet. Their hash is published now and the file itself, unchanged, when those reports are filed. A hash fixes the content; the date it was fixed by is the date of the first public commit that contains this file.",
+  "verify": "shasum -a 256 predictions.json"
+}

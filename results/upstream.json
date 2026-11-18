@@ -1,0 +1,90 @@
+[
+  {
+    "library": "spring-ai",
+    "scenarios": ["truncation.name-only", "truncation.complete-args-under-limit", "truncation.second-call-cut"],
+    "providers": ["openai-chat", "anthropic"],
+    "issue": "https://github.com/spring-projects/spring-ai/issues/7360",
+    "pr": null,
+    "status": "reported",
+    "fixed_in": null,
+    "opened": "2026-11-10",
+    "notes": "Filed by this project's maintainer. Open and awaiting triage. No maintainer confirmation or ruling is recorded. The issue states that the advisor does not consult the finish reason and lists the name-only, cut-mid-JSON and second-call shapes; rows for a call with complete JSON under a limit finish reason are the same decision point, a shape the issue does not list. Fixture provenance remains attached to each observation."
+  },
+  {
+    "library": "spring-ai",
+    "scenarios": ["finish.unknown-value-with-tool-call"],
+    "providers": ["openai-chat"],
+    "issue": "https://github.com/spring-projects/spring-ai/issues/7358",
+    "pr": "https://github.com/spring-projects/spring-ai/pull/7359",
+    "status": "reported",
+    "fixed_in": null,
+    "opened": "2026-11-10",
+    "notes": "Filed by this project's maintainer. DeepSeek finish-reason parsing. The issue is open and the pull request is unmerged; neither has a maintainer response recorded."
+  },
+  {
+    "library": "spring-ai",
+    "scenarios": ["tools.single-call"],
+    "providers": ["openai-chat"],
+    "issue": null,
+    "pr": "https://github.com/spring-projects/spring-ai/pull/6775",
+    "status": "reported",
+    "fixed_in": null,
+    "opened": "2026-08-09",
+    "notes": "Already reported upstream by another contributor. DeepSeek loop-call controls on the declared versions produce ERROR_UNTYPED with java.lang.IllegalStateException after the tool runs. The fixture is synthetic; null assistant content is allowed by the DeepSeek API reference (https://api-docs.deepseek.com/api/create-chat-completion/). Whether the live API sends null or an empty string is unverified until a recording of the live API is made. PR #6775 is open and unmerged. It links the related streaming issue https://github.com/spring-projects/spring-ai/issues/5568, whose closure does not establish a fix for this blocking path."
+  },
+  {
+    "library": "spring-ai",
+    "scenarios": ["tools.parallel-interleaved"],
+    "providers": ["openai-chat"],
+    "issue": "https://github.com/spring-projects/spring-ai/issues/6374",
+    "pr": null,
+    "status": "released",
+    "fixed_in": "2.0.1",
+    "opened": "2026-06-10",
+    "notes": "Already reported upstream by another contributor and closed as completed. Commit 698bde0d09 (Merge streaming tool call deltas by index) is contained in v2.0.1. Covers the spring-ai-openai module on the historical pin 2.0.0. The issue reports continuation deltas with an empty id; the fixture interleaves the arguments of two calls by index. The fixture is synthetic."
+  },
+  {
+    "library": "langchain4j",
+    "scenarios": ["stream.missing-finish"],
+    "providers": ["anthropic"],
+    "issue": "https://github.com/langchain4j/langchain4j/issues/7145",
+    "pr": null,
+    "status": "reported",
+    "fixed_in": null,
+    "opened": "2026-11-17",
+    "notes": "Already reported upstream by another contributor. The issue states that Anthropic streaming delivers no terminal signal when the stream ends before message_stop. It has no response from a project member as of 2026-11-18 and does not mention this project's rows. The fixture is synthetic."
+  },
+  {
+    "library": "langchain4j",
+    "scenarios": ["stream.stall-mid-args"],
+    "providers": ["openai-chat", "anthropic"],
+    "issue": "https://github.com/langchain4j/langchain4j/issues/3925",
+    "pr": null,
+    "status": "reported",
+    "fixed_in": null,
+    "opened": "2025-10-21",
+    "notes": "Already reported upstream by another contributor; the project labelled the issue bug and HTTP, and a project member reproduced the missing timeout with one provider. The thread and langchain4j#3938 describe that the timeout configured on the JDK HTTP client stops applying once response headers arrive. The thread concerns a blocking call; these rows are a streamed response that stalls mid-arguments on the same HTTP client, a trigger the thread does not mention. The fixture is synthetic."
+  },
+  {
+    "library": "langchain4j",
+    "scenarios": ["stream.abort-after-call-start", "stream.error-after-call-start"],
+    "providers": ["openai-chat"],
+    "issue": null,
+    "pr": "https://github.com/langchain4j/langchain4j/pull/6144",
+    "status": "reported",
+    "fixed_in": null,
+    "opened": "2026-08-22",
+    "notes": "Already reported upstream by another contributor, as an open pull request: after an error event, a parse failure or a transport error in an OpenAI stream, the error callback is followed by the completion callback. The pull request is unmerged. One earlier contributor to the library commented in favour of the change; no project member has responded as of 2026-11-18. It does not mention tool execution; these rows record what the tool loop does after that completion. The fixtures are synthetic."
+  },
+  {
+    "library": "langchain4j",
+    "scenarios": ["truncation.name-only", "truncation.complete-args-under-limit", "truncation.second-call-cut"],
+    "providers": ["openai-chat", "anthropic"],
+    "issue": "https://github.com/langchain4j/langchain4j/issues/7169",
+    "pr": null,
+    "status": "reported",
+    "fixed_in": null,
+    "opened": "2026-11-18",
+    "notes": "Filed by this project's maintainer. Open; no response from a project member as of 2026-11-18. The issue states that the AI Service tool loops execute a tool call from a response whose finish reason is the output limit, without consulting that finish reason, and describes the name-only shape, the cut second call and the call with complete arguments. The fixtures are synthetic; the issue cites third-party captures of the name-only shape."
+  }
+]

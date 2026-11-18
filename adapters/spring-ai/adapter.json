@@ -1,0 +1,99 @@
+{
+  "format": "tcf.adapter/v1",
+  "target": "spring-ai",
+  "coordinates": [
+    "org.springframework.ai:spring-ai-openai",
+    "org.springframework.ai:spring-ai-anthropic",
+    "org.springframework.ai:spring-ai-client-chat",
+    "org.springframework.ai:spring-ai-deepseek"
+  ],
+  "version_property": "target.version",
+  "extra_properties": {
+    "2.0.2": {
+      "spring-boot.version": "4.1.2"
+    },
+    "2.0.0": {
+      "spring-boot.version": "4.1.0"
+    },
+    "2.1.0-RC2": {
+      "spring-boot.version": "4.2.0-RC2"
+    }
+  },
+  "main_class": "toolcallfaults.adapter.springai.Main",
+  "modules": {
+    "spring-ai-openai": {
+      "wire": "openai-chat",
+      "http_client": "okhttp"
+    },
+    "spring-ai-anthropic": {
+      "wire": "anthropic",
+      "http_client": "okhttp"
+    },
+    "spring-ai-deepseek": {
+      "wire": "openai-chat",
+      "http_client": "reactor-netty",
+      "scenarios": [
+        "tools.single-call",
+        "finish.unknown-value-with-tool-call",
+        "tools.parallel-sequential",
+        "tools.parallel-interleaved",
+        "stream.error-after-call-start"
+      ]
+    }
+  },
+  "surfaces": [
+    "loop-stream",
+    "loop-call",
+    "model-stream"
+  ],
+  "typed_error_prefixes": [
+    "org.springframework.ai.",
+    "com.openai.errors.",
+    "com.anthropic.errors."
+  ],
+  "unsupported": [],
+  "config_notes": [
+    "OpenAI and Anthropic retries set to 0 (default 2).",
+    "Timeout set to 3 seconds; programmatic setup without Spring Boot auto-configuration.",
+    "Anthropic base URL uses the cell root.",
+    "Anthropic max_tokens is explicitly 1024, sufficient for the replayed control call.",
+    "Model-stream attaches toolCallbacks by mutating the model options, preserving their provider-specific type and configured defaults; OpenAI 2.0.2 requires OpenAiChatOptions on Prompt.",
+    "DeepSeek uses deepSeekApi(), options() and retryTemplate(new RetryTemplate(RetryPolicy.withMaxRetries(0))); released RetryUtils configures maxRetries(10).",
+    "DeepSeek completionsPath is /v1/chat/completions (default /chat/completions). Reactor Netty response/connect timeouts are 3 seconds; automatic transport retries are disabled. Blocking calls use ReactorClientHttpRequestFactory with the same timeout."
+  ],
+  "docs": [
+    "https://docs.spring.io/spring-ai/reference/api/chatclient.html",
+    "https://docs.spring.io/spring-ai/reference/api/tools/chatmodel-tool-calling.html",
+    "https://docs.spring.io/spring-ai/reference/api/chat/deepseek-chat.html"
+  ],
+  "control_failures": [
+    {
+      "module": "spring-ai-deepseek",
+      "surface": "loop-call",
+      "wire": "openai-chat",
+      "tool": "record_note",
+      "category": "ERROR_UNTYPED",
+      "error_class": "java.lang.IllegalStateException",
+      "basis": "https://github.com/spring-projects/spring-ai/pull/6775",
+      "notes": "Synthetic fixture with null assistant content, which the DeepSeek API reference documents as allowed (https://api-docs.deepseek.com/api/create-chat-completion/). Whether the live API sends null or an empty string is unverified until a live response is recorded. PR #6775 references the related streaming issue https://github.com/spring-projects/spring-ai/issues/5568; that issue is not evidence of this blocking-path fix.",
+      "versions": [
+        "2.0.0",
+        "2.0.2"
+      ]
+    },
+    {
+      "module": "spring-ai-deepseek",
+      "surface": "loop-call",
+      "wire": "openai-chat",
+      "tool": "set_level",
+      "category": "ERROR_UNTYPED",
+      "error_class": "java.lang.IllegalStateException",
+      "basis": "https://github.com/spring-projects/spring-ai/pull/6775",
+      "notes": "Synthetic fixture with null assistant content, which the DeepSeek API reference documents as allowed (https://api-docs.deepseek.com/api/create-chat-completion/). Whether the live API sends null or an empty string is unverified until a live response is recorded. PR #6775 references the related streaming issue https://github.com/spring-projects/spring-ai/issues/5568; that issue is not evidence of this blocking-path fix.",
+      "versions": [
+        "2.0.0",
+        "2.0.2"
+      ]
+    }
+  ]
+}

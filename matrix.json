@@ -1,0 +1,76 @@
+{
+  "format": "tcf.matrix/v1",
+  "timeouts": {
+    "t_ms": 3000,
+    "w_ms": 12000
+  },
+  "repetitions": 3,
+  "jdks": [
+    17,
+    21,
+    25
+  ],
+  "window_days": 14,
+  "repository": null,
+  "targets": {
+    "spring-ai": {
+      "versions": {
+        "current": "@pom",
+        "control": {
+          "version": "2.0.0",
+          "scenarios": [
+            "tools.single-call",
+            "tools.parallel-sequential",
+            "tools.parallel-interleaved"
+          ]
+        },
+        "next": {
+          "version": "2.1.0-RC2",
+          "blocking": false
+        }
+      },
+      "surfaces": [
+        "loop-stream",
+        "loop-call",
+        "model-stream"
+      ]
+    },
+    "langchain4j": {
+      "versions": {
+        "current": "@pom",
+        "control": {
+          "version": "1.21.0",
+          "scenarios": [
+            "tools.single-call",
+            "stream.error-after-call-start"
+          ]
+        }
+      },
+      "surfaces": [
+        "loop-stream",
+        "loop-call",
+        "model-stream"
+      ]
+    },
+    "openai-java": {
+      "versions": {
+        "current": "@pom"
+      },
+      "surfaces": [
+        "model-stream",
+        "model-call"
+      ]
+    },
+    "anthropic-sdk-java": {
+      "versions": {
+        "current": "@pom"
+      },
+      "surfaces": [
+        "loop-stream",
+        "loop-call",
+        "model-stream",
+        "model-call"
+      ]
+    }
+  }
+}

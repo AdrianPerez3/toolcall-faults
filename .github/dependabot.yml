@@ -1,0 +1,62 @@
+version: 2
+updates:
+  # The build's own tools. A major update comes in its own pull request, because it needs its
+  # own review and its own run.
+  - package-ecosystem: maven
+    directory: '/'
+    schedule:
+      interval: weekly
+    groups:
+      toolchain:
+        patterns: ['*']
+        update-types: ['minor', 'patch']
+      toolchain-major:
+        patterns: ['*']
+        update-types: ['major']
+  # One group per adapter build, so that a release of one target does not hold back the others.
+  # These pull requests are how a new release of a library under test is noticed, so the
+  # libraries are not ignored here. Everything in an adapter build is on the classpath the rows
+  # record: run the adapter's cells and add their rows before merging. Lint reports a current
+  # version without rows.
+  - package-ecosystem: maven
+    directory: '/adapters/spring-ai'
+    schedule:
+      interval: weekly
+    # The Boot BOM is paired with each Spring AI version in adapter.json (extra_properties);
+    # a change here alone would be overridden at build time.
+    ignore:
+      - dependency-name: 'org.springframework.boot:spring-boot-dependencies'
+    groups:
+      spring-ai:
+        patterns: ['*']
+  - package-ecosystem: maven
+    directory: '/adapters/langchain4j'
+    schedule:
+      interval: weekly
+    # The OkHttp client module version is paired with each LangChain4j version in adapter.json.
+    ignore:
+      - dependency-name: 'dev.langchain4j:langchain4j-http-client-okhttp'
+    groups:
+      langchain4j:
+        patterns: ['*']
+  - package-ecosystem: maven
+    directory: '/adapters/openai-java'
+    schedule:
+      interval: weekly
+    groups:
+      openai-java:
+        patterns: ['*']
+  - package-ecosystem: maven
+    directory: '/adapters/anthropic-sdk-java'
+    schedule:
+      interval: weekly
+    groups:
+      anthropic-sdk-java:
+        patterns: ['*']
+  - package-ecosystem: github-actions
+    directory: '/'
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ['*']

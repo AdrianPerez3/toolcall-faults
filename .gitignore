@@ -1,0 +1,31 @@
+.local/
+docs/superpowers/
+target/
+*.class
+.idea/
+.vscode/
+.DS_Store
+evidence/
+research_notes/
+probe/
+# Instructions and settings for coding tools stay on the maintainer's machine.
+AGENTS.md
+AGENTS.override.md
+CLAUDE.md
+CLAUDE.local.md
+.claude/
+.codex/
+.codex-log/
+# Downloaded by the wrapper script and checked against wrapperSha256Sum.
+.mvn/wrapper/maven-wrapper.jar
+.env
+*.log
+hs_err_pid*
+
+# The generated report is committed only at a release, after the reply-window check.
+# Remove this line in the release commit that adds it.
+/site/
+
+# Generated compatibility observations stay local pending disclosure.
+/compat/agent-faultbench/results/
+/compat/agent-faultbench/rows.md

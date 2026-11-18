@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "Please cite the version or commit used for your measurements. This is pre-release software."
+title: toolcall-faults
+abstract: "what JVM LLM clients do when a streamed tool call arrives damaged"
+type: software
+version: 0.1.0-SNAPSHOT
+license: Apache-2.0
+repository-code: "https://github.com/AdrianPerez3/toolcall-faults"
+authors:
+  - alias: AdrianPerez3
+    website: "https://github.com/AdrianPerez3"

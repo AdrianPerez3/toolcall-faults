@@ -1,0 +1,71 @@
+{
+  "format" : "tcf.fixture/v1",
+  "id" : "openai-chat/stream.error-after-call-start@data-error",
+  "scenario" : "stream.error-after-call-start",
+  "wire" : "openai-chat",
+  "tier" : "synthetic",
+  "provenance" : {
+    "shape_source" : "https://github.com/pydantic/pydantic-ai/blob/eedabfc/tests/models/cassettes/test_groq/test_tool_use_failed_error_streaming.yaml",
+    "source_licence" : "MIT",
+    "evidence" : [ "https://github.com/pydantic/pydantic-ai/blob/eedabfc/tests/models/cassettes/test_groq/test_tool_use_failed_error_streaming.yaml", "https://platform.claude.com/docs/en/api/streaming" ],
+    "built_by" : "FixtureBuilder.fixture",
+    "licence" : "Apache-2.0",
+    "notes" : "Synthetic in-band error after a tool start; no capture of this combined shape.",
+    "body_sha256" : [ "28bb13c838442e896629c11443088edeab332452678774ee5e7d2dce249db2ee", "09004762d8d2d46a3fc165217aa9072caa2902d2c9ba10e440ac21e1c41b0ae1" ]
+  },
+  "derived_from" : null,
+  "call" : {
+    "stream" : true,
+    "tools" : [ "record_note" ],
+    "prompt" : "Record a note about the quarterly report."
+  },
+  "exchanges" : [ {
+    "match" : {
+      "method" : "POST",
+      "path" : "/v1/chat/completions"
+    },
+    "response" : {
+      "status" : 200,
+      "headers" : {
+        "content-type" : "text/event-stream; charset=utf-8"
+      },
+      "body" : {
+        "sse" : [ "data: {\"id\":\"chatcmpl-TCF0001\",\"object\":\"chat.completion.chunk\",\"created\":1794800000,\"model\":\"gpt-4o-2024-08-06\",\"service_tier\":\"default\",\"system_fingerprint\":\"fp_tcf0000\",\"choices\":[{\"index\":0,\"delta\":{\"role\":\"assistant\",\"content\":null,\"tool_calls\":[{\"index\":0,\"id\":\"call_TCF1\",\"type\":\"function\",\"function\":{\"name\":\"record_note\",\"arguments\":\"\"}}],\"refusal\":null},\"logprobs\":null,\"finish_reason\":null}]}\n\n", "data: {\"id\":\"chatcmpl-TCF0001\",\"object\":\"chat.completion.chunk\",\"created\":1794800000,\"model\":\"gpt-4o-2024-08-06\",\"service_tier\":\"default\",\"system_fingerprint\":\"fp_tcf0000\",\"choices\":[{\"index\":0,\"delta\":{\"tool_calls\":[{\"index\":0,\"function\":{\"arguments\":\"{\\\"\"}}]},\"logprobs\":null,\"finish_reason\":null}]}\n\n", "data: {\"id\":\"chatcmpl-TCF0001\",\"object\":\"chat.completion.chunk\",\"created\":1794800000,\"model\":\"gpt-4o-2024-08-06\",\"service_tier\":\"default\",\"system_fingerprint\":\"fp_tcf0000\",\"choices\":[{\"index\":0,\"delta\":{\"tool_calls\":[{\"index\":0,\"function\":{\"arguments\":\"priority\"}}]},\"logprobs\":null,\"finish_reason\":null}]}\n\n", "data: {\"id\":\"chatcmpl-TCF0001\",\"object\":\"chat.completion.chunk\",\"created\":1794800000,\"model\":\"gpt-4o-2024-08-06\",\"service_tier\":\"default\",\"system_fingerprint\":\"fp_tcf0000\",\"choices\":[{\"index\":0,\"delta\":{\"tool_calls\":[{\"index\":0,\"function\":{\"arguments\":\"\\\":\"}}]},\"logprobs\":null,\"finish_reason\":null}]}\n\n", "data: {\"id\":\"chatcmpl-TCF0001\",\"object\":\"chat.completion.chunk\",\"created\":1794800000,\"model\":\"gpt-4o-2024-08-06\",\"service_tier\":\"default\",\"system_fingerprint\":\"fp_tcf0000\",\"choices\":[{\"index\":0,\"delta\":{\"tool_calls\":[{\"index\":0,\"function\":{\"arguments\":\"3\"}}]},\"logprobs\":null,\"finish_reason\":null}]}\n\n", "data: {\"error\":{\"message\":\"The server had an error while processing your request.\",\"type\":\"server_error\",\"param\":null,\"code\":null}}\n\n" ]
+      },
+      "end" : "clean"
+    }
+  }, {
+    "match" : {
+      "method" : "POST",
+      "path" : "/v1/chat/completions"
+    },
+    "response" : {
+      "status" : 200,
+      "headers" : {
+        "content-type" : "text/event-stream; charset=utf-8"
+      },
+      "body" : {
+        "sse" : [ "data: {\"id\":\"chatcmpl-TCF0002\",\"object\":\"chat.completion.chunk\",\"created\":1794800001,\"model\":\"gpt-4o-2024-08-06\",\"service_tier\":\"default\",\"system_fingerprint\":\"fp_tcf0000\",\"choices\":[{\"index\":0,\"delta\":{\"role\":\"assistant\",\"content\":\"Noted.\",\"refusal\":null},\"logprobs\":null,\"finish_reason\":null}]}\n\n", "data: {\"id\":\"chatcmpl-TCF0002\",\"object\":\"chat.completion.chunk\",\"created\":1794800001,\"model\":\"gpt-4o-2024-08-06\",\"service_tier\":\"default\",\"system_fingerprint\":\"fp_tcf0000\",\"choices\":[{\"index\":0,\"delta\":{},\"logprobs\":null,\"finish_reason\":\"stop\"}]}\n\n", "data: [DONE]\n\n" ]
+      },
+      "end" : "clean"
+    }
+  } ],
+  "x" : { },
+  "truth" : {
+    "calls" : [ {
+      "id" : "call_TCF1",
+      "name" : "record_note",
+      "arguments_raw" : "{\"priority\":3",
+      "complete" : false,
+      "intended_arguments" : {
+        "priority" : 3,
+        "title" : "Quarterly report",
+        "body" : "Send the Q3 numbers to finance before Friday"
+      }
+    } ],
+    "raw_finish" : null,
+    "stream_completed" : true,
+    "damage" : "Call started, then an in-band error"
+  },
+  "removes" : [ "finish-chunk", "done-marker" ]
+}

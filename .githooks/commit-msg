@@ -1,0 +1,17 @@
+#!/bin/sh
+# Rejects attribution lines in commit messages, whichever tool or person wrote them.
+# Active after: git config core.hooksPath .githooks
+set -eu
+msg="$1"
+
+if grep -qiE '^[[:space:]]*(co-?authored-by|assisted-by)([[:space:]]*:|[[:space:]]|$)' "$msg"; then
+  echo "commit-msg: remove the Co-authored-by or Assisted-by line. This repository uses no co-author trailers." >&2
+  exit 1
+fi
+
+if grep -qiE '(generated|created|written|assisted|authored)[[:space:]]+(with|by)[[:space:]].*(claude|codex|copilot|cursor|gemini|aider|chatgpt|openai|anthropic)' "$msg"; then
+  echo "commit-msg: remove the tool attribution line. This repository uses no tool attribution in commits." >&2
+  exit 1
+fi
+
+exit 0

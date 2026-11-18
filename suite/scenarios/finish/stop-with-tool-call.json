@@ -1,0 +1,23 @@
+{
+  "format" : "tcf.scenario/v1",
+  "id" : "finish.stop-with-tool-call",
+  "spec_id" : "S09",
+  "title" : "Complete call under a natural stop reason",
+  "summary" : "Complete call under a natural stop reason",
+  "wire_class" : "F2",
+  "evidence" : [ "https://github.com/anthropics/claude-code/issues/19143" ],
+  "sighting" : "third-party, an OpenAI-compatible stream ending in stop with a truncated call; no sighting with a complete call, none on the Anthropic wire",
+  "tools" : [ "record_note" ],
+  "surfaces" : [ "loop-stream", "model-stream", "loop-call", "model-call" ],
+  "http_client_axis" : false,
+  "wires" : {
+    "openai-chat" : {
+      "modes" : [ "stream", "nonstream" ],
+      "variants" : [ "", "nonstream" ]
+    },
+    "anthropic" : {
+      "modes" : [ "stream", "nonstream" ],
+      "variants" : [ "", "nonstream" ]
+    }
+  }
+}

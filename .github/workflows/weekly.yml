@@ -1,0 +1,75 @@
+name: Weekly replay
+on:
+  schedule:
+    - cron: '23 5 * * 1'
+  workflow_dispatch:
+# A run started by hand waits for the scheduled one instead of running beside it.
+concurrency:
+  group: weekly
+  cancel-in-progress: false
+permissions:
+  contents: read
+jobs:
+  replay:
+    runs-on: ubuntu-24.04
+    # About twice the slowest time seen for these steps in one job.
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6.3.0
+        with:
+          distribution: temurin
+          java-version: '21'
+      # The wrapper fetches its jar and Maven from Maven Central. A refused request ends the
+      # script with a checksum message, so the download alone gets three attempts.
+      - name: Fetch Maven
+        run: n=0; until ./mvnw -q -B --version; do n=$((n+1)); [ "$n" -lt 3 ] || exit 1; sleep 15; done
+      - run: ./mvnw -B verify
+      - run: ./tcf lint
+      - name: Runner hardware
+        run: |
+          nproc
+          lscpu | grep -E '^(Model name|Thread\(s\) per core|Core\(s\) per socket):' || true
+      - name: Build reference image
+        timeout-minutes: 20
+        run: docker build --build-arg JDK=21 -t tcf-ref:jdk21 .
+      # Self-test, run and check lines name cells and outcomes. Unfiled observations stay in
+      # the ephemeral workspace, including failure details; only fixed lines and counts reach this log.
+      - name: Self-test
+        run: |
+          mkdir -p .local
+          ./tcf --container 21 selftest > .local/weekly-selftest.log 2>&1 || { grep -E '^(server|controls|anchors|pins): ' .local/weekly-selftest.log || true; echo "harness lines: $(grep -c HARNESS .local/weekly-selftest.log || true)"; echo "selftest failed; details stay in the workspace"; exit 1; }
+          grep -E '^(server|controls|anchors|pins): ' .local/weekly-selftest.log
+      - name: Run matrix
+        # Published cells only: the cells with rows in results/. The others are run and judged
+        # by the maintainer with the private baselines.
+        run: |
+          mkdir -p .local
+          ./tcf --container 21 run --jdk 21 --published --out .local/run > .local/weekly-run.log 2>&1 || { grep -E '^run: ' .local/weekly-run.log || true; echo "run failed; details stay in the workspace"; exit 1; }
+      - name: Check observations
+        # In the container, because withheld rows are written owner-only by its user.
+        run: |
+          mkdir -p .local
+          ./tcf --container 21 check --run .local/run > .local/weekly-check.log 2>&1 || { echo "differing cells: $(grep -cE '^(CHANGED|NEW|STALE) ' .local/weekly-check.log || true)"; echo "check failed; details stay in the workspace"; exit 1; }
+      - name: Stamp successful run
+        run: |
+          python3 - <<'PY'
+          import datetime, json, pathlib, subprocess
+          version = subprocess.check_output(['git', 'describe', '--always', '--dirty'], text=True).strip()
+          # The rows of this run cite the same version; a stamp for a modified tree would name no commit.
+          if version.endswith('-dirty'):
+              raise SystemExit('a step modified tracked files; no stamp')
+          stamp = {
+              'date': datetime.datetime.now(datetime.timezone.utc).date().isoformat(),
+              'suite_version': version,
+          }
+          pathlib.Path('results/last-run.json').write_text(json.dumps(stamp, indent=2) + '\n')
+          PY
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: last-successful-run
+          path: results/last-run.json
+          if-no-files-found: error

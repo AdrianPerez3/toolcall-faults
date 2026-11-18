@@ -1,0 +1,99 @@
+{
+  "format" : "tcf.fixture/v1",
+  "id" : "anthropic/tools.zero-arg-call@nonstream",
+  "scenario" : "tools.zero-arg-call",
+  "wire" : "anthropic",
+  "tier" : "synthetic",
+  "provenance" : {
+    "shape_source" : "https://github.com/Arize-ai/openinference/blob/7dbbd93/js/packages/openinference-instrumentation-bedrock/test/recordings/should-handle-multiple-tools-in-single-request.json",
+    "source_licence" : "Apache-2.0",
+    "evidence" : [ "https://github.com/microsoft/semantic-kernel/issues/14723", "https://github.com/spring-projects/spring-ai/issues/7360" ],
+    "built_by" : "FixtureBuilder.schemaTool",
+    "licence" : "Apache-2.0",
+    "notes" : "Synthetic zero-argument control, twin of name-only truncation except for the finish reason.",
+    "body_sha256" : [ "70bcc1a969dbb787839e7102ca629028320eae8732a6f54c6602cd36b0c6e671", "1d489d46deac0c5f3f4eba3db76c41b6339979fad20d0f4af18511d2203dc014" ]
+  },
+  "derived_from" : null,
+  "call" : {
+    "stream" : false,
+    "tools" : [ "flush_notes" ],
+    "prompt" : "Flush the notes."
+  },
+  "exchanges" : [ {
+    "match" : {
+      "method" : "POST",
+      "path" : "/v1/messages"
+    },
+    "response" : {
+      "status" : 200,
+      "headers" : {
+        "content-type" : "application/json"
+      },
+      "body" : {
+        "json" : {
+          "id" : "msg_01TCF0001",
+          "type" : "message",
+          "role" : "assistant",
+          "model" : "claude-sonnet-4-5-20250929",
+          "content" : [ {
+            "type" : "tool_use",
+            "id" : "toolu_01TCF1",
+            "name" : "flush_notes",
+            "input" : { }
+          } ],
+          "stop_reason" : "tool_use",
+          "stop_sequence" : null,
+          "usage" : {
+            "input_tokens" : 420,
+            "output_tokens" : 40
+          }
+        }
+      },
+      "end" : "clean"
+    }
+  }, {
+    "match" : {
+      "method" : "POST",
+      "path" : "/v1/messages"
+    },
+    "response" : {
+      "status" : 200,
+      "headers" : {
+        "content-type" : "application/json"
+      },
+      "body" : {
+        "json" : {
+          "id" : "msg_01TCF0002",
+          "type" : "message",
+          "role" : "assistant",
+          "model" : "claude-sonnet-4-5-20250929",
+          "content" : [ {
+            "type" : "text",
+            "text" : "Noted."
+          } ],
+          "stop_reason" : "end_turn",
+          "stop_sequence" : null,
+          "usage" : {
+            "input_tokens" : 420,
+            "output_tokens" : 40
+          }
+        }
+      },
+      "end" : "clean"
+    }
+  } ],
+  "x" : { },
+  "truth" : {
+    "calls" : [ {
+      "id" : "toolu_01TCF1",
+      "name" : "flush_notes",
+      "arguments_raw" : "{}",
+      "complete" : true,
+      "intended_arguments" : { }
+    } ],
+    "raw_finish" : "tool_use",
+    "stream_completed" : true,
+    "damage" : "None; normal zero-argument call."
+  },
+  "removes" : [ ]
+}

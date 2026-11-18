@@ -1,0 +1,8 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"><modelVersion>4.0.0</modelVersion>
+  <groupId>io.github.adrianperez3</groupId><artifactId>tcf-adapter-openai-java</artifactId><version>0.1.0-SNAPSHOT</version>
+  <properties><target.version>4.105.0</target.version></properties>
+  <dependencies>
+    <dependency><groupId>com.openai</groupId><artifactId>openai-java</artifactId><version>${target.version}</version></dependency>
+    <dependency><groupId>org.slf4j</groupId><artifactId>slf4j-nop</artifactId><version>2.0.17</version></dependency>
+  </dependencies>
+</project>

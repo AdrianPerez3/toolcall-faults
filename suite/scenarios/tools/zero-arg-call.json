@@ -1,0 +1,24 @@
+{
+  "format" : "tcf.scenario/v1",
+  "id" : "tools.zero-arg-call",
+  "spec_id" : "S14",
+  "title" : "Complete call to a zero-argument tool",
+  "summary" : "Empty arguments under the normal tool-call finish reason",
+  "wire_class" : "S7 (control)",
+  "evidence" : [ "https://github.com/microsoft/semantic-kernel/issues/14723", "https://github.com/spring-projects/spring-ai/issues/7360" ],
+  "sighting" : "third-party, on Bedrock ConverseStream; no sighting on the OpenAI or Anthropic wire",
+  "wires" : {
+    "openai-chat" : {
+      "modes" : [ "stream", "nonstream" ],
+      "variants" : [ "", "nonstream" ]
+    },
+    "anthropic" : {
+      "modes" : [ "stream", "nonstream" ],
+      "variants" : [ "", "nonstream" ]
+    }
+  },
+  "tools" : [ "flush_notes" ],
+  "surfaces" : [ "loop-stream", "model-stream", "loop-call", "model-call" ],
+  "http_client_axis" : false,
+  "evidence_notes" : "spring-ai#7358 and #7360 were filed by this project's maintainer; they show what a client does with the shape, not that a provider sends it."
+}

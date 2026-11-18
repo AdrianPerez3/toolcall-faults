@@ -1,0 +1,25 @@
+{
+  "format": "tcf.baseline/v1",
+  "entries": [
+    {
+      "cell": "langchain4j@1.21.0|langchain4j-open-ai|loop-stream|openai-chat/stream.error-after-call-start@event-error|record_note|jdk21|jdk",
+      "category": "ERROR_UNTYPED",
+      "issue": "https://github.com/langchain4j/langchain4j/pull/6144",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-08-22",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.21.0|langchain4j-open-ai|loop-stream|openai-chat/stream.error-after-call-start@event-error|record_note|jdk21|okhttp",
+      "category": "ERROR_UNTYPED",
+      "issue": "https://github.com/langchain4j/langchain4j/pull/6144",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-08-22",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    }
+  ]
+}

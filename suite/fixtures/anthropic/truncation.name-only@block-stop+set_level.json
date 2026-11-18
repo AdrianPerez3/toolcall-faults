@@ -1,0 +1,70 @@
+{
+  "format" : "tcf.fixture/v1",
+  "id" : "anthropic/truncation.name-only@block-stop+set_level",
+  "scenario" : "truncation.name-only",
+  "wire" : "anthropic",
+  "tier" : "synthetic",
+  "provenance" : {
+    "shape_source" : "https://github.com/anthropics/anthropic-sdk-python/blob/d4976414f2cc4652a7ec19947627f993a2959645/tests/lib/streaming/fixtures/incomplete_partial_json_response.txt",
+    "source_licence" : "Apache-2.0",
+    "evidence" : [ "https://github.com/microsoft/semantic-kernel/issues/14723", "https://github.com/spring-projects/spring-ai/issues/7360" ],
+    "built_by" : "FixtureBuilder.schemaTool",
+    "licence" : "Apache-2.0",
+    "notes" : "Synthetic replay; shape not backed by a capture.",
+    "body_sha256" : [ "353c46f7836e6b23c9d946774cd85e4d6c716523061ca75156b1e880d3caaf20", "1fff9d45f33d8b438b7366bda7a6209470a380e2633c648a913cfa599aa1b587" ]
+  },
+  "derived_from" : null,
+  "call" : {
+    "stream" : true,
+    "tools" : [ "set_level" ],
+    "prompt" : "Set the level to 2 and urgent to true."
+  },
+  "exchanges" : [ {
+    "match" : {
+      "method" : "POST",
+      "path" : "/v1/messages"
+    },
+    "response" : {
+      "status" : 200,
+      "headers" : {
+        "content-type" : "text/event-stream; charset=utf-8"
+      },
+      "body" : {
+        "sse" : [ "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"msg_01TCF0001\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"claude-sonnet-4-5-20250929\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":420,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"output_tokens\":1,\"service_tier\":\"standard\"}}}\n\n", "event: content_block_start\ndata: {\"type\":\"content_block_start\",\"index\":0,\"content_block\":{\"type\":\"tool_use\",\"id\":\"toolu_01TCF1\",\"name\":\"set_level\",\"input\":{}}}\n\n", "event: ping\ndata: {\"type\":\"ping\"}\n\n", "event: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"input_json_delta\",\"partial_json\":\"\"}}\n\n", "event: content_block_stop\ndata: {\"type\":\"content_block_stop\",\"index\":0}\n\n", "event: message_delta\ndata: {\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"max_tokens\",\"stop_sequence\":null},\"usage\":{\"output_tokens\":40}}\n\n", "event: message_stop\ndata: {\"type\":\"message_stop\"}\n\n" ]
+      },
+      "end" : "clean"
+    }
+  }, {
+    "match" : {
+      "method" : "POST",
+      "path" : "/v1/messages"
+    },
+    "response" : {
+      "status" : 200,
+      "headers" : {
+        "content-type" : "text/event-stream; charset=utf-8"
+      },
+      "body" : {
+        "sse" : [ "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"msg_01TCF0002\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"claude-sonnet-4-5-20250929\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":420,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"output_tokens\":1,\"service_tier\":\"standard\"}}}\n\n", "event: content_block_start\ndata: {\"type\":\"content_block_start\",\"index\":0,\"content_block\":{\"type\":\"text\",\"text\":\"\"}}\n\n", "event: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"Noted.\"}}\n\n", "event: content_block_stop\ndata: {\"type\":\"content_block_stop\",\"index\":0}\n\n", "event: message_delta\ndata: {\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\",\"stop_sequence\":null},\"usage\":{\"output_tokens\":40}}\n\n", "event: message_stop\ndata: {\"type\":\"message_stop\"}\n\n" ]
+      },
+      "end" : "clean"
+    }
+  } ],
+  "x" : { },
+  "truth" : {
+    "calls" : [ {
+      "id" : "toolu_01TCF1",
+      "name" : "set_level",
+      "arguments_raw" : "",
+      "complete" : false,
+      "intended_arguments" : {
+        "level" : 2,
+        "urgent" : true
+      }
+    } ],
+    "raw_finish" : "max_tokens",
+    "stream_completed" : true,
+    "damage" : "truncation.name-only"
+  },
+  "removes" : [ ]
+}

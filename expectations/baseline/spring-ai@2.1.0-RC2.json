@@ -1,0 +1,165 @@
+{
+  "format": "tcf.baseline/v1",
+  "entries": [
+    {
+      "cell": "spring-ai@2.1.0-RC2|spring-ai-anthropic|loop-call|anthropic/truncation.complete-args-under-limit@nonstream+set_level|set_level|jdk21|okhttp",
+      "category": "EXECUTED_AS_SENT",
+      "issue": "https://github.com/spring-projects/spring-ai/issues/7360",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-10",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "spring-ai@2.1.0-RC2|spring-ai-anthropic|loop-call|anthropic/truncation.complete-args-under-limit@nonstream|record_note|jdk21|okhttp",
+      "category": "EXECUTED_AS_SENT",
+      "issue": "https://github.com/spring-projects/spring-ai/issues/7360",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-10",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "spring-ai@2.1.0-RC2|spring-ai-anthropic|loop-call|anthropic/truncation.name-only@nonstream+flush_notes|flush_notes|jdk21|okhttp",
+      "category": "EXECUTED_ALTERED",
+      "issue": "https://github.com/spring-projects/spring-ai/issues/7360",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-10",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "spring-ai@2.1.0-RC2|spring-ai-anthropic|loop-call|anthropic/truncation.name-only@nonstream|record_note|jdk21|okhttp",
+      "category": "EXECUTED_ALTERED",
+      "issue": "https://github.com/spring-projects/spring-ai/issues/7360",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-10",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "spring-ai@2.1.0-RC2|spring-ai-anthropic|loop-stream|anthropic/truncation.complete-args-under-limit@set_level|set_level|jdk21|okhttp",
+      "category": "EXECUTED_AS_SENT",
+      "issue": "https://github.com/spring-projects/spring-ai/issues/7360",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-10",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "spring-ai@2.1.0-RC2|spring-ai-anthropic|loop-stream|anthropic/truncation.complete-args-under-limit|record_note|jdk21|okhttp",
+      "category": "EXECUTED_AS_SENT",
+      "issue": "https://github.com/spring-projects/spring-ai/issues/7360",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-10",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "spring-ai@2.1.0-RC2|spring-ai-anthropic|loop-stream|anthropic/truncation.second-call-cut|record_note|jdk21|okhttp",
+      "category": "DROPPED",
+      "issue": "https://github.com/spring-projects/spring-ai/issues/7360",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-10",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "spring-ai@2.1.0-RC2|spring-ai-openai|loop-call|openai-chat/truncation.complete-args-under-limit@nonstream+set_level|set_level|jdk21|okhttp",
+      "category": "EXECUTED_AS_SENT",
+      "issue": "https://github.com/spring-projects/spring-ai/issues/7360",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-10",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "spring-ai@2.1.0-RC2|spring-ai-openai|loop-call|openai-chat/truncation.complete-args-under-limit@nonstream|record_note|jdk21|okhttp",
+      "category": "EXECUTED_AS_SENT",
+      "issue": "https://github.com/spring-projects/spring-ai/issues/7360",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-10",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "spring-ai@2.1.0-RC2|spring-ai-openai|loop-call|openai-chat/truncation.name-only@nonstream+flush_notes|flush_notes|jdk21|okhttp",
+      "category": "EXECUTED_ALTERED",
+      "issue": "https://github.com/spring-projects/spring-ai/issues/7360",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-10",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "spring-ai@2.1.0-RC2|spring-ai-openai|loop-call|openai-chat/truncation.name-only@nonstream|record_note|jdk21|okhttp",
+      "category": "EXECUTED_ALTERED",
+      "issue": "https://github.com/spring-projects/spring-ai/issues/7360",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-10",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "spring-ai@2.1.0-RC2|spring-ai-openai|loop-stream|openai-chat/truncation.complete-args-under-limit@set_level|set_level|jdk21|okhttp",
+      "category": "EXECUTED_AS_SENT",
+      "issue": "https://github.com/spring-projects/spring-ai/issues/7360",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-10",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "spring-ai@2.1.0-RC2|spring-ai-openai|loop-stream|openai-chat/truncation.complete-args-under-limit|record_note|jdk21|okhttp",
+      "category": "EXECUTED_AS_SENT",
+      "issue": "https://github.com/spring-projects/spring-ai/issues/7360",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-10",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "spring-ai@2.1.0-RC2|spring-ai-openai|loop-stream|openai-chat/truncation.name-only@flush_notes|flush_notes|jdk21|okhttp",
+      "category": "EXECUTED_ALTERED",
+      "issue": "https://github.com/spring-projects/spring-ai/issues/7360",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-10",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "spring-ai@2.1.0-RC2|spring-ai-openai|loop-stream|openai-chat/truncation.name-only|record_note|jdk21|okhttp",
+      "category": "EXECUTED_ALTERED",
+      "issue": "https://github.com/spring-projects/spring-ai/issues/7360",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-10",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "spring-ai@2.1.0-RC2|spring-ai-openai|loop-stream|openai-chat/truncation.second-call-cut|record_note|jdk21|okhttp",
+      "category": "FED_BACK_HIDDEN",
+      "issue": "https://github.com/spring-projects/spring-ai/issues/7360",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-10",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    }
+  ]
+}

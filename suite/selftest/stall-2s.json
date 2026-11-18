@@ -1,0 +1,61 @@
+{
+  "format" : "tcf.fixture/v1",
+  "id" : "selftest/stall-2s",
+  "scenario" : "selftest.stall-2s",
+  "wire" : "openai-chat",
+  "tier" : "synthetic",
+  "provenance" : {
+    "shape_source" : "https://github.com/openai/openai-python/blob/main/.inline-snapshot/external/2018feb66ae13fcf5333d61b95849decc68d3f63bd38172889367e1afb1e04f7.bin",
+    "source_licence" : "Apache-2.0",
+    "evidence" : [ "https://github.com/openai/openai-python/blob/main/.inline-snapshot/external/2018feb66ae13fcf5333d61b95849decc68d3f63bd38172889367e1afb1e04f7.bin" ],
+    "built_by" : "FixtureBuilder.fixture",
+    "licence" : "Apache-2.0",
+    "notes" : "Synthetic replay; ids and fingerprint are placeholders.",
+    "body_sha256" : [ "13da8e14ea8e95d390c3c5109534f812be158ffccf5db648882d0953295680bd" ]
+  },
+  "derived_from" : null,
+  "call" : {
+    "stream" : true,
+    "tools" : [ "record_note" ],
+    "prompt" : "Record a note about the quarterly report."
+  },
+  "exchanges" : [ {
+    "match" : {
+      "method" : "POST",
+      "path" : "/v1/chat/completions"
+    },
+    "response" : {
+      "status" : 200,
+      "headers" : {
+        "content-type" : "text/event-stream; charset=utf-8"
+      },
+      "body" : {
+        "chunks_b64" : [ "ZGF0YTogeyJwYXJ0aWFsIjo=" ]
+      },
+      "end" : "abort"
+    }
+  } ],
+  "x" : {
+    "0" : {
+      "end" : "stall",
+      "stall_ms" : 2000
+    }
+  },
+  "truth" : {
+    "calls" : [ {
+      "id" : "call_TCF1",
+      "name" : "record_note",
+      "arguments_raw" : "",
+      "complete" : false,
+      "intended_arguments" : {
+        "priority" : 3,
+        "title" : "Quarterly report",
+        "body" : "Send the Q3 numbers to finance before Friday"
+      }
+    } ],
+    "raw_finish" : null,
+    "stream_completed" : false,
+    "damage" : "selftest.stall-2s"
+  },
+  "removes" : [ "finish-chunk", "done-marker" ]
+}

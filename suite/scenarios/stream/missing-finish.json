@@ -1,0 +1,23 @@
+{
+  "format" : "tcf.scenario/v1",
+  "id" : "stream.missing-finish",
+  "spec_id" : "S06",
+  "title" : "Complete call, then a clean HTTP end: no finish reason and no terminator",
+  "summary" : "Complete call, then a clean HTTP end: no finish reason and no terminator",
+  "wire_class" : "F1, X2",
+  "evidence" : [ "https://github.com/BerriAI/litellm/issues/42085" ],
+  "sighting" : "third-party",
+  "wires" : {
+    "openai-chat" : {
+      "modes" : [ "stream" ],
+      "variants" : [ "" ]
+    },
+    "anthropic" : {
+      "modes" : [ "stream" ],
+      "variants" : [ "" ]
+    }
+  },
+  "tools" : [ "record_note" ],
+  "surfaces" : [ "loop-stream", "model-stream" ],
+  "http_client_axis" : true
+}

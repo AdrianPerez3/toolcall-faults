@@ -1,0 +1,23 @@
+{
+  "format" : "tcf.scenario/v1",
+  "id" : "truncation.args-cut-mid-string",
+  "spec_id" : "S02",
+  "title" : "Arguments stop inside a string value; limit reason",
+  "summary" : "Arguments stop inside a string value; limit reason",
+  "wire_class" : "T3, P1",
+  "evidence" : [ "https://github.com/kartsan03/wiretruth" ],
+  "sighting" : "third-party",
+  "wires" : {
+    "openai-chat" : {
+      "modes" : [ "stream", "nonstream" ],
+      "variants" : [ "", "nonstream", "recorded" ]
+    },
+    "anthropic" : {
+      "modes" : [ "stream" ],
+      "variants" : [ "", "recorded" ]
+    }
+  },
+  "tools" : [ "record_note" ],
+  "surfaces" : [ "loop-stream", "model-stream", "loop-call", "model-call" ],
+  "http_client_axis" : false
+}

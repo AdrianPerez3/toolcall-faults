@@ -1,0 +1,23 @@
+{
+  "format" : "tcf.scenario/v1",
+  "id" : "stream.abort-after-call-start",
+  "spec_id" : "S07",
+  "title" : "Call started with no argument bytes, then connection closed",
+  "summary" : "Call started with no argument bytes, then connection closed",
+  "wire_class" : "X1",
+  "evidence" : [ "https://platform.openai.com/docs/api-reference/chat/streaming", "https://platform.claude.com/docs/en/api/errors" ],
+  "sighting" : "interrupted streams are documented by both providers; no sighting with a tool call open",
+  "tools" : [ "record_note" ],
+  "surfaces" : [ "loop-stream", "model-stream" ],
+  "http_client_axis" : true,
+  "wires" : {
+    "openai-chat" : {
+      "modes" : [ "stream" ],
+      "variants" : [ "fin", "reset" ]
+    },
+    "anthropic" : {
+      "modes" : [ "stream" ],
+      "variants" : [ "fin", "reset" ]
+    }
+  }
+}

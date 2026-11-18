@@ -1,0 +1,19 @@
+{
+  "format" : "tcf.scenario/v1",
+  "id" : "stream.final-event-unterminated",
+  "spec_id" : "S16",
+  "title" : "Final finish event without its terminating blank line",
+  "summary" : "Final finish event without its terminating blank line",
+  "wire_class" : "SSE class 10",
+  "evidence" : [ "https://html.spec.whatwg.org/multipage/server-sent-events.html#event-stream-interpretation" ],
+  "sighting" : "protocol-legal, no sighting",
+  "tools" : [ "record_note" ],
+  "surfaces" : [ "model-stream" ],
+  "http_client_axis" : true,
+  "wires" : {
+    "openai-chat" : {
+      "modes" : [ "stream" ],
+      "variants" : [ "" ]
+    }
+  }
+}

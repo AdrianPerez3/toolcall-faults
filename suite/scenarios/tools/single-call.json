@@ -1,0 +1,23 @@
+{
+  "format" : "tcf.scenario/v1",
+  "id" : "tools.single-call",
+  "spec_id" : "S01",
+  "title" : "One complete call, normal finish",
+  "summary" : "One complete call, normal finish",
+  "wire_class" : "control",
+  "evidence" : [ "https://github.com/openai/openai-python/blob/main/.inline-snapshot/external/2018feb66ae13fcf5333d61b95849decc68d3f63bd38172889367e1afb1e04f7.bin" ],
+  "sighting" : "first-party",
+  "wires" : {
+    "openai-chat" : {
+      "modes" : [ "stream", "nonstream" ],
+      "variants" : [ "", "nonstream" ]
+    },
+    "anthropic" : {
+      "modes" : [ "stream", "nonstream" ],
+      "variants" : [ "", "nonstream" ]
+    }
+  },
+  "tools" : [ "record_note" ],
+  "surfaces" : [ "loop-stream", "model-stream", "loop-call", "model-call" ],
+  "http_client_axis" : true
+}

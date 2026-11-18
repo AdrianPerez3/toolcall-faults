@@ -1,0 +1,107 @@
+{
+  "format" : "tcf.fixture/v1",
+  "id" : "anthropic/truncation.complete-args-under-limit@nonstream",
+  "scenario" : "truncation.complete-args-under-limit",
+  "wire" : "anthropic",
+  "tier" : "synthetic",
+  "provenance" : {
+    "shape_source" : "https://github.com/anthropics/anthropic-sdk-python/blob/d4976414f2cc4652a7ec19947627f993a2959645/tests/lib/streaming/fixtures/incomplete_partial_json_response.txt",
+    "source_licence" : "Apache-2.0",
+    "evidence" : [ "https://github.com/Arize-ai/openinference/blob/7dbbd93/js/packages/openinference-instrumentation-bedrock/test/recordings/should-handle-tool-configuration.json" ],
+    "built_by" : "FixtureBuilder.anthropic",
+    "licence" : "Apache-2.0",
+    "notes" : "Synthetic replay; ids and fingerprint are placeholders.",
+    "body_sha256" : [ "45e77ea9f8d9f68611ba748019bd10a6d70093a0a2dd6d543c5ed4060ac0123d", "1d489d46deac0c5f3f4eba3db76c41b6339979fad20d0f4af18511d2203dc014" ]
+  },
+  "derived_from" : null,
+  "call" : {
+    "stream" : false,
+    "tools" : [ "record_note" ],
+    "prompt" : "Record a note about the quarterly report."
+  },
+  "exchanges" : [ {
+    "match" : {
+      "method" : "POST",
+      "path" : "/v1/messages"
+    },
+    "response" : {
+      "status" : 200,
+      "headers" : {
+        "content-type" : "application/json"
+      },
+      "body" : {
+        "json" : {
+          "id" : "msg_01TCF0001",
+          "type" : "message",
+          "role" : "assistant",
+          "model" : "claude-sonnet-4-5-20250929",
+          "content" : [ {
+            "type" : "tool_use",
+            "id" : "toolu_01TCF1",
+            "name" : "record_note",
+            "input" : {
+              "priority" : 3,
+              "title" : "Quarterly report",
+              "body" : "Send the Q3 numbers to finance before Friday"
+            }
+          } ],
+          "stop_reason" : "max_tokens",
+          "stop_sequence" : null,
+          "usage" : {
+            "input_tokens" : 420,
+            "output_tokens" : 40
+          }
+        }
+      },
+      "end" : "clean"
+    }
+  }, {
+    "match" : {
+      "method" : "POST",
+      "path" : "/v1/messages"
+    },
+    "response" : {
+      "status" : 200,
+      "headers" : {
+        "content-type" : "application/json"
+      },
+      "body" : {
+        "json" : {
+          "id" : "msg_01TCF0002",
+          "type" : "message",
+          "role" : "assistant",
+          "model" : "claude-sonnet-4-5-20250929",
+          "content" : [ {
+            "type" : "text",
+            "text" : "Noted."
+          } ],
+          "stop_reason" : "end_turn",
+          "stop_sequence" : null,
+          "usage" : {
+            "input_tokens" : 420,
+            "output_tokens" : 40
+          }
+        }
+      },
+      "end" : "clean"
+    }
+  } ],
+  "x" : { },
+  "truth" : {
+    "calls" : [ {
+      "id" : "toolu_01TCF1",
+      "name" : "record_note",
+      "arguments_raw" : "{\"priority\":3,\"title\":\"Quarterly report\",\"body\":\"Send the Q3 numbers to finance before Friday\"}",
+      "complete" : true,
+      "intended_arguments" : {
+        "priority" : 3,
+        "title" : "Quarterly report",
+        "body" : "Send the Q3 numbers to finance before Friday"
+      }
+    } ],
+    "raw_finish" : "max_tokens",
+    "stream_completed" : true,
+    "damage" : "Complete arguments under a limit reason"
+  },
+  "removes" : [ ]
+}

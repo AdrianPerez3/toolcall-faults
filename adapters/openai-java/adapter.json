@@ -1,0 +1,32 @@
+{
+  "format": "tcf.adapter/v1",
+  "target": "openai-java",
+  "coordinates": [
+    "com.openai:openai-java"
+  ],
+  "version_property": "target.version",
+  "extra_properties": {},
+  "main_class": "toolcallfaults.adapter.openaijava.Main",
+  "modules": {
+    "openai-java": {
+      "wire": "openai-chat",
+      "http_client": "okhttp"
+    }
+  },
+  "surfaces": [
+    "model-stream",
+    "model-call"
+  ],
+  "typed_error_prefixes": [
+    "com.openai.errors."
+  ],
+  "unsupported": [],
+  "config_notes": [
+    "Retries set to 0 (default 2); timeout set to 3 seconds.",
+    "Tool definitions use ChatCompletionFunctionTool, FunctionDefinition and FunctionParameters builders.",
+    "Model-stream uses chat().completions().createStreaming() and ChatCompletionAccumulator.chatCompletion(); model-call uses create()."
+  ],
+  "docs": [
+    "https://github.com/openai/openai-java/blob/v4.105.0/README.md"
+  ]
+}

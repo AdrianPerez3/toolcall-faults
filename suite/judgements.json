@@ -1,0 +1,561 @@
+{
+  "format": "tcf.judgements/v1",
+  "register": {
+    "N-OA1": {
+      "text": "\"Note that the model does not always generate valid JSON, and may hallucinate parameters not defined by your function schema. Validate the arguments in your code before calling your function.\"",
+      "url": "https://github.com/openai/openai-openapi/blob/f437d0eccb8ca02f47be33ccc243b849b5bb0b74/openapi.yaml#L44060",
+      "wires": [
+        "openai-chat"
+      ]
+    },
+    "N-OA3": {
+      "text": "\"If a failure occurs after streaming has started, a data frame may contain a JSON object with an `error` field instead of a completion chunk. The streaming schema describes successful JSON chunks, not error frames or the completion marker. An interrupted stream may end without the marker.\"",
+      "url": "https://github.com/openai/openai-openapi/blob/f437d0eccb8ca02f47be33ccc243b849b5bb0b74/openapi.yaml#L2585",
+      "wires": [
+        "openai-chat"
+      ]
+    },
+    "N-OA6": {
+      "text": "\"Structured Outputs constrains completed, non-refusal model output to your supplied JSON Schema. Your application still needs to handle refusals, incomplete responses, and API errors, and validate any business rules that the schema does not express.\"",
+      "url": "https://developers.openai.com/api/docs/guides/structured-outputs.md",
+      "scope": "Structured Outputs guide.",
+      "wires": [
+        "openai-chat"
+      ]
+    },
+    "N-OA8": {
+      "text": "`ChatCompletionMessageToolCallChunk`: `required: [index]`; choice: `required: [delta, index]`; chunk: `required: [choices, created, id, model, object]`",
+      "url": "https://github.com/openai/openai-openapi/blob/f437d0eccb8ca02f47be33ccc243b849b5bb0b74/openapi.yaml#L44042",
+      "wires": [
+        "openai-chat"
+      ]
+    },
+    "N-AN2": {
+      "text": "\"new event types may be added, and your code should handle unknown event types gracefully.\" / \"Event streams might also include any number of `ping` events.\"",
+      "url": "https://platform.claude.com/docs/en/build-with-claude/streaming",
+      "wires": [
+        "anthropic"
+      ]
+    },
+    "N-AN3": {
+      "text": "\"The API might occasionally send errors in the event stream. For example, during periods of high usage, you might receive an `overloaded_error`, which would normally correspond to an HTTP 529 in a non-streaming context\"",
+      "url": "https://platform.claude.com/docs/en/build-with-claude/streaming",
+      "wires": [
+        "anthropic"
+      ]
+    },
+    "N-AN4": {
+      "text": "\"You can accumulate the string deltas and parse the JSON once you receive a `content_block_stop` event\" / \"3. On `content_block_stop`, parse the accumulated string.\"",
+      "url": "https://platform.claude.com/docs/en/build-with-claude/streaming",
+      "wires": [
+        "anthropic"
+      ]
+    },
+    "N-AN6": {
+      "text": "\"With fine-grained tool streaming, the accumulated input for a tool call might be invalid or incomplete JSON. When it is, you cannot run the tool, so report the failure back to Claude instead.\"",
+      "url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/fine-grained-tool-streaming",
+      "scope": "Section \"Handling invalid JSON in tool responses\" of the fine-grained tool streaming page.",
+      "wires": [
+        "anthropic"
+      ]
+    },
+    "N-AN7": {
+      "text": "\"If Claude's response is cut off because it hit the `max_tokens` limit, and the truncated response contains an incomplete tool use block, you'll need to retry the request with a higher `max_tokens` value to get the full tool use.\"",
+      "url": "https://platform.claude.com/docs/en/build-with-claude/handling-stop-reasons",
+      "wires": [
+        "anthropic"
+      ]
+    },
+    "N-AN8": {
+      "text": "\"Tool use and thinking blocks cannot be partially recovered. You can resume streaming from the most recent text block.\"",
+      "url": "https://platform.claude.com/docs/en/build-with-claude/streaming",
+      "wires": [
+        "anthropic"
+      ]
+    },
+    "N-AN10": {
+      "text": "\"an error can occur after the API returns a 200 response. In that case, error handling doesn't follow these standard mechanisms.\"",
+      "url": "https://platform.claude.com/docs/en/api/errors",
+      "wires": [
+        "anthropic"
+      ]
+    },
+    "N-BR4": {
+      "text": "\"Because fine-grained streaming sends parameters without buffering or JSON validation, there is no guarantee that the resulting stream will complete in a valid JSON string. Particularly, if the stop reason `max_tokens` is reached, the stream may end midway through a parameter and may be incomplete. You will generally have to write specific support to handle when `max_tokens` is reached.\"",
+      "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-parameters-anthropic-claude-messages-tool-use.html",
+      "scope": "Amazon Bedrock documentation of the Anthropic Messages wire; a note on fine-grained streaming.",
+      "wires": [
+        "anthropic"
+      ]
+    },
+    "N-AN11": {
+      "text": "\"A response can also stop at `max_tokens` midway through a parameter. Check the stop reason and decide whether to retry the request with a higher `max_tokens` or repair the partial input.\"",
+      "url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/fine-grained-tool-streaming",
+      "scope": "Section \"Accumulating tool input deltas\", which the page says applies with and without fine-grained tool streaming.",
+      "wires": [
+        "anthropic"
+      ]
+    }
+  },
+  "entries": [
+    {
+      "scenario": "tools.single-call",
+      "wire": "*",
+      "variant": "*",
+      "level": "required",
+      "unsupported": [
+        {
+          "category": "HARNESS",
+          "when": "always"
+        },
+        {
+          "category": "EXECUTED_ALTERED",
+          "when": "always"
+        },
+        {
+          "category": "HANG",
+          "when": "always"
+        },
+        {
+          "category": "ERROR_TYPED",
+          "when": "always"
+        },
+        {
+          "category": "ERROR_UNTYPED",
+          "when": "always"
+        },
+        {
+          "category": "FED_BACK_HIDDEN",
+          "when": "always"
+        },
+        {
+          "category": "SURFACED",
+          "when": "always"
+        },
+        {
+          "category": "DROPPED",
+          "when": "always"
+        },
+        {
+          "category": "UNSUPPORTED",
+          "when": "always"
+        }
+      ],
+      "flag": [],
+      "defensible": [],
+      "keys": [],
+      "basis": "Normal operation. A declared control failure remains an observed result with its upstream basis; it does not become successful execution.",
+      "criterion": "control"
+    },
+    {
+      "scenario": "tools.parallel-sequential",
+      "wire": "*",
+      "variant": "*",
+      "level": "required",
+      "unsupported": [
+        {
+          "category": "HARNESS",
+          "when": "always"
+        },
+        {
+          "category": "EXECUTED_ALTERED",
+          "when": "always"
+        },
+        {
+          "category": "HANG",
+          "when": "always"
+        },
+        {
+          "category": "ERROR_TYPED",
+          "when": "always"
+        },
+        {
+          "category": "ERROR_UNTYPED",
+          "when": "always"
+        },
+        {
+          "category": "FED_BACK_HIDDEN",
+          "when": "always"
+        },
+        {
+          "category": "SURFACED",
+          "when": "always"
+        },
+        {
+          "category": "DROPPED",
+          "when": "always"
+        },
+        {
+          "category": "UNSUPPORTED",
+          "when": "always"
+        }
+      ],
+      "flag": [],
+      "defensible": [],
+      "keys": [],
+      "basis": "Normal operation. A declared control failure remains an observed result with its upstream basis; it does not become successful execution.",
+      "criterion": "control"
+    },
+    {
+      "scenario": "tools.zero-arg-call",
+      "wire": "*",
+      "variant": "*",
+      "level": "required",
+      "unsupported": [
+        {
+          "category": "HARNESS",
+          "when": "always"
+        },
+        {
+          "category": "EXECUTED_ALTERED",
+          "when": "always"
+        },
+        {
+          "category": "HANG",
+          "when": "always"
+        },
+        {
+          "category": "ERROR_TYPED",
+          "when": "always"
+        },
+        {
+          "category": "ERROR_UNTYPED",
+          "when": "always"
+        },
+        {
+          "category": "FED_BACK_HIDDEN",
+          "when": "always"
+        },
+        {
+          "category": "SURFACED",
+          "when": "always"
+        },
+        {
+          "category": "DROPPED",
+          "when": "always"
+        },
+        {
+          "category": "UNSUPPORTED",
+          "when": "always"
+        }
+      ],
+      "flag": [],
+      "defensible": [],
+      "keys": [],
+      "basis": "Normal operation. A declared control failure remains an observed result with its upstream basis; it does not become successful execution.",
+      "criterion": "control"
+    },
+    {
+      "scenario": "truncation.args-cut-mid-string",
+      "wire": "*",
+      "variant": "*",
+      "level": "required",
+      "unsupported": [
+        {
+          "category": "EXECUTED_ALTERED",
+          "when": "always"
+        },
+        {
+          "category": "DROPPED",
+          "when": "always"
+        }
+      ],
+      "flag": [],
+      "defensible": [
+        "FED_BACK_HIDDEN"
+      ],
+      "keys": [
+        "N-AN6",
+        "N-AN7",
+        "N-AN11",
+        "N-OA1",
+        "N-OA6"
+      ],
+      "basis": "The cited sentences tell the application to validate arguments before calling the function (OpenAI) and, for an incomplete tool input, to retry with a higher limit, repair the input, or report the failure back to the model (Anthropic). Running the tool on a cut input and dropping the call without a sign are none of these. Returning the parse failure to the model is listed as defensible.",
+      "criterion": "provider"
+    },
+    {
+      "scenario": "truncation.name-only",
+      "wire": "*",
+      "variant": "*",
+      "level": "required",
+      "unsupported": [
+        {
+          "category": "EXECUTED_ALTERED",
+          "when": "always"
+        },
+        {
+          "category": "DROPPED",
+          "when": "always"
+        }
+      ],
+      "flag": [],
+      "defensible": [],
+      "keys": [
+        "N-AN6",
+        "N-AN7",
+        "N-AN11",
+        "N-OA1",
+        "N-OA6",
+        "N-BR4"
+      ],
+      "basis": "The cited sentences tell the application to validate arguments before calling the function (OpenAI) and, for an incomplete tool input, to retry with a higher limit, repair the input, or report the failure back to the model (Anthropic). Running the tool with defaults in place of arguments that never arrived and dropping the call without a sign are none of these.",
+      "criterion": "provider"
+    },
+    {
+      "scenario": "truncation.name-only",
+      "wire": "anthropic",
+      "variant": "block-stop",
+      "level": "record-only",
+      "unsupported": [],
+      "flag": [],
+      "defensible": [],
+      "keys": [
+        "N-AN6",
+        "N-AN7",
+        "N-AN11",
+        "N-OA1",
+        "N-OA6",
+        "N-BR4"
+      ],
+      "basis": "Shape not backed by a capture; record only until a recording settles whether a truncated tool input includes content_block_stop.",
+      "criterion": "provider"
+    },
+    {
+      "scenario": "truncation.complete-args-under-limit",
+      "wire": "*",
+      "variant": "*",
+      "level": "recommended",
+      "unsupported": [
+        {
+          "category": "EXECUTED_AS_SENT",
+          "when": "no_limit_signal"
+        }
+      ],
+      "flag": [],
+      "defensible": [],
+      "keys": [],
+      "basis": "Suite criterion; no provider sentence. Running a complete call under a token limit is recorded as unsupported only when no limit reason is visible to the caller. Provider guidance on this case is not uniform, so the level is recommended.",
+      "criterion": "suite"
+    },
+    {
+      "scenario": "truncation.second-call-cut",
+      "wire": "*",
+      "variant": "*",
+      "level": "required",
+      "unsupported": [
+        {
+          "category": "*",
+          "when": "first_call_executed_and_turn_clean"
+        }
+      ],
+      "flag": [],
+      "defensible": [],
+      "keys": [
+        "N-AN7",
+        "N-OA1"
+      ],
+      "basis": "The cited sentences describe a response cut by the token limit and tell the application to validate arguments. That a turn containing a cut call is not presented as clean after its first call ran is the criterion this suite applies.",
+      "criterion": "suite"
+    },
+    {
+      "scenario": "stream.missing-finish",
+      "wire": "anthropic",
+      "variant": "*",
+      "level": "required",
+      "unsupported": [
+        {
+          "category": "DROPPED",
+          "when": "always"
+        },
+        {
+          "category": "HANG",
+          "when": "always"
+        }
+      ],
+      "flag": [],
+      "defensible": [],
+      "keys": [
+        "N-AN4"
+      ],
+      "basis": "The cited sentence says the accumulated input can be parsed once content_block_stop arrives. That a client neither drops the call without a sign nor waits without end when the closing events are missing is the criterion this suite applies.",
+      "criterion": "suite"
+    },
+    {
+      "scenario": "stream.missing-finish",
+      "wire": "openai-chat",
+      "variant": "*",
+      "level": "record-only",
+      "unsupported": [],
+      "flag": [
+        "*"
+      ],
+      "defensible": [],
+      "keys": [],
+      "basis": "No provider statement specifies client behaviour when the finish reason is absent.",
+      "criterion": "suite"
+    },
+    {
+      "scenario": "stream.abort-after-call-start",
+      "wire": "*",
+      "variant": "*",
+      "level": "required",
+      "unsupported": [
+        {
+          "category": "EXECUTED_ALTERED",
+          "when": "always"
+        },
+        {
+          "category": "DROPPED",
+          "when": "always"
+        },
+        {
+          "category": "*",
+          "when": "two_terminal_signals",
+          "criterion": "suite"
+        }
+      ],
+      "flag": [],
+      "defensible": [],
+      "keys": [
+        "N-OA1",
+        "N-OA3",
+        "N-AN8"
+      ],
+      "basis": "The cited sentences say that a stream can be interrupted, that a tool block cannot be partially recovered (Anthropic), and that arguments are validated before the function is called (OpenAI). Running the tool on a call whose arguments never arrived and dropping it without a sign are neither. One terminal signal per call is the criterion this suite applies.",
+      "criterion": "provider"
+    },
+    {
+      "scenario": "stream.stall-mid-args",
+      "wire": "*",
+      "variant": "*",
+      "level": "required",
+      "unsupported": [
+        {
+          "category": "HANG",
+          "when": "beyond_configured_timeout"
+        }
+      ],
+      "flag": [],
+      "defensible": [],
+      "keys": [],
+      "basis": "Not a provider sentence. The adapter sets the timeout the target documents, to 3 seconds; the cell is recorded as unsupported when no terminal signal arrives within the 12-second watchdog. What that timeout covers in each target is stated in the adapter manifest.",
+      "criterion": "target-documentation"
+    },
+    {
+      "scenario": "finish.stop-with-tool-call",
+      "wire": "*",
+      "variant": "*",
+      "level": "record-only",
+      "unsupported": [],
+      "flag": [
+        "DROPPED"
+      ],
+      "defensible": [],
+      "keys": [],
+      "basis": "No document tells a client to gate tool execution on the finish label; the cited guidance is to validate arguments.",
+      "criterion": "suite"
+    },
+    {
+      "scenario": "finish.unknown-value-with-tool-call",
+      "wire": "*",
+      "variant": "*",
+      "level": "record-only",
+      "unsupported": [],
+      "flag": [
+        "ERROR_UNTYPED"
+      ],
+      "defensible": [],
+      "keys": [
+        "N-AN2"
+      ],
+      "basis": "Anthropic's forward-compatibility guidance is recorded as context; OpenAI's finish-reason enum is closed.",
+      "criterion": "suite"
+    },
+    {
+      "scenario": "tools.parallel-interleaved",
+      "wire": "*",
+      "variant": "*",
+      "level": "required",
+      "unsupported": [
+        {
+          "category": "EXECUTED_ALTERED",
+          "when": "always"
+        }
+      ],
+      "flag": [],
+      "defensible": [],
+      "keys": [
+        "N-OA8"
+      ],
+      "basis": "The schema makes `index` the only field every tool-call chunk carries. This suite infers that fragments are associated by index and that identity fields are not repeated in continuation chunks.",
+      "criterion": "provider"
+    },
+    {
+      "scenario": "tools.concatenated-args",
+      "wire": "*",
+      "variant": "*",
+      "level": "required",
+      "unsupported": [
+        {
+          "category": "EXECUTED_ALTERED",
+          "when": "always"
+        }
+      ],
+      "flag": [],
+      "defensible": [],
+      "keys": [
+        "N-OA1"
+      ],
+      "basis": "The cited sentence tells the application to validate the arguments before calling the function. This suite infers that taking only the first of two concatenated JSON values is not validation of the argument value.",
+      "criterion": "provider"
+    },
+    {
+      "scenario": "stream.error-after-call-start",
+      "wire": "*",
+      "variant": "*",
+      "level": "required",
+      "unsupported": [
+        {
+          "category": "EXECUTED_ALTERED",
+          "when": "always"
+        },
+        {
+          "category": "DROPPED",
+          "when": "always"
+        },
+        {
+          "category": "ERROR_UNTYPED",
+          "when": "always",
+          "criterion": "suite"
+        },
+        {
+          "category": "*",
+          "when": "two_terminal_signals",
+          "criterion": "suite"
+        }
+      ],
+      "flag": [],
+      "defensible": [],
+      "keys": [
+        "N-OA3",
+        "N-AN3",
+        "N-AN10"
+      ],
+      "basis": "The cited sentences say that an error can arrive inside a response that began with HTTP 200. Running the tool on the unfinished call and ending the turn without a sign of the error are not described as handling it. A typed error and one terminal signal per call are criteria this suite applies.",
+      "criterion": "provider"
+    },
+    {
+      "scenario": "stream.final-event-unterminated",
+      "wire": "*",
+      "variant": "*",
+      "level": "record-only",
+      "unsupported": [],
+      "flag": [],
+      "defensible": [],
+      "keys": [],
+      "basis": "The SSE specification discards an event without its final blank line; whether the client dispatches it is recorded.",
+      "criterion": "suite"
+    }
+  ]
+}

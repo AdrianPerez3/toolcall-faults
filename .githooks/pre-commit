@@ -1,0 +1,30 @@
+#!/bin/sh
+# Refuses commits that add or change private paths, or that carry a personal author address,
+# then runs the repository lint (fixtures, manifests, the disclosure rule on results, secret
+# and path scan).
+# Active after: git config core.hooksPath .githooks
+set -eu
+
+blocked=$(git diff --cached --name-only --diff-filter=ACMR | grep -iE '(^|/)(\.local|research_notes|evidence|probe)/|^docs/superpowers/|(^|/)(CLAUDE(\.local)?\.md|AGENTS(\.override)?\.md)$|^\.claude/|^\.codex/|^compat/agent-faultbench/(results/|rows\.md$)' || true)
+if [ -n "$blocked" ]; then
+  echo "pre-commit: these paths must never be committed:" >&2
+  echo "$blocked" >&2
+  exit 1
+fi
+
+for ident in GIT_AUTHOR_IDENT GIT_COMMITTER_IDENT; do
+  case "$(git var "$ident")" in
+    *@users.noreply.github.com\>*) ;;
+    *)
+      echo "pre-commit: $ident does not use a GitHub noreply address. Set the repository-local identity (git config user.email), never --global." >&2
+      exit 1
+      ;;
+  esac
+done
+
+if [ ! -x ./tcf ]; then
+  echo "pre-commit: ./tcf is missing, so the lint cannot run. Build the project first; do not skip this hook." >&2
+  exit 1
+fi
+
+./tcf lint

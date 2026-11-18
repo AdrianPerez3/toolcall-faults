@@ -1,0 +1,24 @@
+{
+  "format" : "tcf.scenario/v1",
+  "id" : "truncation.name-only",
+  "spec_id" : "S03",
+  "title" : "Call started, zero argument bytes; limit reason",
+  "summary" : "Call started, zero argument bytes; limit reason",
+  "wire_class" : "T1, P2",
+  "evidence" : [ "https://github.com/microsoft/semantic-kernel/issues/14723", "https://github.com/spring-projects/spring-ai/issues/7360" ],
+  "sighting" : "third-party",
+  "wires" : {
+    "openai-chat" : {
+      "modes" : [ "stream", "nonstream" ],
+      "variants" : [ "", "nonstream", "set_level", "flush_notes", "nonstream+set_level", "nonstream+flush_notes" ]
+    },
+    "anthropic" : {
+      "modes" : [ "stream", "nonstream" ],
+      "variants" : [ "no-block-stop", "block-stop", "nonstream", "no-block-stop+set_level", "no-block-stop+flush_notes", "block-stop+set_level", "block-stop+flush_notes", "nonstream+set_level", "nonstream+flush_notes" ]
+    }
+  },
+  "tools" : [ "record_note", "set_level", "flush_notes" ],
+  "surfaces" : [ "loop-stream", "model-stream", "loop-call", "model-call" ],
+  "http_client_axis" : false,
+  "evidence_notes" : "spring-ai#7358 and #7360 were filed by this project's maintainer; they show what a client does with the shape, not that a provider sends it."
+}

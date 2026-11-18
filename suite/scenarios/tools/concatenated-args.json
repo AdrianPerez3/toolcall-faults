@@ -1,0 +1,19 @@
+{
+  "format" : "tcf.scenario/v1",
+  "id" : "tools.concatenated-args",
+  "spec_id" : "S13",
+  "title" : "Empty object followed by the actual argument object",
+  "summary" : "Empty object followed by the actual argument object",
+  "wire_class" : "S10, C6",
+  "evidence" : [ "https://github.com/openai/openai-agents-js/pull/712" ],
+  "sighting" : "third-party, streaming only; no sighting of a non-streaming body",
+  "tools" : [ "record_note", "set_level" ],
+  "surfaces" : [ "loop-stream", "model-stream", "loop-call", "model-call" ],
+  "http_client_axis" : false,
+  "wires" : {
+    "openai-chat" : {
+      "modes" : [ "stream", "nonstream" ],
+      "variants" : [ "", "nonstream", "set_level", "nonstream+set_level" ]
+    }
+  }
+}

@@ -1,0 +1,123 @@
+{
+  "format": "tcf.fixture/v1",
+  "id": "openai-chat/truncation.args-cut-mid-string@recorded",
+  "scenario": "truncation.args-cut-mid-string",
+  "wire": "openai-chat",
+  "tier": "recorded",
+  "provenance": {
+    "recorded_at": "2026-10-11T12:01:01Z",
+    "requested_model": "gpt-6-luna",
+    "returned_model": "gpt-6-luna",
+    "request": {
+      "model": "gpt-6-luna",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Create an event for a weekend pottery workshop in Málaga on 2026-11-14 with 30 attendees. Invent their full names, mixing Spanish, Greek and Japanese names written in their own scripts."
+        }
+      ],
+      "stream": true,
+      "max_completion_tokens": 20,
+      "tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "create_event",
+            "description": "Create a calendar event.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "date": {
+                  "type": "string",
+                  "description": "YYYY-MM-DD"
+                },
+                "city": {
+                  "type": "string"
+                },
+                "attendees": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "title",
+                "date",
+                "city",
+                "attendees"
+              ],
+              "additionalProperties": false
+            }
+          }
+        }
+      ],
+      "tool_choice": "required",
+      "reasoning_effort": "none"
+    },
+    "source": "https://github.com/kartsan03/wiretruth/blob/b65af93e0186d1a9d8076f85ea4e6614a9102faf/suite/fixtures/openai-chat/truncation.tool-call-args-stream.json",
+    "source_licence": "MIT",
+    "licence": "MIT",
+    "notes": "Original exchange bytes unchanged; toolcall-faults envelope and truth added.",
+    "body_sha256": [
+      "8b65d4f4255e273590dd3d28c96a2d985cfc474a2357c78bcbd1e79cbea0dfd2"
+    ]
+  },
+  "derived_from": null,
+  "call": {
+    "stream": true,
+    "tools": [
+      "create_event"
+    ],
+    "prompt": "Return the tool call from the recorded response."
+  },
+  "exchanges": [
+    {
+      "match": {
+        "method": "POST",
+        "path": "/v1/chat/completions"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "content-type": "text/event-stream; charset=utf-8"
+        },
+        "body": {
+          "sse": [
+            "data: {\"id\":\"chatcmpl-EXmWbuEH1m1F3czcaV6FIXqLd54H7\",\"object\":\"chat.completion.chunk\",\"created\":1791720061,\"model\":\"gpt-6-luna\",\"service_tier\":\"default\",\"system_fingerprint\":null,\"choices\":[{\"index\":0,\"delta\":{\"role\":\"assistant\",\"content\":null,\"tool_calls\":[{\"index\":0,\"id\":\"call_DkXNh5JdHW4s54IKfPr4dP1U\",\"type\":\"function\",\"function\":{\"name\":\"create_event\",\"arguments\":\"\"}}],\"refusal\":null},\"finish_reason\":null}],\"obfuscation\":\"AoLyAol\"}\n\n",
+            "data: {\"id\":\"chatcmpl-EXmWbuEH1m1F3czcaV6FIXqLd54H7\",\"object\":\"chat.completion.chunk\",\"created\":1791720061,\"model\":\"gpt-6-luna\",\"service_tier\":\"default\",\"system_fingerprint\":null,\"choices\":[{\"index\":0,\"delta\":{\"tool_calls\":[{\"index\":0,\"function\":{\"arguments\":\"{\\\"\"}}]},\"finish_reason\":null}],\"obfuscation\":\"q3\"}\n\n",
+            "data: {\"id\":\"chatcmpl-EXmWbuEH1m1F3czcaV6FIXqLd54H7\",\"object\":\"chat.completion.chunk\",\"created\":1791720061,\"model\":\"gpt-6-luna\",\"service_tier\":\"default\",\"system_fingerprint\":null,\"choices\":[{\"index\":0,\"delta\":{\"tool_calls\":[{\"index\":0,\"function\":{\"arguments\":\"title\"}}]},\"finish_reason\":null}],\"obfuscation\":\"\"}\n\n",
+            "data: {\"id\":\"chatcmpl-EXmWbuEH1m1F3czcaV6FIXqLd54H7\",\"object\":\"chat.completion.chunk\",\"created\":1791720061,\"model\":\"gpt-6-luna\",\"service_tier\":\"default\",\"system_fingerprint\":null,\"choices\":[{\"index\":0,\"delta\":{\"tool_calls\":[{\"index\":0,\"function\":{\"arguments\":\"\\\":\\\"\"}}]},\"finish_reason\":null}],\"obfuscation\":\"\"}\n\n",
+            "data: {\"id\":\"chatcmpl-EXmWbuEH1m1F3czcaV6FIXqLd54H7\",\"object\":\"chat.completion.chunk\",\"created\":1791720061,\"model\":\"gpt-6-luna\",\"service_tier\":\"default\",\"system_fingerprint\":null,\"choices\":[{\"index\":0,\"delta\":{\"tool_calls\":[{\"index\":0,\"function\":{\"arguments\":\"Weekend\"}}]},\"finish_reason\":null}],\"obfuscation\":\"MHeTX929pznvFG\"}\n\n",
+            "data: {\"id\":\"chatcmpl-EXmWbuEH1m1F3czcaV6FIXqLd54H7\",\"object\":\"chat.completion.chunk\",\"created\":1791720061,\"model\":\"gpt-6-luna\",\"service_tier\":\"default\",\"system_fingerprint\":null,\"choices\":[{\"index\":0,\"delta\":{\"tool_calls\":[{\"index\":0,\"function\":{\"arguments\":\" Pot\"}}]},\"finish_reason\":null}],\"obfuscation\":\"X\"}\n\n",
+            "data: {\"id\":\"chatcmpl-EXmWbuEH1m1F3czcaV6FIXqLd54H7\",\"object\":\"chat.completion.chunk\",\"created\":1791720061,\"model\":\"gpt-6-luna\",\"service_tier\":\"default\",\"system_fingerprint\":null,\"choices\":[{\"index\":0,\"delta\":{\"tool_calls\":[{\"index\":0,\"function\":{\"arguments\":\"tery\"}}]},\"finish_reason\":null}],\"obfuscation\":\"v\"}\n\n",
+            "data: {\"id\":\"chatcmpl-EXmWbuEH1m1F3czcaV6FIXqLd54H7\",\"object\":\"chat.completion.chunk\",\"created\":1791720061,\"model\":\"gpt-6-luna\",\"service_tier\":\"default\",\"system_fingerprint\":null,\"choices\":[{\"index\":0,\"delta\":{\"tool_calls\":[{\"index\":0,\"function\":{\"arguments\":\" Workshop\"}}]},\"finish_reason\":null}],\"obfuscation\":\"eBxdZFJ0AQaC\"}\n\n",
+            "data: {\"id\":\"chatcmpl-EXmWbuEH1m1F3czcaV6FIXqLd54H7\",\"object\":\"chat.completion.chunk\",\"created\":1791720061,\"model\":\"gpt-6-luna\",\"service_tier\":\"default\",\"system_fingerprint\":null,\"choices\":[{\"index\":0,\"delta\":{\"tool_calls\":[{\"index\":0,\"function\":{\"arguments\":\"\\\",\\\"\"}}]},\"finish_reason\":null}],\"obfuscation\":\"\"}\n\n",
+            "data: {\"id\":\"chatcmpl-EXmWbuEH1m1F3czcaV6FIXqLd54H7\",\"object\":\"chat.completion.chunk\",\"created\":1791720061,\"model\":\"gpt-6-luna\",\"service_tier\":\"default\",\"system_fingerprint\":null,\"choices\":[{\"index\":0,\"delta\":{},\"finish_reason\":\"length\"}],\"obfuscation\":\"ppOIfIY\"}\n\n",
+            "data: [DONE]\n\n"
+          ]
+        },
+        "end": "clean"
+      }
+    }
+  ],
+  "x": {},
+  "truth": {
+    "calls": [
+      {
+        "id": "call_DkXNh5JdHW4s54IKfPr4dP1U",
+        "name": "create_event",
+        "arguments_raw": "{\"title\":\"Weekend Pottery Workshop\",\"",
+        "complete": false,
+        "intended_arguments": null
+      }
+    ],
+    "raw_finish": "length",
+    "stream_completed": true,
+    "damage": "Recorded tool arguments cut inside a string under a limit reason."
+  },
+  "removes": []
+}

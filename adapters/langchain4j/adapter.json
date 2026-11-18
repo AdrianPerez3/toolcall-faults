@@ -1,0 +1,62 @@
+{
+  "format": "tcf.adapter/v1",
+  "target": "langchain4j",
+  "coordinates": [
+    "dev.langchain4j:langchain4j",
+    "dev.langchain4j:langchain4j-open-ai",
+    "dev.langchain4j:langchain4j-anthropic"
+  ],
+  "version_property": "target.version",
+  "extra_properties": {
+    "1.21.0": {
+      "http.client.version": "1.21.0-beta31"
+    },
+    "1.23.0": {
+      "http.client.version": "1.23.0-beta33"
+    }
+  },
+  "main_class": "toolcallfaults.adapter.langchain4j.Main",
+  "modules": {
+    "langchain4j-open-ai": {
+      "wire": "openai-chat",
+      "http_client": "jdk",
+      "http_clients": [
+        "jdk",
+        "okhttp"
+      ]
+    },
+    "langchain4j-anthropic": {
+      "wire": "anthropic",
+      "http_client": "jdk",
+      "http_clients": [
+        "jdk",
+        "okhttp"
+      ]
+    }
+  },
+  "surfaces": [
+    "loop-stream",
+    "loop-call",
+    "model-stream"
+  ],
+  "typed_error_prefixes": [
+    "dev.langchain4j."
+  ],
+  "unsupported": [],
+  "config_notes": [
+    "Timeout set to 3 seconds.",
+    "The streaming OpenAI builder exposes no retry setter.",
+    "Intermediate finish reasons and tool requests are recorded only in callback_only.",
+    "Anthropic base URL uses the cell root followed by /v1/.",
+    "Anthropic max_tokens is explicitly 1024, sufficient for the replayed control call.",
+    "Blocking OpenAiChatModel and AnthropicChatModel builders use timeout(Duration) and maxRetries(0) (the default is 2 retries); AiServices returns Result<String>, whose finalResponse() and finishReason() preserve the final caller response. Result.intermediateResponses() is recorded in callback_only, like onIntermediateResponse on the streaming surface.",
+    "On model-stream the caller view is the ChatResponse passed to onCompleteResponse. onPartialToolCall and onCompleteToolCall are optional callbacks with default no-op bodies; what they deliver is recorded in callback_only (partial_tool_calls, complete_tool_calls) and does not decide the category.",
+    "timeout(Duration) sets the connect and read timeouts of the HTTP client. With the JDK client the read timeout becomes HttpRequest.timeout, which ends when the response head arrives; with the OkHttp client it is a socket read timeout.",
+    "The okhttp build profile uses the matching beta HTTP-client module and excludes the JDK client; the model builder receives the sole discovered client explicitly and its type is checked before labelling the result."
+  ],
+  "docs": [
+    "https://docs.langchain4j.dev/tutorials/response-streaming/",
+    "https://docs.langchain4j.dev/tutorials/tools/",
+    "https://docs.langchain4j.dev/tutorials/ai-services/"
+  ]
+}

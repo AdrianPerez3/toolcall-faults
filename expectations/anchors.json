@@ -1,0 +1,328 @@
+{
+  "format": "tcf.anchors/v1",
+  "entries": [
+    {
+      "target": "spring-ai",
+      "version": "2.0.2",
+      "module": "spring-ai-openai",
+      "surface": "loop-stream",
+      "fixture": "openai-chat/tools.single-call",
+      "tool": "record_note",
+      "jdk": 21,
+      "expect": {
+        "category": "EXECUTED_AS_SENT",
+        "invocations": [
+          {
+            "priority": 3,
+            "title": "Quarterly report",
+            "body": "Send the Q3 numbers to finance before Friday"
+          }
+        ],
+        "request_count": 2,
+        "caller_finish_reasons": [
+          "STOP"
+        ]
+      }
+    },
+    {
+      "target": "spring-ai",
+      "version": "2.0.2",
+      "module": "spring-ai-openai",
+      "surface": "loop-stream",
+      "fixture": "openai-chat/truncation.args-cut-mid-string",
+      "tool": "record_note",
+      "jdk": 21,
+      "expect": {
+        "category": "FED_BACK_HIDDEN",
+        "invocations": [],
+        "request_count": 2,
+        "fed_back_text_contains": "Unexpected end-of-input",
+        "caller_text": "Noted."
+      }
+    },
+    {
+      "target": "spring-ai",
+      "version": "2.0.2",
+      "module": "spring-ai-openai",
+      "surface": "loop-stream",
+      "fixture": "openai-chat/truncation.name-only",
+      "tool": "record_note",
+      "jdk": 21,
+      "expect": {
+        "category": "EXECUTED_ALTERED",
+        "invocations": [
+          {
+            "priority": null,
+            "title": null,
+            "body": null
+          }
+        ],
+        "request_count": 2
+      }
+    },
+    {
+      "target": "spring-ai",
+      "version": "2.0.2",
+      "module": "spring-ai-openai",
+      "surface": "loop-stream",
+      "fixture": "openai-chat/stream.missing-finish",
+      "tool": "record_note",
+      "jdk": 21,
+      "expect": {
+        "category": "EXECUTED_AS_SENT",
+        "invocations": [
+          {
+            "priority": 3,
+            "title": "Quarterly report",
+            "body": "Send the Q3 numbers to finance before Friday"
+          }
+        ],
+        "request_count": 2
+      }
+    },
+    {
+      "target": "spring-ai",
+      "version": "2.0.2",
+      "module": "spring-ai-openai",
+      "surface": "loop-stream",
+      "fixture": "openai-chat/stream.stall-mid-args",
+      "tool": "record_note",
+      "jdk": 21,
+      "expect": {
+        "category": "ERROR_TYPED",
+        "error_type0": "com.openai.errors.OpenAIIoException",
+        "timeout_fired": true,
+        "watchdog_killed": false
+      }
+    },
+    {
+      "target": "langchain4j",
+      "version": "1.23.0",
+      "module": "langchain4j-open-ai",
+      "surface": "loop-stream",
+      "fixture": "openai-chat/tools.single-call",
+      "tool": "record_note",
+      "jdk": 21,
+      "expect": {
+        "category": "EXECUTED_AS_SENT",
+        "invocations": [
+          {
+            "priority": 3,
+            "title": "Quarterly report",
+            "body": "Send the Q3 numbers to finance before Friday"
+          }
+        ],
+        "request_count": 2
+      }
+    },
+    {
+      "target": "langchain4j",
+      "version": "1.23.0",
+      "module": "langchain4j-open-ai",
+      "surface": "loop-stream",
+      "fixture": "openai-chat/truncation.args-cut-mid-string",
+      "tool": "record_note",
+      "jdk": 21,
+      "expect": {
+        "category": "ERROR_UNTYPED",
+        "error_type0": "java.lang.RuntimeException",
+        "error_type1": "com.fasterxml.jackson.core.io.JsonEOFException",
+        "invocations": [],
+        "request_count": 1
+      }
+    },
+    {
+      "target": "langchain4j",
+      "version": "1.23.0",
+      "module": "langchain4j-open-ai",
+      "surface": "loop-stream",
+      "fixture": "openai-chat/stream.missing-finish",
+      "tool": "record_note",
+      "jdk": 21,
+      "expect": {
+        "category": "EXECUTED_AS_SENT",
+        "invocations": [
+          {
+            "priority": 3,
+            "title": "Quarterly report",
+            "body": "Send the Q3 numbers to finance before Friday"
+          }
+        ]
+      }
+    },
+    {
+      "target": "spring-ai",
+      "version": "2.0.2",
+      "module": "spring-ai-anthropic",
+      "surface": "loop-stream",
+      "fixture": "anthropic/tools.single-call",
+      "tool": "record_note",
+      "jdk": 21,
+      "expect": {
+        "category": "EXECUTED_AS_SENT",
+        "caller_finish_reasons": [
+          "end_turn"
+        ]
+      }
+    },
+    {
+      "target": "spring-ai",
+      "version": "2.0.2",
+      "module": "spring-ai-anthropic",
+      "surface": "loop-stream",
+      "fixture": "anthropic/truncation.args-cut-mid-string",
+      "tool": "record_note",
+      "jdk": 21,
+      "expect": {
+        "category": "SURFACED",
+        "caller_finish_reasons": [
+          "max_tokens"
+        ],
+        "request_count": 1
+      }
+    },
+    {
+      "target": "langchain4j",
+      "version": "1.23.0",
+      "module": "langchain4j-anthropic",
+      "surface": "loop-stream",
+      "fixture": "anthropic/tools.single-call",
+      "tool": "record_note",
+      "jdk": 21,
+      "expect": {
+        "category": "EXECUTED_AS_SENT"
+      }
+    },
+    {
+      "target": "langchain4j",
+      "version": "1.23.0",
+      "module": "langchain4j-anthropic",
+      "surface": "loop-stream",
+      "fixture": "anthropic/truncation.args-cut-mid-string",
+      "tool": "record_note",
+      "jdk": 21,
+      "expect": {
+        "category": "SURFACED",
+        "caller_finish_reasons": [
+          "LENGTH"
+        ],
+        "request_count": 1
+      }
+    },
+    {
+      "target": "langchain4j",
+      "version": "1.23.0",
+      "module": "langchain4j-open-ai",
+      "surface": "loop-stream",
+      "fixture": "openai-chat/stream.stall-mid-args",
+      "tool": "record_note",
+      "jdk": 21,
+      "expect": {
+        "category": "HANG",
+        "watchdog_killed": true,
+        "timeout_fired": false
+      }
+    },
+    {
+      "target": "spring-ai",
+      "version": "2.0.2",
+      "module": "spring-ai-anthropic",
+      "surface": "loop-stream",
+      "fixture": "anthropic/truncation.name-only@no-block-stop",
+      "tool": "record_note",
+      "jdk": 21,
+      "expect": {
+        "category": "SURFACED",
+        "caller_finish_reasons": [
+          "max_tokens"
+        ]
+      }
+    },
+    {
+      "target": "spring-ai",
+      "version": "2.0.2",
+      "module": "spring-ai-anthropic",
+      "surface": "loop-stream",
+      "fixture": "anthropic/truncation.name-only@block-stop",
+      "tool": "record_note",
+      "jdk": 21,
+      "expect": {
+        "category": "EXECUTED_ALTERED",
+        "invocations": [
+          {
+            "priority": null,
+            "title": null,
+            "body": null
+          }
+        ]
+      }
+    },
+    {
+      "target": "langchain4j",
+      "version": "1.23.0",
+      "module": "langchain4j-anthropic",
+      "surface": "loop-stream",
+      "fixture": "anthropic/stream.missing-finish",
+      "tool": "record_note",
+      "jdk": 21,
+      "expect": {
+        "category": "HANG",
+        "watchdog_killed": true
+      }
+    },
+    {
+      "target": "langchain4j",
+      "version": "1.23.0",
+      "module": "langchain4j-open-ai",
+      "surface": "loop-stream",
+      "fixture": "openai-chat/truncation.name-only",
+      "tool": "record_note",
+      "jdk": 21,
+      "expect": {
+        "category": "EXECUTED_ALTERED",
+        "invocations": [
+          {
+            "priority": null,
+            "title": null,
+            "body": null
+          }
+        ],
+        "request_count": 2
+      }
+    },
+    {
+      "target": "langchain4j",
+      "version": "1.23.0",
+      "module": "langchain4j-anthropic",
+      "surface": "loop-stream",
+      "fixture": "anthropic/truncation.name-only@no-block-stop",
+      "tool": "record_note",
+      "jdk": 21,
+      "expect": {
+        "category": "SURFACED",
+        "caller_finish_reasons": [
+          "LENGTH"
+        ]
+      }
+    },
+    {
+      "target": "langchain4j",
+      "version": "1.23.0",
+      "module": "langchain4j-anthropic",
+      "surface": "loop-stream",
+      "fixture": "anthropic/truncation.name-only@block-stop",
+      "tool": "record_note",
+      "jdk": 21,
+      "expect": {
+        "category": "EXECUTED_ALTERED",
+        "invocations": [
+          {
+            "priority": null,
+            "title": null,
+            "body": null
+          }
+        ]
+      }
+    }
+  ]
+}

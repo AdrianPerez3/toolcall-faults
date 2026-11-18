@@ -1,0 +1,30 @@
+#!/bin/sh
+set -eu
+cd "$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
+if [ "${1:-}" = "--container" ]; then
+    jdk=${2:?JDK required}
+    case "$jdk" in 17|21|25) ;; *) echo "unsupported JDK $jdk" >&2; exit 2 ;; esac
+    shift 2
+    docker build --build-arg JDK="$jdk" -t "tcf-ref:jdk$jdk" . >&2
+    mkdir -p results .local
+    image="tcf-ref:jdk$jdk"
+    if [ "${1:-}" = "compat" ]; then
+        [ "$jdk" = 21 ] || { echo 'Compatibility image requires JDK 21' >&2; exit 2; }
+        vendor=.local/vendor/agent-cutoff-bench
+        [ "$(git -C "$vendor" rev-parse HEAD)" = 6a575c59fae1bf593554d78b88b22986e72064fa ]
+        git -C "$vendor" diff --exit-code HEAD -- server.py LICENSE NOTICE >&2
+        docker build -f compat/agent-faultbench/Dockerfile -t tcf-compat:jdk21 "$vendor" >&2
+        image=tcf-compat:jdk21
+    fi
+    tcf_suite_version=$(git describe --always --dirty)
+    tcf_image_digest=$(docker image inspect --format '{{.Id}}' "$image")
+    exec docker run --rm --network none -e "TCF_SUITE_VERSION=$tcf_suite_version" -e "TCF_IMAGE_DIGEST=$tcf_image_digest" -v "$PWD/results:/tcf/results" -v "$PWD/.local:/tcf/.local" "$image" "$@"
+fi
+marker=runner/target/.tcf-build
+if [ ! -f "$marker" ] || [ ! -f runner/target/cp.txt ] ||
+   [ -n "$(find kit server runner -type f \( -path '*/src/main/*' -o -name pom.xml \) -newer "$marker" -print 2>/dev/null)" ] ||
+   [ pom.xml -nt "$marker" ]; then
+    ./mvnw -q -DskipTests package dependency:build-classpath -Dmdep.outputFile=target/cp.txt >&2
+    touch "$marker"
+fi
+exec java -cp "runner/target/classes:server/target/classes:kit/target/classes:$(cat runner/target/cp.txt)" toolcallfaults.runner.Main "$@"

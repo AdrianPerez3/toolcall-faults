@@ -1,0 +1,755 @@
+{
+  "format": "tcf.baseline/v1",
+  "entries": [
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-anthropic|loop-call|anthropic/truncation.complete-args-under-limit@nonstream+set_level|set_level|jdk17|jdk",
+      "category": "EXECUTED_AS_SENT",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/7169",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-18",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-anthropic|loop-call|anthropic/truncation.complete-args-under-limit@nonstream+set_level|set_level|jdk21|jdk",
+      "category": "EXECUTED_AS_SENT",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/7169",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-18",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-anthropic|loop-call|anthropic/truncation.complete-args-under-limit@nonstream+set_level|set_level|jdk25|jdk",
+      "category": "EXECUTED_AS_SENT",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/7169",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-18",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-anthropic|loop-call|anthropic/truncation.complete-args-under-limit@nonstream|record_note|jdk17|jdk",
+      "category": "EXECUTED_AS_SENT",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/7169",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-18",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-anthropic|loop-call|anthropic/truncation.complete-args-under-limit@nonstream|record_note|jdk21|jdk",
+      "category": "EXECUTED_AS_SENT",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/7169",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-18",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-anthropic|loop-call|anthropic/truncation.complete-args-under-limit@nonstream|record_note|jdk25|jdk",
+      "category": "EXECUTED_AS_SENT",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/7169",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-18",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-anthropic|loop-call|anthropic/truncation.name-only@nonstream+flush_notes|flush_notes|jdk17|jdk",
+      "category": "EXECUTED_ALTERED",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/7169",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-18",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-anthropic|loop-call|anthropic/truncation.name-only@nonstream+flush_notes|flush_notes|jdk21|jdk",
+      "category": "EXECUTED_ALTERED",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/7169",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-18",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-anthropic|loop-call|anthropic/truncation.name-only@nonstream+flush_notes|flush_notes|jdk25|jdk",
+      "category": "EXECUTED_ALTERED",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/7169",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-18",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-anthropic|loop-call|anthropic/truncation.name-only@nonstream|record_note|jdk17|jdk",
+      "category": "EXECUTED_ALTERED",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/7169",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-18",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-anthropic|loop-call|anthropic/truncation.name-only@nonstream|record_note|jdk21|jdk",
+      "category": "EXECUTED_ALTERED",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/7169",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-18",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-anthropic|loop-call|anthropic/truncation.name-only@nonstream|record_note|jdk25|jdk",
+      "category": "EXECUTED_ALTERED",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/7169",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-18",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-anthropic|loop-stream|anthropic/stream.missing-finish|record_note|jdk17|jdk",
+      "category": "HANG",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/7145",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-17",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-anthropic|loop-stream|anthropic/stream.missing-finish|record_note|jdk17|okhttp",
+      "category": "HANG",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/7145",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-17",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-anthropic|loop-stream|anthropic/stream.missing-finish|record_note|jdk21|jdk",
+      "category": "HANG",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/7145",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-17",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-anthropic|loop-stream|anthropic/stream.missing-finish|record_note|jdk21|okhttp",
+      "category": "HANG",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/7145",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-17",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-anthropic|loop-stream|anthropic/stream.missing-finish|record_note|jdk25|jdk",
+      "category": "HANG",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/7145",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-17",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-anthropic|loop-stream|anthropic/stream.missing-finish|record_note|jdk25|okhttp",
+      "category": "HANG",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/7145",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-17",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-anthropic|loop-stream|anthropic/stream.stall-mid-args|record_note|jdk17|jdk",
+      "category": "HANG",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/3925",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2025-10-21",
+      "maintainerAnswered": true,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-anthropic|loop-stream|anthropic/stream.stall-mid-args|record_note|jdk21|jdk",
+      "category": "HANG",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/3925",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2025-10-21",
+      "maintainerAnswered": true,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-anthropic|loop-stream|anthropic/stream.stall-mid-args|record_note|jdk25|jdk",
+      "category": "HANG",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/3925",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2025-10-21",
+      "maintainerAnswered": true,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-anthropic|loop-stream|anthropic/truncation.complete-args-under-limit@set_level|set_level|jdk17|jdk",
+      "category": "EXECUTED_AS_SENT",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/7169",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-18",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-anthropic|loop-stream|anthropic/truncation.complete-args-under-limit@set_level|set_level|jdk21|jdk",
+      "category": "EXECUTED_AS_SENT",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/7169",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-18",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-anthropic|loop-stream|anthropic/truncation.complete-args-under-limit@set_level|set_level|jdk25|jdk",
+      "category": "EXECUTED_AS_SENT",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/7169",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-18",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-anthropic|loop-stream|anthropic/truncation.complete-args-under-limit|record_note|jdk17|jdk",
+      "category": "EXECUTED_AS_SENT",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/7169",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-18",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-anthropic|loop-stream|anthropic/truncation.complete-args-under-limit|record_note|jdk21|jdk",
+      "category": "EXECUTED_AS_SENT",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/7169",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-18",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-anthropic|loop-stream|anthropic/truncation.complete-args-under-limit|record_note|jdk25|jdk",
+      "category": "EXECUTED_AS_SENT",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/7169",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-18",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-anthropic|loop-stream|anthropic/truncation.second-call-cut|record_note|jdk17|jdk",
+      "category": "DROPPED",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/7169",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-18",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-anthropic|loop-stream|anthropic/truncation.second-call-cut|record_note|jdk21|jdk",
+      "category": "DROPPED",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/7169",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-18",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-anthropic|loop-stream|anthropic/truncation.second-call-cut|record_note|jdk25|jdk",
+      "category": "DROPPED",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/7169",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-18",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-open-ai|loop-call|openai-chat/truncation.complete-args-under-limit@nonstream+set_level|set_level|jdk17|jdk",
+      "category": "EXECUTED_AS_SENT",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/7169",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-18",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-open-ai|loop-call|openai-chat/truncation.complete-args-under-limit@nonstream+set_level|set_level|jdk21|jdk",
+      "category": "EXECUTED_AS_SENT",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/7169",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-18",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-open-ai|loop-call|openai-chat/truncation.complete-args-under-limit@nonstream+set_level|set_level|jdk25|jdk",
+      "category": "EXECUTED_AS_SENT",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/7169",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-18",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-open-ai|loop-call|openai-chat/truncation.complete-args-under-limit@nonstream|record_note|jdk17|jdk",
+      "category": "EXECUTED_AS_SENT",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/7169",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-18",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-open-ai|loop-call|openai-chat/truncation.complete-args-under-limit@nonstream|record_note|jdk21|jdk",
+      "category": "EXECUTED_AS_SENT",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/7169",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-18",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-open-ai|loop-call|openai-chat/truncation.complete-args-under-limit@nonstream|record_note|jdk25|jdk",
+      "category": "EXECUTED_AS_SENT",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/7169",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-18",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-open-ai|loop-call|openai-chat/truncation.name-only@nonstream+flush_notes|flush_notes|jdk17|jdk",
+      "category": "EXECUTED_ALTERED",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/7169",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-18",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-open-ai|loop-call|openai-chat/truncation.name-only@nonstream+flush_notes|flush_notes|jdk21|jdk",
+      "category": "EXECUTED_ALTERED",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/7169",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-18",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-open-ai|loop-call|openai-chat/truncation.name-only@nonstream+flush_notes|flush_notes|jdk25|jdk",
+      "category": "EXECUTED_ALTERED",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/7169",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-18",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-open-ai|loop-call|openai-chat/truncation.name-only@nonstream|record_note|jdk17|jdk",
+      "category": "EXECUTED_ALTERED",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/7169",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-18",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-open-ai|loop-call|openai-chat/truncation.name-only@nonstream|record_note|jdk21|jdk",
+      "category": "EXECUTED_ALTERED",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/7169",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-18",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-open-ai|loop-call|openai-chat/truncation.name-only@nonstream|record_note|jdk25|jdk",
+      "category": "EXECUTED_ALTERED",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/7169",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-18",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-open-ai|loop-stream|openai-chat/stream.abort-after-call-start@fin|record_note|jdk17|jdk",
+      "category": "EXECUTED_ALTERED",
+      "issue": "https://github.com/langchain4j/langchain4j/pull/6144",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-08-22",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-open-ai|loop-stream|openai-chat/stream.abort-after-call-start@fin|record_note|jdk17|okhttp",
+      "category": "EXECUTED_ALTERED",
+      "issue": "https://github.com/langchain4j/langchain4j/pull/6144",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-08-22",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-open-ai|loop-stream|openai-chat/stream.abort-after-call-start@fin|record_note|jdk21|jdk",
+      "category": "EXECUTED_ALTERED",
+      "issue": "https://github.com/langchain4j/langchain4j/pull/6144",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-08-22",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-open-ai|loop-stream|openai-chat/stream.abort-after-call-start@fin|record_note|jdk21|okhttp",
+      "category": "EXECUTED_ALTERED",
+      "issue": "https://github.com/langchain4j/langchain4j/pull/6144",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-08-22",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-open-ai|loop-stream|openai-chat/stream.abort-after-call-start@fin|record_note|jdk25|jdk",
+      "category": "EXECUTED_ALTERED",
+      "issue": "https://github.com/langchain4j/langchain4j/pull/6144",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-08-22",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-open-ai|loop-stream|openai-chat/stream.abort-after-call-start@fin|record_note|jdk25|okhttp",
+      "category": "EXECUTED_ALTERED",
+      "issue": "https://github.com/langchain4j/langchain4j/pull/6144",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-08-22",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-open-ai|loop-stream|openai-chat/stream.abort-after-call-start@reset|record_note|jdk17|jdk",
+      "category": "EXECUTED_ALTERED",
+      "issue": "https://github.com/langchain4j/langchain4j/pull/6144",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-08-22",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-open-ai|loop-stream|openai-chat/stream.abort-after-call-start@reset|record_note|jdk17|okhttp",
+      "category": "EXECUTED_ALTERED",
+      "issue": "https://github.com/langchain4j/langchain4j/pull/6144",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-08-22",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-open-ai|loop-stream|openai-chat/stream.abort-after-call-start@reset|record_note|jdk21|jdk",
+      "category": "EXECUTED_ALTERED",
+      "issue": "https://github.com/langchain4j/langchain4j/pull/6144",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-08-22",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-open-ai|loop-stream|openai-chat/stream.abort-after-call-start@reset|record_note|jdk21|okhttp",
+      "category": "EXECUTED_ALTERED",
+      "issue": "https://github.com/langchain4j/langchain4j/pull/6144",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-08-22",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-open-ai|loop-stream|openai-chat/stream.abort-after-call-start@reset|record_note|jdk25|jdk",
+      "category": "EXECUTED_ALTERED",
+      "issue": "https://github.com/langchain4j/langchain4j/pull/6144",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-08-22",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-open-ai|loop-stream|openai-chat/stream.abort-after-call-start@reset|record_note|jdk25|okhttp",
+      "category": "EXECUTED_ALTERED",
+      "issue": "https://github.com/langchain4j/langchain4j/pull/6144",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-08-22",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-open-ai|loop-stream|openai-chat/stream.error-after-call-start@event-error|record_note|jdk17|jdk",
+      "category": "ERROR_UNTYPED",
+      "issue": "https://github.com/langchain4j/langchain4j/pull/6144",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-08-22",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-open-ai|loop-stream|openai-chat/stream.error-after-call-start@event-error|record_note|jdk17|okhttp",
+      "category": "ERROR_UNTYPED",
+      "issue": "https://github.com/langchain4j/langchain4j/pull/6144",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-08-22",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-open-ai|loop-stream|openai-chat/stream.error-after-call-start@event-error|record_note|jdk21|jdk",
+      "category": "ERROR_UNTYPED",
+      "issue": "https://github.com/langchain4j/langchain4j/pull/6144",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-08-22",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-open-ai|loop-stream|openai-chat/stream.error-after-call-start@event-error|record_note|jdk21|okhttp",
+      "category": "ERROR_UNTYPED",
+      "issue": "https://github.com/langchain4j/langchain4j/pull/6144",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-08-22",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-open-ai|loop-stream|openai-chat/stream.error-after-call-start@event-error|record_note|jdk25|jdk",
+      "category": "ERROR_UNTYPED",
+      "issue": "https://github.com/langchain4j/langchain4j/pull/6144",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-08-22",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-open-ai|loop-stream|openai-chat/stream.error-after-call-start@event-error|record_note|jdk25|okhttp",
+      "category": "ERROR_UNTYPED",
+      "issue": "https://github.com/langchain4j/langchain4j/pull/6144",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-08-22",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-open-ai|loop-stream|openai-chat/stream.stall-mid-args|record_note|jdk17|jdk",
+      "category": "HANG",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/3925",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2025-10-21",
+      "maintainerAnswered": true,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-open-ai|loop-stream|openai-chat/stream.stall-mid-args|record_note|jdk21|jdk",
+      "category": "HANG",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/3925",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2025-10-21",
+      "maintainerAnswered": true,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-open-ai|loop-stream|openai-chat/stream.stall-mid-args|record_note|jdk25|jdk",
+      "category": "HANG",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/3925",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2025-10-21",
+      "maintainerAnswered": true,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-open-ai|loop-stream|openai-chat/truncation.complete-args-under-limit@set_level|set_level|jdk17|jdk",
+      "category": "EXECUTED_AS_SENT",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/7169",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-18",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-open-ai|loop-stream|openai-chat/truncation.complete-args-under-limit@set_level|set_level|jdk21|jdk",
+      "category": "EXECUTED_AS_SENT",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/7169",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-18",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-open-ai|loop-stream|openai-chat/truncation.complete-args-under-limit@set_level|set_level|jdk25|jdk",
+      "category": "EXECUTED_AS_SENT",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/7169",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-18",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-open-ai|loop-stream|openai-chat/truncation.complete-args-under-limit|record_note|jdk17|jdk",
+      "category": "EXECUTED_AS_SENT",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/7169",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-18",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-open-ai|loop-stream|openai-chat/truncation.complete-args-under-limit|record_note|jdk21|jdk",
+      "category": "EXECUTED_AS_SENT",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/7169",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-18",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-open-ai|loop-stream|openai-chat/truncation.complete-args-under-limit|record_note|jdk25|jdk",
+      "category": "EXECUTED_AS_SENT",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/7169",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-18",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-open-ai|loop-stream|openai-chat/truncation.name-only@flush_notes|flush_notes|jdk17|jdk",
+      "category": "EXECUTED_ALTERED",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/7169",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-18",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-open-ai|loop-stream|openai-chat/truncation.name-only@flush_notes|flush_notes|jdk21|jdk",
+      "category": "EXECUTED_ALTERED",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/7169",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-18",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-open-ai|loop-stream|openai-chat/truncation.name-only@flush_notes|flush_notes|jdk25|jdk",
+      "category": "EXECUTED_ALTERED",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/7169",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-18",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-open-ai|loop-stream|openai-chat/truncation.name-only|record_note|jdk17|jdk",
+      "category": "EXECUTED_ALTERED",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/7169",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-18",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-open-ai|loop-stream|openai-chat/truncation.name-only|record_note|jdk21|jdk",
+      "category": "EXECUTED_ALTERED",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/7169",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-18",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    },
+    {
+      "cell": "langchain4j@1.23.0|langchain4j-open-ai|loop-stream|openai-chat/truncation.name-only|record_note|jdk25|jdk",
+      "category": "EXECUTED_ALTERED",
+      "issue": "https://github.com/langchain4j/langchain4j/issues/7169",
+      "status": "reported",
+      "disclosure": "filed",
+      "filedOn": "2026-11-18",
+      "maintainerAnswered": false,
+      "maintainerPosition": null
+    }
+  ]
+}

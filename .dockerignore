@@ -1,0 +1,9 @@
+.git
+**/.local
+docs/superpowers
+**/target
+results
+site
+compat/agent-faultbench/results
+compat/agent-faultbench/rows.md
+.mvn/wrapper/maven-wrapper.jar

@@ -1,0 +1,116 @@
+name: CI
+on:
+  pull_request:
+    paths: &paths
+      - 'adapters/**'
+      - 'suite/**'
+      - 'matrix.json'
+      - '**/pom.xml'
+      - 'runner/**'
+      - 'server/**'
+      - 'kit/**'
+      - 'expectations/**'
+      - 'results/**'
+      - 'scan-allow.txt'
+      - 'compat/**'
+      - '.githooks/**'
+      - '.gitignore'
+      - '.github/**'
+      - '.mvn/**'
+      - 'mvnw'
+      - 'tcf'
+      - 'Dockerfile'
+      - '.dockerignore'
+      - 'README.md'
+      - 'CONTRIBUTING.md'
+      - 'SECURITY.md'
+      - 'CODE_OF_CONDUCT.md'
+      - 'CHANGELOG.md'
+      - 'CITATION.cff'
+      - 'NOTICE'
+      - 'docs/*.md'
+  push:
+    branches: [main]
+    paths: *paths
+  workflow_dispatch:
+# One run per change: a pull request branch is covered by its pull_request run, and a newer push
+# to a pull request replaces its run still in progress. A run on main always finishes: it is the
+# record that the published rows reproduce at that commit.
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+# Two jobs per JDK, side by side on separate runners, so that neither comes near its time limit.
+# A cell still runs alone on its runner. The limits are about twice the slowest time seen.
+# Self-test, run and check lines name cells and outcomes. Unfiled observations stay in the
+# ephemeral workspace, including failure details; only fixed lines and counts reach this log.
+jobs:
+  selftest:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    strategy:
+      fail-fast: false
+      matrix:
+        jdk: ['17', '21', '25']
+    env:
+      JDK: ${{ matrix.jdk }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6.3.0
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.jdk }}
+      # The wrapper fetches its jar and Maven from Maven Central. A refused request ends the
+      # script with a checksum message, so the download alone gets three attempts.
+      - name: Fetch Maven
+        run: n=0; until ./mvnw -q -B --version; do n=$((n+1)); [ "$n" -lt 3 ] || exit 1; sleep 15; done
+      - run: ./mvnw -B verify
+      - run: ./tcf lint
+      - name: Runner hardware
+        run: |
+          nproc
+          lscpu | grep -E '^(Model name|Thread\(s\) per core|Core\(s\) per socket):' || true
+      - name: Build reference image
+        timeout-minutes: 20
+        run: docker build --build-arg JDK="$JDK" -t "tcf-ref:jdk$JDK" .
+      - name: Self-test
+        run: |
+          mkdir -p .local
+          ./tcf --container "$JDK" selftest > .local/ci-selftest.log 2>&1 || { grep -E '^(server|controls|anchors|pins): ' .local/ci-selftest.log || true; echo "harness lines: $(grep -c HARNESS .local/ci-selftest.log || true)"; echo "selftest failed; details stay in the workspace"; exit 1; }
+          grep -E '^(server|controls|anchors|pins): ' .local/ci-selftest.log
+  cells:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        jdk: ['17', '21', '25']
+    env:
+      JDK: ${{ matrix.jdk }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Runner hardware
+        run: |
+          nproc
+          lscpu | grep -E '^(Model name|Thread\(s\) per core|Core\(s\) per socket):' || true
+      - name: Build reference image
+        timeout-minutes: 20
+        run: docker build --build-arg JDK="$JDK" -t "tcf-ref:jdk$JDK" .
+      - name: Run matrix
+        # Published cells only: the cells with rows in results/. The others are run and judged
+        # by the maintainer with the private baselines.
+        run: |
+          mkdir -p .local
+          ./tcf --container "$JDK" run --jdk "$JDK" --published --out .local/run > .local/ci-run.log 2>&1 || { grep -E '^run: ' .local/ci-run.log || true; echo "run failed; details stay in the workspace"; exit 1; }
+      - name: Check observations
+        # In the container, because withheld rows are written owner-only by its user.
+        run: |
+          mkdir -p .local
+          ./tcf --container "$JDK" check --run .local/run > .local/ci-check.log 2>&1 || { echo "differing cells: $(grep -cE '^(CHANGED|NEW|STALE) ' .local/ci-check.log || true)"; echo "check failed; details stay in the workspace"; exit 1; }

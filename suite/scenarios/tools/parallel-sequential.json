@@ -1,0 +1,19 @@
+{
+  "format" : "tcf.scenario/v1",
+  "id" : "tools.parallel-sequential",
+  "spec_id" : "S11",
+  "title" : "Two complete calls with sequential argument fragments",
+  "summary" : "Two complete calls with sequential argument fragments",
+  "wire_class" : "control",
+  "evidence" : [ "https://github.com/traceloop/openllmetry/blob/e3d651a/packages/opentelemetry-instrumentation-openai/tests/traces/cassettes/test_functions/test_open_ai_function_calls_tools_streaming_parallel.yaml" ],
+  "sighting" : "first-party",
+  "tools" : [ "record_note" ],
+  "surfaces" : [ "loop-stream", "model-stream" ],
+  "http_client_axis" : false,
+  "wires" : {
+    "openai-chat" : {
+      "modes" : [ "stream" ],
+      "variants" : [ "" ]
+    }
+  }
+}

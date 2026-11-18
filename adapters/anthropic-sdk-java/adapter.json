@@ -1,0 +1,41 @@
+{
+  "format": "tcf.adapter/v1",
+  "target": "anthropic-sdk-java",
+  "coordinates": [
+    "com.anthropic:anthropic-java"
+  ],
+  "version_property": "target.version",
+  "extra_properties": {},
+  "main_class": "toolcallfaults.adapter.anthropicsdk.Main",
+  "modules": {
+    "anthropic-java": {
+      "wire": "anthropic",
+      "http_client": "okhttp"
+    }
+  },
+  "surfaces": [
+    "loop-stream",
+    "loop-call",
+    "model-stream",
+    "model-call"
+  ],
+  "typed_error_prefixes": [
+    "com.anthropic.errors."
+  ],
+  "unsupported": [],
+  "config_notes": [
+    "Retries set to 0 (default 2); timeout set to 3 seconds.",
+    "Model surfaces use messages().createStreaming with MessageAccumulator.message(), or messages().create().",
+    "Loop surfaces use beta().messages().toolRunner(ToolRunnerCreateParams), iterated directly or through streaming(); tools use BetaRunnableTool.of(Class, Function).",
+    "ToolRunnerCreateParams.thread(false) sends the whole conversation on the ordinary messages endpoint; the released default enables server-side message threads.",
+    "Every message yielded by BetaToolRunner is visible to its caller and is retained in caller observations.",
+    "max_tokens is explicitly 1024.",
+    "Non-beta model parameters use explicit Tool and Tool.InputSchema builders; the Class overload is available on beta message parameters.",
+    "flush_notes uses an explicit empty BetaTool schema with BetaRunnableTool.of(BetaTool, Function); the SDK class-schema generator rejects empty classes before any request. Parameterized recorder tools retain typed SDK binding."
+  ],
+  "docs": [
+    "https://github.com/anthropics/anthropic-sdk-java/blob/v3.8.0/README.md",
+    "https://github.com/anthropics/anthropic-sdk-java/blob/v3.8.0/anthropic-java-core/src/main/kotlin/com/anthropic/helpers/BetaToolRunner.kt",
+    "https://platform.claude.com/docs/en/api/sdks/java"
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "format" : "tcf.scenario/v1",
+  "id" : "tools.parallel-interleaved",
+  "spec_id" : "S12",
+  "title" : "Two complete calls with alternating argument fragments",
+  "summary" : "Two complete calls with alternating argument fragments",
+  "wire_class" : "S1",
+  "evidence" : [ "https://github.com/openai/openai-java/issues/1070", "https://github.com/spring-projects/spring-ai/issues/6381" ],
+  "sighting" : "protocol-legal, no sighting",
+  "tools" : [ "record_note" ],
+  "surfaces" : [ "loop-stream", "model-stream" ],
+  "http_client_axis" : false,
+  "wires" : {
+    "openai-chat" : {
+      "modes" : [ "stream" ],
+      "variants" : [ "" ]
+    }
+  }
+}
