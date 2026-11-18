@@ -310,7 +310,7 @@ public final class Report {
     MessageDigest digest = MessageDigest.getInstance("SHA-256");
     try (var files = Files.walk(root.resolve("suite/fixtures"))) {
       for (var p : files.filter(f -> f.toString().endsWith(".json")).sorted().toList())
-        for (var hash : FixtureLoader.load(p).bodySha256())
+        for (var hash : FixtureLoader.loadVerified(p).bodySha256())
           digest.update((hash + "\n").getBytes(StandardCharsets.UTF_8));
     }
     return "Last successful run: "

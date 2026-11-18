@@ -22,7 +22,7 @@ public final class SelfTest {
         files.addAll(fixtures);
       }
     for (Path path : files) {
-      Fixture f = FixtureLoader.load(path);
+      Fixture f = FixtureLoader.loadVerified(path);
       for (int i = 0; i < f.exchanges().size(); i++)
         verify(f, i, path.startsWith(suite.resolve("selftest")));
     }
@@ -61,7 +61,7 @@ public final class SelfTest {
     List<Fixture> fixtures = new ArrayList<>();
     try (var files = Files.walk(root.resolve("suite/fixtures"))) {
       for (Path p : files.filter(p -> p.toString().endsWith(".json")).sorted().toList()) {
-        Fixture f = FixtureLoader.load(p);
+        Fixture f = FixtureLoader.loadVerified(p);
         if (AdapterManifest.isControl(f.scenario())) fixtures.add(f);
         if (f.scenario().equals("truncation.complete-args-under-limit")
             && f.tools().equals(List.of("set_level"))) fixtures.add(levelControl(f));
@@ -235,7 +235,7 @@ public final class SelfTest {
           toolcallfaults.runner.cell.AdapterManifest.load(root.resolve("adapters").resolve(name));
       String fixture = entry.path("fixture").asText();
       var cell = anchorCell(entry, manifest, Runtime.version().feature());
-      Fixture f = FixtureLoader.load(root.resolve("suite/fixtures/" + fixture + ".json"));
+      Fixture f = FixtureLoader.loadVerified(root.resolve("suite/fixtures/" + fixture + ".json"));
       int ok = 0;
       for (int rep = 1; rep <= 3; rep++)
         try (var server = ReplayServer.start(0)) {

@@ -48,7 +48,7 @@ public final class Matrix {
       List<Fixture> fixtures = new ArrayList<>();
       try (var files = Files.walk(root.resolve("suite/fixtures"))) {
         for (Path p : files.filter(f -> f.toString().endsWith(".json")).sorted().toList()) {
-          var f = FixtureLoader.load(p);
+          var f = FixtureLoader.loadVerified(p);
           fixtures.add(f);
           if (f.scenario().equals("truncation.complete-args-under-limit")
               && f.tools().equals(List.of("set_level")))

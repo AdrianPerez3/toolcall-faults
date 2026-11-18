@@ -1,7 +1,6 @@
 package toolcallfaults.runner.fixture;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import java.io.*;
 import java.nio.file.*;
 import java.util.*;
 
@@ -13,18 +12,18 @@ public final class ControlFixtures {
     Path base = root.resolve("suite/fixtures").toAbsolutePath().normalize();
     Path file = base.resolve(id + ".json").normalize();
     if (!file.startsWith(base)) throw new IllegalArgumentException("Invalid fixture path");
-    if (Files.exists(file)) return FixtureLoader.load(file);
+    if (Files.exists(file)) return FixtureLoader.loadVerified(file);
     String[] pieces = id.split("/", 2);
     if (pieces.length == 2
         && Set.of("tools.single-call@set_level", "tools.single-call@nonstream+set_level")
             .contains(pieces[1])) {
       String variant = pieces[1].substring(pieces[1].indexOf('@') + 1);
       return levelControl(
-          FixtureLoader.load(
+          FixtureLoader.loadVerified(
               base.resolve(
                   pieces[0] + "/truncation.complete-args-under-limit@" + variant + ".json")));
     }
-    return FixtureLoader.load(file);
+    return FixtureLoader.loadVerified(file);
   }
 
   public static Fixture levelControl(Fixture source) throws Exception {
@@ -53,12 +52,7 @@ public final class ControlFixtures {
               .put("finish_reason", normal);
       }
       exchanges.add(e);
-      var bytes = new ByteArrayOutputStream();
-      for (byte[] part : FixtureLoader.parts(body)) bytes.writeBytes(part);
-      hashes.add(
-          HexFormat.of()
-              .formatHex(
-                  java.security.MessageDigest.getInstance("SHA-256").digest(bytes.toByteArray())));
+      hashes.add(FixtureLoader.bodyHash(body));
     }
     return new Fixture(
         source.wire() + "/tools.single-call@" + (source.stream() ? "" : "nonstream+") + "set_level",

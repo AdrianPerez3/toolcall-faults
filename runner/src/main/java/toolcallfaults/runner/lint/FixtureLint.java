@@ -2,7 +2,6 @@ package toolcallfaults.runner.lint;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.nio.file.*;
-import java.security.MessageDigest;
 import java.util.*;
 import toolcallfaults.runner.fixture.*;
 import toolcallfaults.server.*;
@@ -52,10 +51,7 @@ public final class FixtureLint {
             String p = "$.exchanges[" + i + "].response";
             JsonNode body = f.exchanges().get(i).path("response").path("body");
             Exchange e = script.exchanges().get(i);
-            String sha =
-                HexFormat.of()
-                    .formatHex(
-                        MessageDigest.getInstance("SHA-256").digest(FixtureLoader.bodyBytes(f, i)));
+            String sha = FixtureLoader.bodyHash(body);
             if (i >= f.bodySha256().size() || !sha.equals(f.bodySha256().get(i)))
               add(out, f, "$.provenance.body_sha256[" + i + "]", "body hash mismatch");
             if (e.kind() == BodyKind.WHOLE && e.end() != End.CLEAN)

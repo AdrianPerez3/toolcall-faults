@@ -7,6 +7,8 @@ import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import toolcallfaults.server.*;
 
@@ -94,6 +96,29 @@ public final class FixtureLoader {
                         truth.path("stream_completed").isBoolean()?truth.get("stream_completed").asBoolean():null,text(truth,"damage","$.truth")),
                 strings(n.path("removes"),"$.removes"),strings(provenance.path("body_sha256"),"$.provenance.body_sha256"),file);
     }
+    /** Validate the byte receipts before a catalogue fixture is used in an observation. */
+    public static Fixture loadVerified(Path file) throws IOException {
+        Fixture fixture = load(file);
+        if (fixture.bodySha256().size() != fixture.exchanges().size())
+            throw new IOException(file + ": $.provenance.body_sha256: one hash per exchange required");
+        for (int i = 0; i < fixture.exchanges().size(); i++) {
+            JsonNode body = fixture.exchanges().get(i).path("response").path("body");
+            if (!bodyHash(body).equals(fixture.bodySha256().get(i)))
+                throw new IOException(file + ": $.provenance.body_sha256[" + i + "]: body hash mismatch");
+        }
+        return fixture;
+    }
+
+    public static String bodyHash(JsonNode body) {
+        try {
+            var digest = MessageDigest.getInstance("SHA-256");
+            for (byte[] part : parts(body)) digest.update(part);
+            return HexFormat.of().formatHex(digest.digest());
+        } catch (NoSuchAlgorithmException e) {
+            throw new AssertionError(e);
+        }
+    }
+
     public static List<byte[]> parts(JsonNode body) {
         String form=body.fieldNames().next();JsonNode value=body.get(form);List<byte[]> parts=new ArrayList<>();
         try {
