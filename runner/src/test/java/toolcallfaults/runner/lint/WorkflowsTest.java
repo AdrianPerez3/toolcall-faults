@@ -220,9 +220,6 @@ class WorkflowsTest {
       assertTrue(excluded.contains(pattern), "Missing private build exclusion: " + pattern);
   }
 
-  private static final String THREE_ATTEMPTS =
-      "; do n=$((n+1)); [ \"$n\" -lt 3 ] || exit 1; sleep 15; done";
-
   @Test
   void a_clean_checkout_and_image_include_the_verified_wrapper_bootstrap() throws Exception {
     var wrapper = root.resolve(".mvn/wrapper");
@@ -242,12 +239,11 @@ class WorkflowsTest {
   void the_first_maven_call_of_a_fresh_environment_only_downloads_and_is_tried_three_times()
       throws Exception {
     // The bootstrap retries distribution and dependency downloads before starting the tests.
-    var image =
-        Files.readAllLines(root.resolve("Dockerfile")).stream()
-            .filter(l -> l.contains("./mvnw"))
-            .toList();
-    assertEquals(
-        "RUN n=0; until ./mvnw -q -B dependency:go-offline" + THREE_ATTEMPTS, image.get(0));
+    var image = Files.readAllLines(root.resolve("Dockerfile")).stream()
+        .filter(l -> l.startsWith("RUN ") && (l.contains("./mvnw") || l.contains("prepare-maven.sh")))
+        .toList();
+    assertEquals("RUN sh .github/scripts/prepare-maven.sh --image /etc/mavenrc", image.get(0));
+    assertTrue(image.get(1).startsWith("RUN ./mvnw -q -B package "), image.get(1));
     for (String name : List.of("ci.yml", "weekly.yml")) {
       var steps = lines(name).stream().map(String::strip).toList();
       int bootstrap = steps.indexOf("run: sh .github/scripts/prepare-maven.sh");
