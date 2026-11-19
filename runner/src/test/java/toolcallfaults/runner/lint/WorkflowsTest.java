@@ -249,12 +249,12 @@ class WorkflowsTest {
     assertEquals(
         "RUN n=0; until ./mvnw -q -B dependency:go-offline" + THREE_ATTEMPTS, image.get(0));
     for (String name : List.of("ci.yml", "weekly.yml")) {
-      var calls = lines(name).stream().filter(l -> l.contains("./mvnw")).toList();
-      assertEquals(
-          "        run: n=0; until ./mvnw -q -B --version" + THREE_ATTEMPTS,
-          calls.get(0),
-          name + " starts Maven without a second attempt");
-      assertEquals("      - run: ./mvnw -B verify", calls.get(1), name);
+      var steps = lines(name).stream().map(String::strip).toList();
+      int bootstrap = steps.indexOf("run: sh .github/scripts/prepare-maven.sh");
+      int verify = steps.indexOf("- run: ./mvnw -B verify");
+      assertTrue(bootstrap >= 0 && verify == bootstrap + 1, name);
+      assertEquals(List.of("- run: ./mvnw -B verify"),
+          steps.stream().filter(l -> l.contains("./mvnw")).toList(), name);
     }
     for (String name :
         List.of("Dockerfile", ".github/workflows/ci.yml", ".github/workflows/weekly.yml"))
