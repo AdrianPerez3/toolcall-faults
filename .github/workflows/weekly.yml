@@ -23,9 +23,8 @@ jobs:
         with:
           distribution: temurin
           java-version: '21'
-      # The verified wrapper JAR comes from the checkout. Retry the Maven distribution download.
       - name: Fetch Maven
-        run: n=0; until ./mvnw -q -B --version; do n=$((n+1)); [ "$n" -lt 3 ] || exit 1; sleep 15; done
+        run: sh .github/scripts/prepare-maven.sh
       - run: ./mvnw -B verify
       - run: ./tcf lint
       - name: Runner hardware

@@ -11,8 +11,9 @@ COPY .mvn .mvn
 COPY kit/pom.xml kit/pom.xml
 COPY server/pom.xml server/pom.xml
 COPY runner/pom.xml runner/pom.xml
-# Retry dependency downloads before any tests run. The wrapper JAR is supplied by the checkout.
-RUN n=0; until ./mvnw -q -B dependency:go-offline; do n=$((n+1)); [ "$n" -lt 3 ] || exit 1; sleep 15; done
+COPY .github/scripts/prepare-maven.sh .github/scripts/maven-central-fallback.xml .github/scripts/
+# Fetch the wrapper distribution and plugin graph before running any tests.
+RUN sh .github/scripts/prepare-maven.sh --image /etc/mavenrc
 COPY . .
 RUN ./mvnw -q -B package dependency:build-classpath -Dmdep.outputFile=target/cp.txt && touch runner/target/.tcf-build
 RUN java -cp "runner/target/classes:server/target/classes:kit/target/classes:$(cat runner/target/cp.txt)" toolcallfaults.runner.cell.AdapterBuild
