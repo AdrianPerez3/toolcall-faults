@@ -320,3 +320,7 @@ For loop surfaces, the observations record actual tool entries. For model surfac
 ## 2026-11-18 — Hosted failure summaries
 
 CI and weekly replay print counts of unstable cells, unexpected controls and check findings. Each command keeps its own exit status. The full self-test has four required summary lines. Raw observations and cell identifiers stay in the runner workspace.
+
+## 2026-11-19 — Maven build tooling
+
+The wrapper uses Maven 3.10.1 and verifies its distribution against the pinned SHA-256. The build uses Maven Dependency Plugin 3.11.0. Git stores the Windows launcher with LF and checks it out with CRLF so a fresh checkout supplies a clean measurement revision.
